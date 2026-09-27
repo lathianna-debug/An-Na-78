@@ -715,6 +715,12 @@ function getInitialDatabase(): DatabaseSchema {
     allowReviewDetailAfterSubmit: false,
     isBannerLocked: true,
     schoolName: 'TRƯỜNG THCS TÂN HẢI',
+    customBannerImage: '/uploads/banner_1790495237357_fdc4121b.png',
+    useCustomBanner: true,
+    bannerFitMode: 'contain',
+    bannerBorderRadius: 'rounded-3xl',
+    bannerShadow: 'shadow-xl',
+    backgroundTheme: 'default',
   };
 
   const auditLogs: AuditLog[] = [

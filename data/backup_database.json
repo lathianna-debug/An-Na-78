@@ -6608,6 +6608,14 @@
   },
   "auditLogs": [
     {
+      "id": "log-1790496917726-3d8av",
+      "timestamp": "2026-09-27T08:15:17.726Z",
+      "actor": "Cô An Na",
+      "action": "Đăng nhập",
+      "targetEntity": "Hệ thống Quản trị",
+      "details": "Đăng nhập thành công vào trang quản lý"
+    },
+    {
       "id": "log-1790496858779-u36ee",
       "timestamp": "2026-09-27T08:14:18.779Z",
       "actor": "Cô An Na",
@@ -8240,7 +8248,7 @@
       "details": "Chuyển vào thùng rác do tên không hợp lệ"
     },
     {
-      "id": "log-1790497025719",
+      "id": "log-1790497025708",
       "timestamp": "2026-09-27T08:17:05.702Z",
       "actor": "Cô An Na",
       "action": "Nạp danh sách học sinh Lớp 9A8",
@@ -8248,7 +8256,7 @@
       "details": "Đã nạp chính xác 43 học sinh Lớp 9A8 theo đúng số thứ tự và họ tên từ bảng điểm."
     },
     {
-      "id": "log-1790497142968",
+      "id": "log-1790497142956",
       "timestamp": "2026-09-27T08:19:02.950Z",
       "actor": "Cô An Na",
       "action": "Nạp danh sách học sinh Lớp 9A9",
@@ -8256,7 +8264,7 @@
       "details": "Đã nạp chính xác 46 học sinh Lớp 9A9 theo đúng số thứ tự và họ tên từ bảng điểm."
     },
     {
-      "id": "log-1790497567215",
+      "id": "log-1790497567204",
       "timestamp": "2026-09-27T08:26:07.198Z",
       "actor": "Cô An Na",
       "action": "Nạp danh sách học sinh Lớp 9A10",
@@ -8264,7 +8272,7 @@
       "details": "Đã nạp chính xác 45 học sinh Lớp 9A10 theo đúng số thứ tự và họ tên từ bảng điểm."
     },
     {
-      "id": "log-1790497710524",
+      "id": "log-1790497710511",
       "timestamp": "2026-09-27T08:28:30.505Z",
       "actor": "Cô An Na",
       "action": "Nạp danh sách học sinh Lớp 9A11",
@@ -8272,7 +8280,7 @@
       "details": "Đã nạp chính xác 45 học sinh Lớp 9A11 theo đúng số thứ tự và họ tên từ bảng điểm."
     },
     {
-      "id": "log-1790497895177",
+      "id": "log-1790497895164",
       "timestamp": "2026-09-27T08:31:35.158Z",
       "actor": "Cô An Na",
       "action": "Nạp danh sách học sinh Lớp 9A12",

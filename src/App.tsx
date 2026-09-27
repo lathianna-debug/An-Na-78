@@ -25,14 +25,16 @@ import { TeacherLoginModal } from './components/TeacherLoginModal.tsx';
 import { TeacherDashboard } from './components/TeacherDashboard.tsx';
 import { ImageUploaderModal } from './components/ImageUploaderModal.tsx';
 
+const PERMANENT_LOCKED_BANNER = '/uploads/banner_1790495237357_fdc4121b.png';
+
 export default function App() {
   const [currentView, setCurrentView] = useState<'home' | 'student-join' | 'student-exam' | 'student-completion' | 'teacher-dashboard'>('home');
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const [showTeacherLogin, setShowTeacherLogin] = useState(false);
 
-  // Custom Banner / Image replacement state
-  const [customBannerImage, setCustomBannerImage] = useState<string>('');
-  const [useCustomBanner, setUseCustomBanner] = useState<boolean>(false);
+  // Custom Banner / Image replacement state (Khóa cố định theo ảnh Cô An Na đã thay)
+  const [customBannerImage, setCustomBannerImage] = useState<string>(PERMANENT_LOCKED_BANNER);
+  const [useCustomBanner, setUseCustomBanner] = useState<boolean>(true);
   const [bannerFitMode, setBannerFitMode] = useState<'contain' | 'cover' | 'original'>('contain');
   const [bannerBorderRadius, setBannerBorderRadius] = useState<string>('rounded-3xl');
   const [bannerShadow, setBannerShadow] = useState<string>('shadow-xl');
