@@ -1,0 +1,6 @@
+{
+  "name": "Hành trình Công dân nhí",
+  "description": "Nền tảng học tập trực tuyến Môn Giáo dục Công dân 9 – Trường THCS Tân Hải với Hành trình bài học, quản lý nhiệm vụ, bảo mật bài nộp và thống kê tiến độ học sinh.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
