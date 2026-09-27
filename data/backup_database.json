@@ -1997,7 +1997,8 @@
       "avgScore": 0,
       "isDeleted": false,
       "createdAt": "2026-09-27T08:31:35.158Z",
-      "updatedAt": "2026-09-27T08:31:35.158Z"
+      "updatedAt": "2026-09-27T08:31:35.158Z",
+      "lastActive": "2026-09-27T09:50:33.548Z"
     },
     {
       "id": "hs-9a12-02",
@@ -6586,7 +6587,23 @@
       "points": 0.6
     }
   ],
-  "submissions": [],
+  "submissions": [
+    {
+      "id": "sub-1790502633548-jbp4",
+      "assignmentId": "assign-1",
+      "assignmentTitle": "Bài 1: Sống có lí tưởng — Thử thách: “La bàn tuổi 15”",
+      "lessonNumber": 1,
+      "lessonTitle": "Sống có lí tưởng",
+      "studentId": "hs-9a12-01",
+      "studentName": "Nguyễn Võ Trầm Anh",
+      "studentClass": "9A12",
+      "startTime": "2026-09-27T09:50:33.548Z",
+      "serverDueTime": "2026-09-27T10:05:33.548Z",
+      "status": "IN_PROGRESS",
+      "totalQuestions": 18,
+      "maxScore": 10
+    }
+  ],
   "answers": [],
   "settings": {
     "lockImmediatelyOnSubmit": true,
@@ -6607,6 +6624,14 @@
     "backgroundTheme": "default"
   },
   "auditLogs": [
+    {
+      "id": "log-1790498107378-2gyuk",
+      "timestamp": "2026-09-27T08:35:07.378Z",
+      "actor": "Cô An Na",
+      "action": "Đăng nhập",
+      "targetEntity": "Hệ thống Quản trị",
+      "details": "Đăng nhập thành công vào trang quản lý"
+    },
     {
       "id": "log-1790496917726-3d8av",
       "timestamp": "2026-09-27T08:15:17.726Z",

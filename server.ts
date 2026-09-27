@@ -117,7 +117,7 @@ app.post('/api/public/student-scorecard', (req, res) => {
   if (studentId) {
     student = db.students.find((s: any) => !s.isDeleted && s.id === studentId);
   } else if (studentName && studentClass) {
-    const cleanName = String(studentName).trim();
+    const cleanName = String(studentName).trim().replace(/\s+/g, ' ');
     const cleanClass = String(studentClass).trim().toUpperCase();
     const normName = normalizeVietnamese(cleanName);
 
@@ -127,12 +127,26 @@ app.post('/api/public/student-scorecard', (req, res) => {
         s.class === cleanClass &&
         (s.name.toLowerCase() === cleanName.toLowerCase() || normalizeVietnamese(s.name) === normName)
     );
+
+    if (!student) {
+      const classStudents = (db.students || []).filter((s: any) => !s.isDeleted && s.class === cleanClass);
+      const partialCandidates = classStudents.filter((s: any) => {
+        const normS = normalizeVietnamese(s.name);
+        return normS === normName ||
+               normS.endsWith(' ' + normName) ||
+               normS.startsWith(normName + ' ') ||
+               normS.includes(normName);
+      });
+      if (partialCandidates.length === 1) {
+        student = partialCandidates[0];
+      }
+    }
   }
 
   if (!student) {
     return res.status(404).json({
       error: 'STUDENT_NOT_FOUND',
-      message: 'Không tìm thấy thông tin học sinh trong danh sách lớp.',
+      message: 'Không tìm thấy thông tin học sinh trong danh sách lớp. Em vui lòng kiểm tra lại chính tả họ và tên nhé!',
     });
   }
 
@@ -448,7 +462,7 @@ app.post('/api/student/start', (req, res) => {
   }
 
   const lesson = db.lessons.find((l) => l.id === assignment.lessonId);
-  const cleanName = studentName.trim();
+  const cleanName = studentName.trim().replace(/\s+/g, ' ');
 
   // Find official student in roster (Strictly protected by Cô An Na)
   const normCleanName = normalizeVietnamese(cleanName);
@@ -460,13 +474,28 @@ app.post('/api/student/start', (req, res) => {
         normalizeVietnamese(s.name) === normCleanName)
   );
 
+  // Partial match fallback if unique candidate in class
+  if (!student) {
+    const classStudents = (db.students || []).filter((s) => !s.isDeleted && s.class === studentClass);
+    const partialCandidates = classStudents.filter((s) => {
+      const normS = normalizeVietnamese(s.name);
+      return normS === normCleanName ||
+             normS.endsWith(' ' + normCleanName) ||
+             normS.startsWith(normCleanName + ' ') ||
+             normS.includes(normCleanName);
+    });
+    if (partialCandidates.length === 1) {
+      student = partialCandidates[0];
+    }
+  }
+
   const classHasRoster = db.students.some((s) => !s.isDeleted && s.class === studentClass);
 
   if (!student) {
     if (classHasRoster) {
       return res.status(403).json({
         error: 'STUDENT_NOT_IN_ROSTER',
-        message: `🔐 BẢO MẬT DỮ LIỆU: Họ tên "${cleanName}" không có trong danh sách Lớp ${studentClass} đã khóa của trường. Ngoài Cô An Na ra, không bất kỳ ai có thể thêm, xóa hay thay đổi danh sách học sinh. Em vui lòng chọn đúng họ tên từ danh sách lớp của mình nhé!`,
+        message: `🔐 BẢO MẬT DỮ LIỆU: Họ tên "${cleanName}" chưa khớp với danh sách Lớp ${studentClass} đã khóa của trường. Ngoài Cô An Na ra, không bất kỳ ai có thể thêm, xóa hay thay đổi danh sách học sinh. Em vui lòng kiểm tra lại chính tả họ và tên của mình nhé!`,
       });
     }
 

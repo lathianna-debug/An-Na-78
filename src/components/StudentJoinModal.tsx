@@ -53,13 +53,36 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
   // Roster of students in the currently selected class
   const [rosterStudents, setRosterStudents] = useState<RosterStudent[]>([]);
   const [loadingRoster, setLoadingRoster] = useState(false);
-  const [searchFilter, setSearchFilter] = useState('');
-  const [showRosterDropdown, setShowRosterDropdown] = useState(false);
 
   // Live assignments list with real-time lock and schedule status
   const [assignments, setAssignments] = useState<PublicAssignmentStatus[]>([]);
   const [loadingAssignments, setLoadingAssignments] = useState(true);
   const [filterMode, setFilterMode] = useState<'all' | 'open' | 'scheduled'>('all');
+
+  // Client helper to normalize Vietnamese string
+  const normalizeVietnameseClient = (str: string) => {
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D')
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, ' ');
+  };
+
+  // Find matching student in official class roster
+  const matchedStudent = rosterStudents.find((st) => {
+    if (!studentName.trim()) return false;
+    const cleanInput = studentName.trim().replace(/\s+/g, ' ');
+    const normInput = normalizeVietnameseClient(cleanInput);
+    const normRoster = normalizeVietnameseClient(st.name);
+    return (
+      st.name.toLowerCase() === cleanInput.toLowerCase() ||
+      normRoster === normInput ||
+      normRoster.endsWith(' ' + normInput)
+    );
+  });
 
   // Personal scorecard state
   const [scorecardLoading, setScorecardLoading] = useState(false);
@@ -221,12 +244,6 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
     return true;
   });
 
-  const filteredRoster = rosterStudents.filter((st) => {
-    if (!searchFilter.trim()) return true;
-    const term = searchFilter.toLowerCase();
-    return st.name.toLowerCase().includes(term) || st.stt.toString().includes(term);
-  });
-
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 sm:py-10">
       <button
@@ -238,6 +255,28 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
       </button>
 
       <div className="bg-white rounded-3xl shadow-2xl shadow-indigo-200/60 border-2 border-indigo-200 overflow-hidden">
+        {/* 🔒 Hình nền chính thức của Cô An Na (Khóa cố định, không hiển thị hình cũ) */}
+        <div className="relative w-full bg-slate-900 border-b border-indigo-200 overflow-hidden max-h-52 flex items-center justify-center">
+          <img
+            src="/uploads/banner_1790495237357_fdc4121b.png"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = '/banner_co_an_na.png';
+            }}
+            alt="Hình nền Hành trình Công dân nhí 9 - Trường THCS Tân Hải"
+            className="w-full h-auto max-h-52 object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-black/30 pointer-events-none" />
+          <div className="absolute top-3 left-4 right-4 flex items-center justify-between pointer-events-none">
+            <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-black text-amber-300 border border-amber-400/40 shadow-sm">
+              🏫 TRƯỜNG THCS TÂN HẢI • GDCD 9
+            </span>
+            <span className="px-3 py-1 rounded-full bg-black/70 backdrop-blur-md text-[10px] font-extrabold text-amber-300 border border-amber-300/50 shadow-sm flex items-center gap-1.5">
+              <span>🔒</span>
+              <span>HÌNH NỀN CÔ AN NA • ĐÃ KHÓA CỐ ĐỊNH</span>
+            </span>
+          </div>
+        </div>
+
         {/* Top Header Gradient */}
         <div className="bg-gradient-to-r from-amber-500 via-purple-700 to-indigo-800 p-6 sm:p-8 text-white relative overflow-hidden shadow-inner">
           <div className="absolute right-0 top-0 translate-x-4 -translate-y-4 w-36 h-36 bg-white/15 rounded-full blur-2xl" />
@@ -254,7 +293,7 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
             🎒 KHÔNG GIAN HỌC TẬP HỌC SINH
           </h1>
           <p className="text-purple-100 text-xs sm:text-sm mt-1.5 font-semibold">
-            Chọn lớp (9A8 – 9A12), chọn họ tên trong danh sách lớp đã khóa của Cô An Na để làm bài và theo dõi điểm số các cột!
+            Chọn lớp (9A8 – 9A12), tự nhập họ tên để vào làm bài và theo dõi điểm số các cột!
           </p>
 
           {/* 🔐 Data Lock Badge */}
@@ -322,7 +361,6 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
                     onClick={() => {
                       setStudentClass(cls as ClassGrade9);
                       setStudentName('');
-                      setSearchFilter('');
                     }}
                     className={`py-2.5 px-2 rounded-2xl font-black text-xs sm:text-sm border-2 transition text-center cursor-pointer ${
                       studentClass === cls
@@ -336,12 +374,12 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
               </div>
             </div>
 
-            {/* 👤 2. Chọn Họ và tên từ danh sách lớp đã khóa */}
-            <div className="space-y-1.5">
+            {/* 👤 2. Tự đăng nhập Họ và tên */}
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                   <User className="w-4 h-4 text-purple-600" />
-                  <span>2. Chọn họ tên của em (Lớp {studentClass})</span>
+                  <span>2. Tự đăng nhập Họ và tên (Lớp {studentClass})</span>
                 </label>
                 <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
                   <Lock className="w-3 h-3 text-emerald-600" />
@@ -349,30 +387,36 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
                 </span>
               </div>
 
-              {/* Roster Selection Dropdown / Auto-complete */}
+              {/* Text Input for student self-login */}
               <div className="relative">
-                <select
+                <input
+                  type="text"
+                  required
                   value={studentName}
                   onChange={(e) => {
                     setStudentName(e.target.value);
                   }}
-                  className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-200 focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none text-slate-800 font-bold transition text-sm sm:text-base cursor-pointer"
-                >
-                  <option value="">-- Bấm để chọn Họ và Tên của em --</option>
-                  {rosterStudents.map((st) => (
-                    <option key={st.id || st.stt} value={st.name}>
-                      {st.stt}. {st.name} (Lớp {studentClass})
-                    </option>
-                  ))}
-                </select>
+                  placeholder="Nhập họ và tên của em (Ví dụ: Nguyễn Võ Trầm Anh)"
+                  className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-200 focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none text-slate-800 font-bold transition text-sm sm:text-base placeholder:font-normal placeholder:text-slate-400"
+                />
               </div>
 
-              {/* Quick Search Helper */}
-              <div className="pt-1">
-                <p className="text-[11px] text-slate-400">
-                  * Danh sách học sinh đã được Cô An Na nạp và khóa an toàn theo bảng điểm chuẩn của trường.
-                </p>
-              </div>
+              {/* Roster Match Feedback */}
+              {matchedStudent ? (
+                <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>
+                    ✓ Đã nhận diện học sinh: <strong>{matchedStudent.name}</strong> • STT: <strong>{matchedStudent.stt}</strong> (Lớp {studentClass})
+                  </span>
+                </div>
+              ) : studentName.trim().length >= 2 ? (
+                <div className="flex items-center gap-2 p-2 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-xs">
+                  <Info className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                  <span>
+                    Gợi ý: Em có thể gõ có dấu hoặc không dấu. Hệ thống sẽ tự động đối chiếu với danh sách Lớp {studentClass}.
+                  </span>
+                </div>
+              ) : null}
             </div>
 
             {/* 🔑 3. Mã nhiệm vụ & Tình trạng mở/khóa theo thời gian */}
@@ -590,22 +634,23 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                   <User className="w-4 h-4 text-purple-600" />
-                  <span>Chọn họ tên của em trong Lớp {studentClass}:</span>
+                  <span>Tự nhập họ và tên của em trong Lớp {studentClass}:</span>
                 </label>
-                <select
+                <input
+                  type="text"
                   value={studentName}
                   onChange={(e) => {
                     setStudentName(e.target.value);
                   }}
-                  className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 focus:border-purple-500 outline-none font-bold text-sm cursor-pointer"
-                >
-                  <option value="">-- Chọn tên của em --</option>
-                  {rosterStudents.map((st) => (
-                    <option key={st.id || st.stt} value={st.name}>
-                      {st.stt}. {st.name}
-                    </option>
-                  ))}
-                </select>
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleFetchScorecard();
+                    }
+                  }}
+                  placeholder="Nhập họ và tên để tra cứu điểm (Ví dụ: Nguyễn Võ Trầm Anh)"
+                  className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 focus:border-purple-500 outline-none font-bold text-sm placeholder:font-normal placeholder:text-slate-400"
+                />
               </div>
 
               <button
