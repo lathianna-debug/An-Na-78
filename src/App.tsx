@@ -105,6 +105,20 @@ export default function App() {
           setAdminUser(null);
         });
     }
+
+    // 3. Restore student exam session if still valid (supports phone app reload/switch)
+    try {
+      const savedSessionStr = sessionStorage.getItem('htcdn_exam_session');
+      if (savedSessionStr) {
+        const saved = JSON.parse(savedSessionStr);
+        if (saved && saved.serverDueTime && new Date(saved.serverDueTime).getTime() > Date.now()) {
+          setExamSession(saved);
+          setCurrentView('student-exam');
+        } else {
+          sessionStorage.removeItem('htcdn_exam_session');
+        }
+      }
+    } catch {}
   }, []);
 
   const handleAdminLogout = async () => {
@@ -119,11 +133,17 @@ export default function App() {
   };
 
   const handleStartMissionSuccess = (sessionData: any) => {
+    try {
+      sessionStorage.setItem('htcdn_exam_session', JSON.stringify(sessionData));
+    } catch {}
     setExamSession(sessionData);
     setCurrentView('student-exam');
   };
 
   const handleExamCompleted = (resultData: any) => {
+    try {
+      sessionStorage.removeItem('htcdn_exam_session');
+    } catch {}
     setCompletionResult(resultData);
     setCurrentView('student-completion');
   };

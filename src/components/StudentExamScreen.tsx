@@ -85,6 +85,16 @@ export const StudentExamScreen: React.FC<StudentExamScreenProps> = ({ sessionDat
     const newAnswers = { ...answers, [currentQ.id]: optionKey };
     setAnswers(newAnswers);
 
+    // Keep session storage updated locally
+    try {
+      const stored = sessionStorage.getItem('htcdn_exam_session');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        parsed.savedAnswers = newAnswers;
+        sessionStorage.setItem('htcdn_exam_session', JSON.stringify(parsed));
+      }
+    } catch {}
+
     // Autosave trigger
     setSaveStatus('saving');
     try {
@@ -114,6 +124,50 @@ export const StudentExamScreen: React.FC<StudentExamScreenProps> = ({ sessionDat
     }
   };
 
+  // Keyboard navigation on Computer / Laptop (A, B, C, D, 1, 2, 3, 4, Arrows, Enter)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      if (showConfirmModal) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleFinalSubmit();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          setShowConfirmModal(false);
+        }
+        return;
+      }
+
+      const key = e.key.toUpperCase();
+      if (key === 'A' || key === '1') {
+        e.preventDefault();
+        handleSelectOption('A');
+      } else if (key === 'B' || key === '2') {
+        e.preventDefault();
+        handleSelectOption('B');
+      } else if (key === 'C' || key === '3') {
+        e.preventDefault();
+        handleSelectOption('C');
+      } else if (key === 'D' || key === '4') {
+        e.preventDefault();
+        handleSelectOption('D');
+      } else if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        e.preventDefault();
+        setCurrentIndex((prev) => Math.min(totalQ - 1, prev + 1));
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        setCurrentIndex((prev) => Math.max(0, prev - 1));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentIndex, answers, showConfirmModal, totalQ]);
+
   const handleFinalSubmit = async () => {
     setIsSubmitting(true);
     setShowConfirmModal(false);
@@ -139,45 +193,63 @@ export const StudentExamScreen: React.FC<StudentExamScreenProps> = ({ sessionDat
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
-      {/* 🌟 Mobile-First Top Header */}
-      <div className="sticky top-0 z-30 bg-white border-b-2 border-indigo-200/90 shadow-md shadow-indigo-100/50 px-4 py-2.5">
-        <div className="max-w-xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="text-2xl drop-shadow-xs">🌟</span>
-            <div>
+      {/* 🌟 Responsive Top Header (Mobile & Computer) */}
+      <div className="sticky top-0 z-30 bg-white border-b-2 border-indigo-200/90 shadow-md shadow-indigo-100/50 px-3 sm:px-4 py-2.5">
+        <div className="max-w-2xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <span className="text-xl sm:text-2xl drop-shadow-xs shrink-0">🌟</span>
+            <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">
+                <span className="text-xs sm:text-sm font-black text-slate-900 tracking-tight truncate">
                   Hành trình Công dân nhí
                 </span>
-                <span className="hidden sm:inline-block px-1.5 py-0.2 rounded-md bg-amber-100 text-amber-900 text-[10px] font-black border border-amber-300">
+                <span className="hidden sm:inline-block px-1.5 py-0.2 rounded-md bg-amber-100 text-amber-900 text-[10px] font-black border border-amber-300 shrink-0">
                   THCS TÂN HẢI
                 </span>
               </div>
-              <p className="text-[10px] sm:text-xs text-purple-700 font-bold truncate max-w-[150px] sm:max-w-[220px]">
+              <p className="text-[10px] sm:text-xs text-purple-700 font-bold truncate">
                 {student.name} • Lớp {student.class}
               </p>
             </div>
           </div>
 
-          {/* ⏰ Clock Timer */}
-          <div
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl font-mono font-bold text-sm sm:text-base border transition ${
-              isUrgent
-                ? 'bg-rose-50 border-rose-300 text-rose-600 animate-pulse'
-                : 'bg-indigo-50 border-indigo-200 text-indigo-700'
-            }`}
-          >
-            <Clock className={`w-4 h-4 ${isUrgent ? 'text-rose-500' : 'text-indigo-600'}`} />
-            <span>{formattedTime}</span>
+          {/* Quick Submit & Clock Timer */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowConfirmModal(true)}
+              className="py-1.5 px-2.5 sm:px-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-[11px] sm:text-xs flex items-center gap-1 shadow-sm active:scale-95 transition cursor-pointer"
+              title="Nộp bài bất kỳ lúc nào"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Nộp bài ({answeredCount}/{totalQ})</span>
+              <span className="sm:hidden">Nộp ({answeredCount}/{totalQ})</span>
+            </button>
+
+            <div
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-2xl font-mono font-bold text-xs sm:text-base border transition ${
+                isUrgent
+                  ? 'bg-rose-50 border-rose-300 text-rose-600 animate-pulse'
+                  : 'bg-indigo-50 border-indigo-200 text-indigo-700'
+              }`}
+            >
+              <Clock className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isUrgent ? 'text-rose-500' : 'text-indigo-600'}`} />
+              <span>{formattedTime}</span>
+            </div>
           </div>
         </div>
 
         {/* CÂU & Thanh tiến trình */}
-        <div className="max-w-xl mx-auto mt-2.5">
+        <div className="max-w-2xl mx-auto mt-2">
           <div className="flex items-center justify-between text-xs font-bold mb-1">
-            <span className="text-purple-700 uppercase tracking-wider">
-              CÂU {currentIndex + 1}/{totalQ}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-purple-700 uppercase tracking-wider">
+                CÂU {currentIndex + 1}/{totalQ}
+              </span>
+              <span className="hidden md:inline text-[11px] text-slate-400 font-normal">
+                (Phím 1-4 hoặc A-D • Mũi tên ← →)
+              </span>
+            </div>
             <div className="flex items-center gap-2">
               {/* 💾 Autosave Indicator */}
               {saveStatus === 'saved' && (
@@ -204,8 +276,8 @@ export const StudentExamScreen: React.FC<StudentExamScreenProps> = ({ sessionDat
         </div>
       </div>
 
-      {/* Main Single-Question Stage (Mobile-First) */}
-      <div className="max-w-xl mx-auto w-full px-4 py-6 flex-1 flex flex-col justify-center">
+      {/* Main Single-Question Stage (Mobile-First & Desktop Friendly) */}
+      <div className="max-w-2xl mx-auto w-full px-4 py-5 sm:py-6 flex-1 flex flex-col justify-center">
         {errorMessage && (
           <div className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 shrink-0" />
@@ -291,7 +363,7 @@ export const StudentExamScreen: React.FC<StudentExamScreenProps> = ({ sessionDat
                     type="button"
                     key={opt.key}
                     onClick={() => handleSelectOption(opt.key)}
-                    className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-start gap-3 sm:gap-4 select-none active:scale-[0.99] ${
+                    className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-start gap-3 sm:gap-4 select-none cursor-pointer touch-manipulation active:scale-[0.99] ${
                       isSelected
                         ? 'bg-purple-50/80 border-purple-600 shadow-md shadow-purple-100 ring-4 ring-purple-100 text-slate-900'
                         : 'bg-white border-slate-200 hover:border-purple-300 hover:bg-slate-50/60 text-slate-700 shadow-sm'
@@ -311,6 +383,11 @@ export const StudentExamScreen: React.FC<StudentExamScreenProps> = ({ sessionDat
                     <div className="flex-1 text-sm sm:text-base font-medium pt-1 sm:pt-1.5 leading-relaxed">
                       {opt.text}
                     </div>
+
+                    {/* Desktop Key Hint */}
+                    <span className="hidden sm:inline-block text-[11px] text-slate-400 font-normal shrink-0 pt-1">
+                      (Phím {opt.key})
+                    </span>
 
                     {isSelected && (
                       <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 shrink-0 mt-1 animate-in zoom-in-50 duration-200" />
@@ -340,7 +417,7 @@ export const StudentExamScreen: React.FC<StudentExamScreenProps> = ({ sessionDat
                 <button
                   key={q.id}
                   onClick={() => setCurrentIndex(idx)}
-                  className={`w-8 h-8 rounded-xl font-bold text-xs transition ${
+                  className={`w-9 h-9 sm:w-8 sm:h-8 rounded-xl font-bold text-xs transition cursor-pointer select-none touch-manipulation ${
                     isCurrent
                       ? 'bg-purple-600 text-white ring-2 ring-purple-300 shadow-sm'
                       : isAnswered
@@ -356,9 +433,9 @@ export const StudentExamScreen: React.FC<StudentExamScreenProps> = ({ sessionDat
         </div>
       </div>
 
-      {/* 📱 Bottom Navigation Bar */}
+      {/* 📱 Bottom Navigation Bar (Responsive max-w-2xl) */}
       <div className="sticky bottom-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-3 shadow-lg">
-        <div className="max-w-xl mx-auto flex items-center justify-between gap-3">
+        <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
           <button
             onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
             disabled={currentIndex === 0}
