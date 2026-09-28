@@ -49,7 +49,14 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
   const [taskCode, setTaskCode] = useState('GDCD9-B1');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [alreadySubmittedInfo, setAlreadySubmittedInfo] = useState<{
+    message: string;
+    score?: number;
+    lessonNumber?: number;
+  } | null>(null);
 
+  // All students across all classes for instant auto-recognition
+  const [allStudents, setAllStudents] = useState<RosterStudent[]>([]);
   // Roster of students in the currently selected class
   const [rosterStudents, setRosterStudents] = useState<RosterStudent[]>([]);
   const [loadingRoster, setLoadingRoster] = useState(false);
@@ -71,18 +78,35 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
       .replace(/\s+/g, ' ');
   };
 
-  // Find matching student in official class roster
-  const matchedStudent = rosterStudents.find((st) => {
-    if (!studentName.trim()) return false;
+  // Find matching student across roster in current class (or exact match across school)
+  const matchedStudent = React.useMemo(() => {
+    if (!studentName.trim() || studentName.trim().length < 2) return null;
     const cleanInput = studentName.trim().replace(/\s+/g, ' ');
     const normInput = normalizeVietnameseClient(cleanInput);
-    const normRoster = normalizeVietnameseClient(st.name);
-    return (
-      st.name.toLowerCase() === cleanInput.toLowerCase() ||
-      normRoster === normInput ||
-      normRoster.endsWith(' ' + normInput)
-    );
-  });
+
+    // 1. Try currently selected class first
+    const exactInClass = rosterStudents.find((st) => {
+      const normRoster = normalizeVietnameseClient(st.name);
+      return st.name.toLowerCase() === cleanInput.toLowerCase() || normRoster === normInput;
+    });
+    if (exactInClass) return exactInClass;
+
+    // 1b. Partial in selected class only if input is reasonably specific (>= 3 chars)
+    if (normInput.length >= 3) {
+      const partialInClass = rosterStudents.filter((st) => {
+        const normRoster = normalizeVietnameseClient(st.name);
+        return normRoster.endsWith(' ' + normInput) || normRoster.startsWith(normInput + ' ') || normRoster.includes(normInput);
+      });
+      if (partialInClass.length === 1) return partialInClass[0];
+    }
+
+    // 2. Try across all classes only if exact match on full name
+    const exactAcross = allStudents.find((st) => {
+      const normRoster = normalizeVietnameseClient(st.name);
+      return st.name.toLowerCase() === cleanInput.toLowerCase() || normRoster === normInput;
+    });
+    return exactAcross || null;
+  }, [studentName, rosterStudents, allStudents]);
 
   // Personal scorecard state
   const [scorecardLoading, setScorecardLoading] = useState(false);
@@ -104,7 +128,7 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
     }>;
   } | null>(null);
 
-  // Load available classes
+  // Load available classes & all students roster
   useEffect(() => {
     api.getClasses().then((res) => {
       if (res && res.classes && res.classes.length > 0) {
@@ -112,6 +136,12 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
         if (!res.classes.includes(studentClass)) {
           setStudentClass(res.classes[0]);
         }
+      }
+    }).catch(() => {});
+
+    api.getAllStudents().then((res) => {
+      if (res && res.students) {
+        setAllStudents(res.students as RosterStudent[]);
       }
     }).catch(() => {});
   }, []);
@@ -163,25 +193,44 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
     return () => clearInterval(interval);
   }, []);
 
-  const selectedAssignment = assignments.find((a) => {
-    const raw = taskCode.trim().toUpperCase();
-    if (a.code.toUpperCase() === raw) return true;
-    if (raw === a.lessonNumber?.toString()) return true;
-    if (raw === `B${a.lessonNumber}`) return true;
-    if (raw === `BAI ${a.lessonNumber}` || raw === `BAI${a.lessonNumber}` || raw === `BAI-${a.lessonNumber}`) return true;
-    return false;
-  });
+  const selectedAssignment = React.useMemo(() => {
+    if (!assignments || assignments.length === 0) return null;
+    const raw = (taskCode || '').trim().toUpperCase();
+    const norm = normalizeVietnameseClient(taskCode).replace(/[^a-z0-9]/g, '');
+
+    // 1. Direct code match
+    const byCode = assignments.find((a) => a.code.toUpperCase() === raw);
+    if (byCode) return byCode;
+
+    // 2. By lesson number (1..10)
+    for (let num = 10; num >= 1; num--) {
+      const patterns = [`${num}`, `b${num}`, `bai${num}`, `gdcd${num}`, `gdcd9b${num}`];
+      if (patterns.includes(norm)) {
+        const byNum = assignments.find((a) => a.lessonNumber === num);
+        if (byNum) return byNum;
+      }
+    }
+
+    // 3. Number in raw text (e.g. "bài 2")
+    const numMatch = raw.match(/\b(10|[1-9])\b/);
+    if (numMatch) {
+      const num = parseInt(numMatch[1], 10);
+      const byNum = assignments.find((a) => a.lessonNumber === num);
+      if (byNum) return byNum;
+    }
+
+    // 4. Default to first open or first available assignment
+    return assignments.find((a) => a.isAvailable) || assignments[0] || null;
+  }, [assignments, taskCode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!studentName.trim()) {
-      setError('Vui lòng chọn hoặc nhập Họ và tên của em.');
+      setError('Vui lòng nhập Họ và tên của em.');
       return;
     }
-    if (!taskCode.trim()) {
-      setError('Vui lòng nhập hoặc chọn Mã nhiệm vụ được cô giáo giao.');
-      return;
-    }
+
+    const codeToUse = selectedAssignment?.code || taskCode.trim() || 'GDCD9-B1';
 
     if (selectedAssignment && !selectedAssignment.isAvailable) {
       setError(selectedAssignment.lockMessage || 'Bài tập này hiện đang bị khóa hoặc chưa đến thời gian mở.');
@@ -190,16 +239,33 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
 
     setLoading(true);
     setError(null);
+    setAlreadySubmittedInfo(null);
 
     try {
       const data = await api.startMission({
         studentName: studentName.trim(),
         studentClass,
-        taskCode: taskCode.trim(),
+        taskCode: codeToUse,
       });
       onStartSuccess(data);
     } catch (err: any) {
-      setError(err.message || 'Không thể bắt đầu nhiệm vụ. Vui lòng kiểm tra lại mã bài tập.');
+      const msg = err.message || '';
+      if (
+        msg.includes('EM_DA_NOP_BAI') ||
+        msg.includes('đã nộp bài') ||
+        msg.includes('HET_GIO_LOCKED') ||
+        msg.includes('kết thúc') ||
+        msg.includes('khóa bài làm')
+      ) {
+        setAlreadySubmittedInfo({
+          message: msg.includes('HET_GIO') || msg.includes('kết thúc')
+            ? 'Thời gian làm bài tập này đã kết thúc. Bài làm của em đã được tự động nộp và khóa an toàn trên hệ thống.'
+            : 'Em đã nộp bài tập này rồi và điểm đã được khóa an toàn trên hệ thống!',
+          lessonNumber: selectedAssignment?.lessonNumber || 1,
+        });
+      } else {
+        setError(msg || 'Không thể bắt đầu nhiệm vụ. Vui lòng kiểm tra lại họ tên và mã bài tập.');
+      }
     } finally {
       setLoading(false);
     }
@@ -207,7 +273,7 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
 
   const handleFetchScorecard = async () => {
     if (!studentName.trim()) {
-      setScorecardError('Vui lòng chọn hoặc nhập tên của em để tra cứu điểm.');
+      setScorecardError('Vui lòng nhập tên của em để tra cứu điểm.');
       return;
     }
 
@@ -219,10 +285,15 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
         studentClass,
       });
       setScorecardData(res);
+      // If student was from another class, update displayed class
+      if (res.student && res.student.class && res.student.class !== studentClass) {
+        setStudentClass(res.student.class);
+      }
     } catch (err: any) {
       setScorecardError(err.message || 'Không tìm thấy bảng điểm của em. Em kiểm tra lại họ tên và lớp nhé!');
       setScorecardData(null);
     } finally {
+      setLoading(false);
       setScorecardLoading(false);
     }
   };
@@ -261,50 +332,51 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
 
       <div className="bg-white rounded-3xl shadow-2xl shadow-indigo-200/60 border-2 border-indigo-200 overflow-hidden">
         {/* 🔒 Hình nền chính thức của Cô An Na (Khóa cố định, không hiển thị hình cũ) */}
-        <div className="relative w-full bg-slate-900 border-b border-indigo-200 overflow-hidden max-h-52 flex items-center justify-center">
+        <div className="relative w-full bg-slate-900 border-b border-indigo-200 overflow-hidden max-h-36 sm:max-h-52 flex items-center justify-center">
           <img
             src="/uploads/banner_1790495237357_fdc4121b.png"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src = '/banner_co_an_na.png';
             }}
             alt="Hình nền Hành trình Công dân nhí 9 - Trường THCS Tân Hải"
-            className="w-full h-auto max-h-52 object-cover object-center"
+            className="w-full h-auto max-h-36 sm:max-h-52 object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-black/30 pointer-events-none" />
-          <div className="absolute top-3 left-4 right-4 flex items-center justify-between pointer-events-none">
-            <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-black text-amber-300 border border-amber-400/40 shadow-sm">
+          <div className="absolute top-2 sm:top-3 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between pointer-events-none">
+            <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] sm:text-[11px] font-black text-amber-300 border border-amber-400/40 shadow-sm">
               🏫 TRƯỜNG THCS TÂN HẢI • GDCD 9
             </span>
-            <span className="px-3 py-1 rounded-full bg-black/70 backdrop-blur-md text-[10px] font-extrabold text-amber-300 border border-amber-300/50 shadow-sm flex items-center gap-1.5">
+            <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-black/70 backdrop-blur-md text-[9px] sm:text-[10px] font-extrabold text-amber-300 border border-amber-300/50 shadow-sm flex items-center gap-1">
               <span>🔒</span>
-              <span>HÌNH NỀN CÔ AN NA • ĐÃ KHÓA CỐ ĐỊNH</span>
+              <span className="hidden sm:inline">HÌNH NỀN CÔ AN NA • ĐÃ KHÓA CỐ ĐỊNH</span>
+              <span className="sm:hidden">ẢNH ĐÃ KHÓA</span>
             </span>
           </div>
         </div>
 
         {/* Top Header Gradient */}
-        <div className="bg-gradient-to-r from-amber-500 via-purple-700 to-indigo-800 p-6 sm:p-8 text-white relative overflow-hidden shadow-inner">
+        <div className="bg-gradient-to-r from-amber-500 via-purple-700 to-indigo-800 p-4 sm:p-7 text-white relative overflow-hidden shadow-inner">
           <div className="absolute right-0 top-0 translate-x-4 -translate-y-4 w-36 h-36 bg-white/15 rounded-full blur-2xl" />
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-400 text-slate-900 text-xs font-black tracking-wide uppercase shadow-sm">
+          <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-3">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-yellow-400 text-slate-900 text-[11px] sm:text-xs font-black tracking-wide uppercase shadow-sm">
               <span>🏫 TRƯỜNG THCS TÂN HẢI</span>
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold tracking-wide uppercase text-yellow-200">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/20 backdrop-blur-md text-[11px] sm:text-xs font-bold tracking-wide uppercase text-yellow-200">
               <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-              <span>MÔN GIÁO DỤC CÔNG DÂN 9</span>
+              <span>MÔN GDCD 9</span>
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight drop-shadow-xs">
+          <h1 className="text-xl sm:text-3xl font-black tracking-tight drop-shadow-xs">
             🎒 KHÔNG GIAN HỌC TẬP HỌC SINH
           </h1>
-          <p className="text-purple-100 text-xs sm:text-sm mt-1.5 font-semibold">
+          <p className="text-purple-100 text-xs sm:text-sm mt-1 font-semibold">
             Chọn lớp (9A8 – 9A12), tự nhập họ tên để vào làm bài và theo dõi điểm số các cột!
           </p>
 
           {/* 🔐 Data Lock Badge */}
-          <div className="mt-3.5 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/25 backdrop-blur-md border border-white/20 text-[11px] font-semibold text-amber-200">
-            <ShieldCheck className="w-4 h-4 text-emerald-300 shrink-0" />
-            <span>Dữ liệu đã khóa bảo mật: Học sinh chỉ xem và làm bài của mình, không xem được bài của bạn khác.</span>
+          <div className="mt-2.5 sm:mt-3.5 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/25 backdrop-blur-md border border-white/20 text-[10px] sm:text-[11px] font-semibold text-amber-200">
+            <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-300 shrink-0" />
+            <span>Dữ liệu đã khóa bảo mật: Học sinh chỉ xem và làm bài của mình.</span>
           </div>
         </div>
 
@@ -352,6 +424,53 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
               </div>
             )}
 
+            {/* 🔒 THÔNG BÁO BÀI ĐÃ ĐƯỢC NỘP / KHÓA AN TOÀN */}
+            {alreadySubmittedInfo && (
+              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-50 via-purple-50 to-indigo-50 border-2 border-indigo-200 text-slate-800 space-y-3 shadow-md">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 text-xl shadow-xs">
+                    🔒
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-extrabold text-sm text-indigo-950">
+                      BÀI LÀM ĐÃ ĐƯỢC NỘP VÀ KHÓA AN TOÀN!
+                    </h4>
+                    <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                      {alreadySubmittedInfo.message}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab('scorecard');
+                      handleFetchScorecard();
+                    }}
+                    className="py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black flex items-center gap-1.5 shadow-sm transition cursor-pointer"
+                  >
+                    <Award className="w-4 h-4" />
+                    <span>Xem bảng điểm của em (Bài 1 → 10)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAlreadySubmittedInfo(null);
+                      const nextOpen = assignments.find((a) => a.code !== taskCode && a.isAvailable);
+                      if (nextOpen) {
+                        setTaskCode(nextOpen.code);
+                      }
+                    }}
+                    className="py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold transition cursor-pointer"
+                  >
+                    <span>Chọn bài tập khác</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* 🏫 1. Chọn Lớp học */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
@@ -365,7 +484,6 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
                     type="button"
                     onClick={() => {
                       setStudentClass(cls as ClassGrade9);
-                      setStudentName('');
                     }}
                     className={`py-2.5 px-2 rounded-2xl font-black text-xs sm:text-sm border-2 transition text-center cursor-pointer ${
                       studentClass === cls
@@ -386,10 +504,17 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
                   <User className="w-4 h-4 text-purple-600" />
                   <span>2. Tự đăng nhập Họ và tên (Lớp {studentClass})</span>
                 </label>
-                <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
-                  <Lock className="w-3 h-3 text-emerald-600" />
-                  <span>{rosterStudents.length} học sinh chính thức</span>
-                </span>
+                {rosterStudents.length > 0 ? (
+                  <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
+                    <Lock className="w-3 h-3 text-emerald-600" />
+                    <span>{rosterStudents.length} học sinh</span>
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-purple-700 font-bold flex items-center gap-1 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+                    <Sparkles className="w-3 h-3 text-purple-600" />
+                    <span>Tự do đăng nhập (Tự động ghi danh)</span>
+                  </span>
+                )}
               </div>
 
               {/* Text Input for student self-login */}
@@ -401,49 +526,140 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
                   onChange={(e) => {
                     setStudentName(e.target.value);
                   }}
-                  placeholder="Nhập họ và tên của em (Ví dụ: Nguyễn Võ Trầm Anh)"
+                  placeholder="Nhập họ và tên của em (Ví dụ: Nguyễn Văn An)"
                   className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-200 focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none text-slate-800 font-bold transition text-sm sm:text-base placeholder:font-normal placeholder:text-slate-400"
                 />
               </div>
 
               {/* Roster Match Feedback */}
-              {matchedStudent ? (
+              {matchedStudent && matchedStudent.class === studentClass ? (
                 <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>
                     ✓ Đã nhận diện học sinh: <strong>{matchedStudent.name}</strong> • STT: <strong>{matchedStudent.stt}</strong> (Lớp {studentClass})
                   </span>
                 </div>
+              ) : matchedStudent && matchedStudent.class !== studentClass ? (
+                <div className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-semibold">
+                  <span>
+                    💡 Tìm thấy học sinh <strong>{matchedStudent.name}</strong> ở <strong>Lớp {matchedStudent.class}</strong>.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setStudentClass(matchedStudent.class)}
+                    className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs shrink-0 cursor-pointer shadow-xs"
+                  >
+                    Chuyển sang Lớp {matchedStudent.class}
+                  </button>
+                </div>
               ) : studentName.trim().length >= 2 ? (
                 <div className="flex items-center gap-2 p-2 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-xs">
                   <Info className="w-3.5 h-3.5 text-purple-600 shrink-0" />
                   <span>
-                    Gợi ý: Em có thể gõ có dấu hoặc không dấu. Hệ thống sẽ tự động đối chiếu với danh sách Lớp {studentClass}.
+                    {rosterStudents.length > 0
+                      ? `Gợi ý: Em có thể gõ có dấu hoặc không dấu. Hệ thống sẽ tự động đối chiếu với danh sách Lớp ${studentClass}.`
+                      : `✨ Tên em "${studentName.trim()}" sẽ được ghi danh vào Lớp ${studentClass} khi bấm bắt đầu làm bài!`}
                   </span>
                 </div>
               ) : null}
             </div>
 
-            {/* 🔑 3. Mã nhiệm vụ & Tình trạng mở/khóa theo thời gian */}
-            <div className="space-y-2">
+            {/* 📚 3. Chọn Bài tập GDCD 9 (Bài 1 → Bài 10) */}
+            <div className="space-y-3 pt-1">
               <div className="flex items-center justify-between">
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                   <KeyRound className="w-4 h-4 text-cyan-600" />
-                  <span>3. Mã nhiệm vụ / bài tập</span>
+                  <span>3. Chọn Bài tập em muốn làm:</span>
                 </label>
-                <span className="text-[11px] text-slate-400 font-medium">
-                  Tự động kiểm tra lịch mở/khóa
-                </span>
+                <div className="flex items-center gap-1 text-[11px]">
+                  <button
+                    type="button"
+                    onClick={() => setFilterMode('all')}
+                    className={`px-2 py-0.5 rounded-md font-bold transition cursor-pointer ${
+                      filterMode === 'all'
+                        ? 'bg-purple-100 text-purple-800'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    Tất cả ({assignments.length})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFilterMode('open')}
+                    className={`px-2 py-0.5 rounded-md font-bold transition cursor-pointer ${
+                      filterMode === 'open'
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    Đang mở ({assignments.filter((a) => a.isAvailable).length})
+                  </button>
+                </div>
               </div>
 
-              <input
-                type="text"
-                required
-                value={taskCode}
-                onChange={(e) => setTaskCode(e.target.value.toUpperCase())}
-                placeholder="Ví dụ: GDCD9-B1"
-                className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none text-slate-800 font-bold uppercase tracking-wider transition placeholder:normal-case placeholder:font-normal text-sm sm:text-base"
-              />
+              {loadingAssignments ? (
+                <div className="py-6 text-center text-xs text-slate-400">
+                  Đang kiểm tra trạng thái các bài tập...
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto pr-1">
+                  {filteredAssignments.map((a) => {
+                    const isSelected = selectedAssignment?.id === a.id || a.code.toUpperCase() === taskCode.trim().toUpperCase();
+                    return (
+                      <button
+                        key={a.id}
+                        type="button"
+                        onClick={() => {
+                          setTaskCode(a.code);
+                        }}
+                        className={`p-3 rounded-2xl border text-left transition flex items-center justify-between gap-2.5 cursor-pointer ${
+                          isSelected
+                            ? 'bg-purple-50/90 border-purple-600 ring-2 ring-purple-200 shadow-sm'
+                            : 'bg-slate-50 border-slate-200 hover:border-purple-300 hover:bg-white'
+                        }`}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span className="font-mono font-black text-xs text-purple-700 bg-white px-1.5 py-0.2 rounded border border-purple-200">
+                              {a.code}
+                            </span>
+                            <span className="text-[11px] font-bold text-slate-500">
+                              Bài {a.lessonNumber}
+                            </span>
+                            {isSelected && (
+                              <span className="text-[10px] font-black text-purple-700 bg-purple-200/80 px-1.5 py-0.2 rounded-full">
+                                ✓ Đang chọn
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs font-bold text-slate-800 truncate">
+                            {a.title}
+                          </p>
+                          <div className="flex items-center gap-2 text-[10px] text-slate-500 mt-1">
+                            <span>⏱️ {a.durationMinutes} phút</span>
+                            <span>•</span>
+                            <span>{a.questionsCount} câu hỏi</span>
+                          </div>
+                        </div>
+
+                        <div className="shrink-0">
+                          {a.isAvailable ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300">
+                              <Unlock className="w-3 h-3 text-emerald-600" />
+                              <span>Mở</span>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold border border-slate-300">
+                              <Lock className="w-3 h-3 text-slate-500" />
+                              <span>Khóa</span>
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* REAL-TIME STATUS CARD FOR THE SELECTED ASSIGNMENT */}
               {selectedAssignment && (
@@ -504,87 +720,6 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
               )}
             </div>
 
-            {/* 📋 DANH SÁCH CÁC BÀI TẬP ĐANG MỞ */}
-            <div className="space-y-3 pt-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                  Chọn nhanh bài tập trong danh sách:
-                </span>
-                <div className="flex items-center gap-1 text-[11px]">
-                  <button
-                    type="button"
-                    onClick={() => setFilterMode('all')}
-                    className={`px-2 py-0.5 rounded-md font-bold transition ${
-                      filterMode === 'all'
-                        ? 'bg-purple-100 text-purple-800'
-                        : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    Tất cả ({assignments.length})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFilterMode('open')}
-                    className={`px-2 py-0.5 rounded-md font-bold transition ${
-                      filterMode === 'open'
-                        ? 'bg-emerald-100 text-emerald-800'
-                        : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    Đang mở ({assignments.filter((a) => a.isAvailable).length})
-                  </button>
-                </div>
-              </div>
-
-              {loadingAssignments ? (
-                <div className="py-6 text-center text-xs text-slate-400">
-                  Đang kiểm tra trạng thái các bài tập...
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
-                  {filteredAssignments.map((a) => {
-                    const isSelected = a.code.toUpperCase() === taskCode.trim().toUpperCase();
-                    return (
-                      <button
-                        key={a.id}
-                        type="button"
-                        onClick={() => {
-                          setTaskCode(a.code);
-                        }}
-                        className={`p-3 rounded-2xl border text-left transition flex items-center justify-between gap-2 cursor-pointer ${
-                          isSelected
-                            ? 'bg-purple-50 border-purple-500 ring-2 ring-purple-100 shadow-sm'
-                            : 'bg-slate-50 border-slate-200 hover:border-purple-300 hover:bg-white'
-                        }`}
-                      >
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-mono font-bold text-xs text-purple-700">
-                              {a.code}
-                            </span>
-                            <span className="text-[10px] text-slate-400">
-                              Bài {a.lessonNumber}
-                            </span>
-                          </div>
-                          <p className="text-xs font-bold text-slate-800 truncate">
-                            {a.title}
-                          </p>
-                        </div>
-
-                        <div className="shrink-0">
-                          {a.isAvailable ? (
-                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" title="Đang mở" />
-                          ) : (
-                            <span className="w-2.5 h-2.5 rounded-full bg-rose-400 inline-block" title="Đang khóa" />
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
             {/* Action Submit Button */}
             <button
               type="submit"
@@ -592,7 +727,13 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
               className="w-full py-4 px-6 rounded-2xl font-black text-white text-base bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg shadow-purple-200 transition flex items-center justify-center gap-2.5 active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
             >
               <Rocket className="w-5 h-5 text-amber-300" />
-              <span>{loading ? 'Đang vào bài làm...' : 'Bắt đầu làm bài ngay'}</span>
+              <span>
+                {loading
+                  ? 'Đang vào bài làm...'
+                  : selectedAssignment
+                  ? `Bắt đầu làm: ${selectedAssignment.title.split('—')[0] || selectedAssignment.code}`
+                  : 'Bắt đầu làm bài ngay'}
+              </span>
             </button>
           </form>
         )}
@@ -621,7 +762,6 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
                       type="button"
                       onClick={() => {
                         setStudentClass(cls as ClassGrade9);
-                        setStudentName('');
                         setScorecardData(null);
                       }}
                       className={`py-2 px-1 rounded-xl font-bold text-xs border text-center transition cursor-pointer ${

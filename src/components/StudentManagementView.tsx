@@ -554,11 +554,11 @@ export const StudentManagementView: React.FC<StudentManagementViewProps> = ({ on
                           <FileSpreadsheet className="w-7 h-7" />
                         </div>
                         <h4 className="text-base font-bold text-slate-800">
-                          {students.length === 0 ? 'Dữ liệu học sinh đã được làm mới hoàn toàn' : 'Không tìm thấy học sinh phù hợp'}
+                          {students.length === 0 ? '✨ Đang mở chế độ: Học sinh tự do đăng nhập & làm bài' : 'Không tìm thấy học sinh phù hợp'}
                         </h4>
                         <p className="text-xs text-slate-500 leading-relaxed">
                           {students.length === 0
-                            ? 'Hệ thống đã sẵn sàng cho năm học mới. Cô An Na hãy nhấn nút bên dưới để tải lên file Excel danh sách học sinh các lớp.'
+                            ? 'Toàn bộ danh sách học sinh cũ đã được xóa sạch theo yêu cầu của Cô. Các em học sinh khi vào ứng dụng sẽ tự nhập Họ và tên để bắt đầu làm bài. Hệ thống sẽ tự động ghi danh theo từng lớp và thống kê bảng điểm tại đây trong thời gian thực.'
                             : 'Vui lòng kiểm tra lại từ khóa tìm kiếm hoặc bỏ chọn các bộ lọc lớp.'}
                         </p>
                         {students.length === 0 && (

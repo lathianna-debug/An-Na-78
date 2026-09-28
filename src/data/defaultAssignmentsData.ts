@@ -1,0 +1,4120 @@
+// Dữ liệu câu hỏi và bài tập GDCD 9 chuẩn Kết Nối Tri Thức
+// Dùng cho cả server và chế độ Client-Side Fallback (chạy trên Netlify / Vercel / offline)
+import type { Assignment, Lesson, Question, ClassGrade9 } from "../types.ts";
+
+export const DEFAULT_CLASSES: ClassGrade9[] = ["9A8", "9A9", "9A10", "9A11", "9A12"];
+
+export const DEFAULT_LESSONS: Lesson[] = [
+  {
+    "id": "lesson-1",
+    "number": 1,
+    "title": "Sống có lí tưởng",
+    "description": "Xác định mục đích sống cao đẹp, kế hoạch phấn đấu học tập, rèn luyện vì tương lai bản thân và cống hiến cho quê hương, đất nước.",
+    "status": "active",
+    "createdAt": "2026-09-01T08:00:00.000Z",
+    "updatedAt": "2026-09-01T08:00:00.000Z"
+  },
+  {
+    "id": "lesson-2",
+    "number": 2,
+    "title": "Khoan dung",
+    "description": "Rộng lòng tha thứ, tôn trọng và thông cảm với người khác, không định kiến hay cố chấp trước lỗi lầm đã biết sửa chữa.",
+    "status": "active",
+    "createdAt": "2026-09-01T08:00:00.000Z",
+    "updatedAt": "2026-09-01T08:00:00.000Z"
+  },
+  {
+    "id": "lesson-3",
+    "number": 3,
+    "title": "Tích cực tham gia các hoạt động cộng đồng",
+    "description": "Tự giác, hăng hái tham gia phong trào tập thể, công tác thiện nguyện, xây dựng môi trường xanh - sạch - đẹp tại địa phương.",
+    "status": "active",
+    "createdAt": "2026-09-01T08:00:00.000Z",
+    "updatedAt": "2026-09-01T08:00:00.000Z"
+  },
+  {
+    "id": "lesson-4",
+    "number": 4,
+    "title": "Khách quan và công bằng",
+    "description": "Nhìn nhận, đánh giá sự vật hiện tượng đúng bản chất thực tế; đối xử bình đẳng, không thiên vị hay tư lợi cá nhân.",
+    "status": "active",
+    "createdAt": "2026-09-01T08:00:00.000Z",
+    "updatedAt": "2026-09-01T08:00:00.000Z"
+  },
+  {
+    "id": "lesson-5",
+    "number": 5,
+    "title": "Bảo vệ hòa bình",
+    "description": "Khát vọng và trách nhiệm xây dựng quan hệ hữu nghị, ngăn chặn chiến tranh, phòng ngừa xung đột và bạo lực học đường.",
+    "status": "active",
+    "createdAt": "2026-09-01T08:00:00.000Z",
+    "updatedAt": "2026-09-01T08:00:00.000Z"
+  },
+  {
+    "id": "lesson-6",
+    "number": 6,
+    "title": "Quản lí thời gian hiệu quả",
+    "description": "Phương pháp lập kế hoạch học tập khoa học, phân loại thứ tự ưu tiên công việc, tránh trì hoãn và cân bằng cuộc sống.",
+    "status": "active",
+    "createdAt": "2026-09-01T08:00:00.000Z",
+    "updatedAt": "2026-09-01T08:00:00.000Z"
+  },
+  {
+    "id": "lesson-7",
+    "number": 7,
+    "title": "Thích ứng với thay đổi",
+    "description": "Kỹ năng thích nghi với môi trường sống và học tập mới, đón nhận thử thách và ứng phó linh hoạt trước các biến đổi.",
+    "status": "active",
+    "createdAt": "2026-09-01T08:00:00.000Z",
+    "updatedAt": "2026-09-01T08:00:00.000Z"
+  },
+  {
+    "id": "lesson-8",
+    "number": 8,
+    "title": "Tiêu dùng thông minh",
+    "description": "Quản lý tài chính cá nhân, phân biệt nhu cầu thiết yếu và sở thích, thói quen tiết kiệm và lựa chọn hàng hóa an toàn.",
+    "status": "active",
+    "createdAt": "2026-09-01T08:00:00.000Z",
+    "updatedAt": "2026-09-01T08:00:00.000Z"
+  },
+  {
+    "id": "lesson-9",
+    "number": 9,
+    "title": "Vi phạm pháp luật và trách nhiệm pháp lí",
+    "description": "Khái niệm, dấu hiệu vi phạm pháp luật; phân biệt các loại vi phạm pháp luật và trách nhiệm pháp lý tương ứng.",
+    "status": "active",
+    "createdAt": "2026-09-01T08:00:00.000Z",
+    "updatedAt": "2026-09-01T08:00:00.000Z"
+  },
+  {
+    "id": "lesson-10",
+    "number": 10,
+    "title": "Quyền tự do kinh doanh và nghĩa vụ nộp thuế",
+    "description": "Quyền và nghĩa vụ của công dân trong hoạt động kinh doanh, ý thức chấp hành pháp luật và nghĩa vụ đóng thuế.",
+    "status": "active",
+    "createdAt": "2026-09-01T08:00:00.000Z",
+    "updatedAt": "2026-09-01T08:00:00.000Z"
+  }
+];
+
+export const DEFAULT_ASSIGNMENTS: Assignment[] = [
+  {
+    "id": "assign-1",
+    "lessonId": "lesson-1",
+    "title": "Bài 1: Sống có lí tưởng — Thử thách: “La bàn tuổi 15”",
+    "type": "bai_tap",
+    "code": "GDCD9-B1",
+    "description": "Phiếu học tập GDCD: Thử thách La bàn tuổi 15. Mỗi lựa chọn hôm nay là một bước tạo nên con người em ngày mai. (Thời gian: 10–15 phút | Mục tiêu: Hiểu – Nhớ – Vận dụng)",
+    "durationMinutes": 15,
+    "isLocked": false,
+    "order": 1,
+    "reviewMode": "NO_REVIEW",
+    "createdAt": "2026-09-02T08:00:00.000Z",
+    "updatedAt": "2026-09-25T14:38:34.935Z",
+    "timeLimitEnabled": false,
+    "openTime": null,
+    "closeTime": null,
+    "scheduleNote": "",
+    "lessonNumber": 1
+  },
+  {
+    "id": "assign-3",
+    "lessonId": "lesson-2",
+    "title": "Bài 2: Khoan dung — Thử thách: “Trái tim rộng mở”",
+    "type": "bai_tap",
+    "code": "GDCD9-B2",
+    "description": "Phiếu học tập GDCD 9: Thử thách Trái tim rộng mở. Nhiệm vụ: Hiểu đúng → Nhận ra → Biết xử lí → Biết sống khoan dung. Khoan dung không có nghĩa là đồng ý với mọi điều người khác làm. (Thời gian: 12–15 phút)",
+    "durationMinutes": 15,
+    "isLocked": false,
+    "order": 1,
+    "reviewMode": "NO_REVIEW",
+    "createdAt": "2026-09-05T08:00:00.000Z",
+    "updatedAt": "2026-09-05T08:00:00.000Z",
+    "lessonNumber": 2
+  },
+  {
+    "id": "assign-4",
+    "lessonId": "lesson-3",
+    "title": "Bài 3: Tích cực tham gia các hoạt động cộng đồng — Thử thách: “Em có vào cuộc?”",
+    "type": "bai_tap",
+    "code": "GDCD9-B3",
+    "description": "Phiếu học tập GDCD 9: Thử thách “Em có vào cuộc?”. Một người làm một việc nhỏ. Nhiều người cùng làm có thể tạo nên thay đổi lớn. (Thời gian: 10–15 phút | Mục tiêu: HIỂU → NHỚ → VẬN DỤNG → MUỐN HÀNH ĐỘNG)",
+    "durationMinutes": 15,
+    "isLocked": false,
+    "order": 1,
+    "reviewMode": "NO_REVIEW",
+    "createdAt": "2026-09-10T08:00:00.000Z",
+    "updatedAt": "2026-09-22T02:30:02.971Z",
+    "lessonNumber": 3
+  },
+  {
+    "id": "assign-5",
+    "lessonId": "lesson-4",
+    "title": "Bài 4: Khách quan và công bằng — Thử thách: “Thẩm phán 15 tuổi”",
+    "type": "bai_tap",
+    "code": "GDCD9-B4",
+    "description": "Phiếu học tập GDCD 9: Bài 4. Khách quan và công bằng — Thử thách: “Thẩm phán 15 tuổi”. Luật duy nhất: Đừng chọn theo cảm tính, hãy chọn theo dữ kiện. (Thời gian: 10–15 phút | Nhiệm vụ: HIỂU ĐÚNG → NHẬN RA → BIẾT QUYẾT ĐỊNH → BIẾT ỨNG XỬ)",
+    "durationMinutes": 15,
+    "isLocked": false,
+    "order": 1,
+    "reviewMode": "NO_REVIEW",
+    "createdAt": "2026-09-12T08:00:00.000Z",
+    "updatedAt": "2026-09-22T03:02:37.634Z",
+    "lessonNumber": 4
+  },
+  {
+    "id": "assign-6",
+    "lessonId": "lesson-5",
+    "title": "Bài 5: Bảo vệ hoà bình — Mật lệnh: “Sứ giả hoà bình 15 tuổi”",
+    "type": "bai_tap",
+    "code": "GDCD9-B5",
+    "description": "Phiếu học tập GDCD 9: Bài 5. Bảo vệ hoà bình — Mật lệnh: “Sứ giả hoà bình 15 tuổi”. Hành trình: HIỂU → NHẬN DIỆN → RA QUYẾT ĐỊNH → BIẾT HÀNH ĐỘNG. Hoà bình không chỉ là điều chúng ta mong muốn, nó còn được tạo nên từ cách chúng ta ứng xử mỗi ngày.",
+    "durationMinutes": 15,
+    "isLocked": false,
+    "order": 1,
+    "reviewMode": "NO_REVIEW",
+    "createdAt": "2026-09-15T08:00:00.000Z",
+    "updatedAt": "2026-09-22T03:29:39.928Z",
+    "lessonNumber": 5
+  },
+  {
+    "id": "assign-7",
+    "lessonId": "lesson-6",
+    "title": "Bài 6: Quản lí thời gian hiệu quả — Thử thách: “CEO của 24 giờ”",
+    "type": "bai_tap",
+    "code": "GDCD9-B6",
+    "description": "Phiếu học tập GDCD 9: Bài 6. Quản lí thời gian hiệu quả — Thử thách: “CEO của 24 giờ”. Mục tiêu: HIỂU → BIẾT ƯU TIÊN → BIẾT LẬP KẾ HOẠCH → BIẾT HÀNH ĐỘNG. Mỗi người đều có 24 giờ. Khác biệt nằm ở cách chúng ta sử dụng 24 giờ ấy.",
+    "durationMinutes": 15,
+    "isLocked": false,
+    "order": 1,
+    "reviewMode": "NO_REVIEW",
+    "createdAt": "2026-09-20T08:00:00.000Z",
+    "updatedAt": "2026-09-22T04:14:08.475Z",
+    "lessonNumber": 6
+  },
+  {
+    "id": "assign-8",
+    "lessonId": "lesson-7",
+    "title": "Bài 7: Thích ứng với thay đổi — Thử thách: “UPDATE BẢN THÂN 9.0”",
+    "type": "bai_tap",
+    "code": "GDCD9-B7",
+    "description": "Phiếu học tập GDCD 9: Bài 7. Thích ứng với thay đổi — Thử thách: “UPDATE BẢN THÂN 9.0”. Nhiệm vụ: NHẬN RA → BÌNH TĨNH → ĐIỀU CHỈNH → TIẾP TỤC TIẾN LÊN. 🌬️ Ta không phải lúc nào cũng đổi được “hướng gió”, nhưng có thể học cách điều chỉnh “cánh buồm”.",
+    "durationMinutes": 15,
+    "isLocked": false,
+    "order": 1,
+    "reviewMode": "NO_REVIEW",
+    "createdAt": "2026-09-21T08:00:00.000Z",
+    "updatedAt": "2026-09-24T00:42:17.302Z",
+    "lessonNumber": 7
+  },
+  {
+    "id": "assign-9",
+    "lessonId": "lesson-8",
+    "title": "Bài 8: Tiêu dùng thông minh — Thử thách: “SMART SHOPPER – ĐỪNG ĐỂ CHIẾC VÍ QUYẾT ĐỊNH TRONG 3 GIÂY!”",
+    "type": "bai_tap",
+    "code": "GDCD9-B8",
+    "description": "Phiếu học tập GDCD 9: Bài 8. Tiêu dùng thông minh — Thử thách: “SMART SHOPPER – ĐỪNG ĐỂ CHIẾC VÍ QUYẾT ĐỊNH TRONG 3 GIÂY!”. Hành trình: NHẬN RA → KIỂM TRA → SO SÁNH → QUYẾT ĐỊNH. Người tiêu dùng thông minh biết mình đang mua gì – vì sao mua – và mua như thế nào.",
+    "durationMinutes": 15,
+    "isLocked": false,
+    "order": 1,
+    "reviewMode": "NO_REVIEW",
+    "createdAt": "2026-09-21T08:00:00.000Z",
+    "updatedAt": "2026-09-24T00:42:17.302Z",
+    "lessonNumber": 8
+  },
+  {
+    "id": "assign-10",
+    "lessonId": "lesson-9",
+    "title": "Bài 9: Vi phạm pháp luật và trách nhiệm pháp lí — Thử thách: “PHÒNG ĐIỀU TRA PHÁP LÍ 9A”",
+    "type": "bai_tap",
+    "code": "GDCD9-B9",
+    "description": "Phiếu học tập GDCD 9: Bài 9. Vi phạm pháp luật và trách nhiệm pháp lí — Nhiệm vụ: “PHÒNG ĐIỀU TRA PHÁP LÍ 9A”. Hành trình: NHẬN DIỆN → PHÂN LOẠI → GHÉP HẬU QUẢ → BIẾT TUÂN THỦ. ⚖️ Đừng phán đoán bằng cảm tính, hãy tìm đúng dấu hiệu pháp lí.",
+    "durationMinutes": 15,
+    "isLocked": false,
+    "order": 1,
+    "reviewMode": "NO_REVIEW",
+    "createdAt": "2026-09-21T08:00:00.000Z",
+    "updatedAt": "2026-09-24T00:42:17.302Z",
+    "lessonNumber": 9
+  },
+  {
+    "id": "assign-11",
+    "lessonId": "lesson-10",
+    "title": "Bài 10: Quyền tự do kinh doanh và nghĩa vụ nộp thuế — Thử thách: “STARTUP 15 TUỔI – MỞ SHOP NHƯNG ĐỪNG VƯỢT VẠCH!”",
+    "type": "bai_tap",
+    "code": "GDCD9-B10",
+    "description": "Phiếu học tập GDCD 9: Bài 10. Quyền tự do kinh doanh và nghĩa vụ nộp thuế — Thử thách: “STARTUP 15 TUỔI – MỞ SHOP NHƯNG ĐỪNG VƯỢT VẠCH!”. Hành trình tư duy: HIỂU QUYỀN → NHẬN RA GIỚI HẠN → HIỂU NGHĨA VỤ → BIẾT HÀNH ĐỘNG.",
+    "durationMinutes": 15,
+    "isLocked": false,
+    "order": 1,
+    "reviewMode": "NO_REVIEW",
+    "createdAt": "2026-09-21T08:00:00.000Z",
+    "updatedAt": "2026-09-24T00:42:17.302Z",
+    "lessonNumber": 10
+  }
+];
+
+export const DEFAULT_QUESTIONS: Question[] = [
+  {
+    "id": "q-1-1",
+    "assignmentId": "assign-1",
+    "order": 1,
+    "content": "🧠 THỬ THÁCH 1 — BẮT ĐÚNG “LÍ TƯỞNG” (⏱️ 1 phút)\n\nTheo em, bạn nào dưới đây thể hiện sống có lí tưởng rõ nhất?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Minh muốn nổi tiếng nên làm mọi cách để nhiều người biết đến mình."
+      },
+      {
+        "key": "B",
+        "text": "Lan đặt mục tiêu học tốt để phát triển bản thân và sau này tạo ra những sản phẩm hữu ích cho cộng đồng."
+      },
+      {
+        "key": "C",
+        "text": "Nam chưa cần nghĩ đến tương lai vì “đến đâu hay đến đó”."
+      },
+      {
+        "key": "D",
+        "text": "An chỉ chọn việc nào đem lại lợi ích cho riêng mình."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Lan đặt mục tiêu vừa phát triển bản thân vừa hướng tới những giá trị tốt đẹp, tạo ra sản phẩm hữu ích cho cộng đồng.",
+    "points": 1
+  },
+  {
+    "id": "q-1-2",
+    "assignmentId": "assign-1",
+    "order": 2,
+    "content": "🔑 THỬ THÁCH 1 — TỪ KHÓA EM VỪA PHÁT HIỆN\n\nLí tưởng không chỉ hướng tới BẢN THÂN mà còn hướng tới những giá trị tốt đẹp cho ___________?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Cộng đồng, xã hội, quê hương đất nước và nhân loại"
+      },
+      {
+        "key": "B",
+        "text": "Riêng cá nhân mình và người thân trong gia đình"
+      },
+      {
+        "key": "C",
+        "text": "Sự nổi tiếng nhất thời và lượt theo dõi trên mạng xã hội"
+      },
+      {
+        "key": "D",
+        "text": "Những quyền lợi vật chất trước mắt"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: \"cộng đồng / xã hội / đất nước, nhân loại\". Lí tưởng chân chính luôn gắn liền với lợi ích chung của tập thể và xã hội.",
+    "points": 1
+  },
+  {
+    "id": "q-1-3",
+    "assignmentId": "assign-1",
+    "order": 3,
+    "content": "🧩 THỬ THÁCH 2 — GHÉP MẢNH “SỐNG CÓ LÍ TƯỞNG” (⏱️ 1,5 phút | Nối cặp)\n\nNối mỗi biểu hiện ở cột A với ý phù hợp nhất ở cột B:\n\n• CỘT A:\n  1. Có đích đến rõ ràng\n  2. Biết mình cần làm gì\n  3. Không bỏ cuộc khi gặp khó\n  4. Bắt tay thực hiện từ hôm nay\n\n• CỘT B:\n  A. Kiên trì\n  B. Mục đích\n  C. Hành động\n  D. Kế hoạch\n\nEm hãy chọn phương án ghép cặp chính xác nhất:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1–B ; 2–D ; 3–A ; 4–C"
+      },
+      {
+        "key": "B",
+        "text": "1–A ; 2–B ; 3–C ; 4–D"
+      },
+      {
+        "key": "C",
+        "text": "1–D ; 2–B ; 3–A ; 4–C"
+      },
+      {
+        "key": "D",
+        "text": "1–B ; 2–A ; 3–D ; 4–C"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 1–B (Có đích đến rõ ràng → Mục đích) ; 2–D (Biết mình cần làm gì → Kế hoạch) ; 3–A (Không bỏ cuộc khi gặp khó → Kiên trì) ; 4–C (Bắt tay thực hiện từ hôm nay → Hành động).",
+    "points": 1
+  },
+  {
+    "id": "q-1-4",
+    "assignmentId": "assign-1",
+    "order": 4,
+    "content": "🔐 THỬ THÁCH 2 — GIẢI MÃ MẬT MÃ\n\nHoàn thành công thức mật mã quan trọng sau:\n\nMỤC ĐÍCH + KẾ HOẠCH + HÀNH ĐỘNG + KIÊN TRÌ → SỐNG CÓ ____________.",
+    "options": [
+      {
+        "key": "A",
+        "text": "LÍ TƯỞNG"
+      },
+      {
+        "key": "B",
+        "text": "MAY MẮN"
+      },
+      {
+        "key": "C",
+        "text": "AN NHÀN"
+      },
+      {
+        "key": "D",
+        "text": "DANH VỌNG"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: Mật mã: LÍ TƯỞNG. Khi một người có mục đích tốt đẹp, kế hoạch rõ ràng, hành động quyết liệt và kiên trì không bỏ cuộc, người đó đang sống có lí tưởng.",
+    "points": 1
+  },
+  {
+    "id": "q-1-5",
+    "assignmentId": "assign-1",
+    "order": 5,
+    "content": "🚦 THỬ THÁCH 3 — “MỤC TIÊU” HAY “LÍ TƯỞNG”? (Phân loại 1)\n💡 Bẫy tư duy: Không phải mọi mục tiêu cá nhân đều tự động trở thành lí tưởng sống.\n\nĐiều một bạn trẻ mong muốn:\n«1. Đạt 8 điểm môn Toán học kì này» thuộc loại nào?",
+    "options": [
+      {
+        "key": "A",
+        "text": "🎯 Mục tiêu cá nhân"
+      },
+      {
+        "key": "B",
+        "text": "🌟 Có thể gắn với lí tưởng sống"
+      },
+      {
+        "key": "C",
+        "text": "Lí tưởng suốt đời"
+      },
+      {
+        "key": "D",
+        "text": "Mục tiêu phục vụ cộng đồng"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 1 → Mục tiêu cá nhân. Đây là mục tiêu cụ thể, ngắn hạn trong học tập của cá nhân học sinh.",
+    "points": 0.5
+  },
+  {
+    "id": "q-1-6",
+    "assignmentId": "assign-1",
+    "order": 6,
+    "content": "🚦 THỬ THÁCH 3 — “MỤC TIÊU” HAY “LÍ TƯỞNG”? (Phân loại 2)\n\nĐiều một bạn trẻ mong muốn:\n«2. Học công nghệ để tạo sản phẩm hỗ trợ người khuyết tật» thuộc loại nào?",
+    "options": [
+      {
+        "key": "A",
+        "text": "🎯 Chỉ là mục tiêu cá nhân ngắn hạn"
+      },
+      {
+        "key": "B",
+        "text": "🌟 Có thể gắn với lí tưởng sống"
+      },
+      {
+        "key": "C",
+        "text": "Sở thích giải trí đơn thuần"
+      },
+      {
+        "key": "D",
+        "text": "Nghĩa vụ pháp lý bắt buộc"
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án giáo viên: 2 → Có thể gắn với lí tưởng sống. Mục tiêu này mang giá trị nhân văn cao đẹp, hướng tới phục vụ và hỗ trợ người yếu thế trong cộng đồng.",
+    "points": 0.5
+  },
+  {
+    "id": "q-1-7",
+    "assignmentId": "assign-1",
+    "order": 7,
+    "content": "🚦 THỬ THÁCH 3 — “MỤC TIÊU” HAY “LÍ TƯỞNG”? (Phân loại 3)\n\nĐiều một bạn trẻ mong muốn:\n«3. Chạy được 3 km trong tháng tới» thuộc loại nào?",
+    "options": [
+      {
+        "key": "A",
+        "text": "🎯 Mục tiêu cá nhân"
+      },
+      {
+        "key": "B",
+        "text": "🌟 Có thể gắn với lí tưởng sống"
+      },
+      {
+        "key": "C",
+        "text": "Lí tưởng cống hiến cho xã hội"
+      },
+      {
+        "key": "D",
+        "text": "Trách nhiệm với quốc gia"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 3 → Mục tiêu cá nhân. Đây là mục tiêu rèn luyện thể chất riêng cho bản thân trong một khoảng thời gian nhất định.",
+    "points": 0.5
+  },
+  {
+    "id": "q-1-8",
+    "assignmentId": "assign-1",
+    "order": 8,
+    "content": "🚦 THỬ THÁCH 3 — “MỤC TIÊU” HAY “LÍ TƯỞNG”? (Phân loại 4)\n\nĐiều một bạn trẻ mong muốn:\n«4. Rèn luyện để sau này làm công việc có ích cho xã hội» thuộc loại nào?",
+    "options": [
+      {
+        "key": "A",
+        "text": "🎯 Mục tiêu cá nhân hạn hẹp"
+      },
+      {
+        "key": "B",
+        "text": "🌟 Có thể gắn với lí tưởng sống"
+      },
+      {
+        "key": "C",
+        "text": "Ước mơ không khả thi"
+      },
+      {
+        "key": "D",
+        "text": "Chỉ là sự bắt chước"
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án giáo viên: 4 → Có thể gắn với lí tưởng sống. Mục tiêu định hướng cống hiến cho xã hội là nền tảng hình thành lí tưởng sống cao đẹp của thanh thiếu niên.",
+    "points": 0.5
+  },
+  {
+    "id": "q-1-9",
+    "assignmentId": "assign-1",
+    "order": 9,
+    "content": "⚡ THỬ THÁCH 4 — “QUÉT” HÀNH VI TRONG 30 GIÂY (Nhận định 1)\n⏱️ Đánh giá tính Đúng (✓) hoặc Sai (✗):\n\n«1. Có lí tưởng thì chỉ cần ước mơ thật lớn.»",
+    "options": [
+      {
+        "key": "A",
+        "text": "✗ Sai (Chỉ ước mơ lớn mà không hành động thực tế thì không phải là sống có lí tưởng)"
+      },
+      {
+        "key": "B",
+        "text": "✓ Đúng (Chỉ cần có ước mơ thật lớn là đủ trở thành người có lí tưởng)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 1 ✗ (Sai). Ước mơ lớn nếu thiếu kế hoạch và hành động kiên trì thì chỉ là mơ mộng viển vông, không phải sống có lí tưởng.",
+    "points": 0.5
+  },
+  {
+    "id": "q-1-10",
+    "assignmentId": "assign-1",
+    "order": 10,
+    "content": "⚡ THỬ THÁCH 4 — “QUÉT” HÀNH VI TRONG 30 GIÂY (Nhận định 2)\n⏱️ Đánh giá tính Đúng (✓) hoặc Sai (✗):\n\n«2. Học tập nghiêm túc cũng là một cách học sinh từng bước thực hiện lí tưởng.»",
+    "options": [
+      {
+        "key": "A",
+        "text": "✓ Đúng (Học tập chăm chỉ là nền tảng tri thức và kỹ năng để hiện thực hóa ước mơ)"
+      },
+      {
+        "key": "B",
+        "text": "✗ Sai (Học sinh đi học chỉ là nghĩa vụ, chưa liên quan đến lí tưởng sống)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 2 ✓ (Đúng). Việc học tập nghiêm túc mỗi ngày chính là hành động thiết thực nhất của lứa tuổi học sinh để chuẩn bị hành trang thực hiện lí tưởng.",
+    "points": 0.5
+  },
+  {
+    "id": "q-1-11",
+    "assignmentId": "assign-1",
+    "order": 11,
+    "content": "⚡ THỬ THÁCH 4 — “QUÉT” HÀNH VI TRONG 30 GIÂY (Nhận định 3)\n⏱️ Đánh giá tính Đúng (✓) hoặc Sai (✗):\n\n«3. Lí tưởng tốt đẹp có thể tạo động lực để con người vượt khó.»",
+    "options": [
+      {
+        "key": "A",
+        "text": "✓ Đúng (Lí tưởng soi sáng con đường và tiếp thêm nghị lực vượt qua thử thách)"
+      },
+      {
+        "key": "B",
+        "text": "✗ Sai (Lí tưởng chỉ là lý thuyết, không tạo ra sức mạnh thực tế)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 3 ✓ (Đúng). Lí tưởng sống đúng đắn và cao đẹp luôn là ngọn đuốc soi đường và điểm tựa tinh thần vững chắc giúp con người vượt qua mọi gian khó.",
+    "points": 0.5
+  },
+  {
+    "id": "q-1-12",
+    "assignmentId": "assign-1",
+    "order": 12,
+    "content": "⚡ THỬ THÁCH 4 — “QUÉT” HÀNH VI TRONG 30 GIÂY (Nhận định 4)\n⏱️ Đánh giá tính Đúng (✓) hoặc Sai (✗):\n\n«4. Phải làm được việc thật lớn mới được xem là sống có lí tưởng.»",
+    "options": [
+      {
+        "key": "A",
+        "text": "✗ Sai (Sống có lí tưởng bắt nguồn từ những việc làm cụ thể, có ích hàng ngày)"
+      },
+      {
+        "key": "B",
+        "text": "✓ Đúng (Chỉ những vĩ nhân làm nên việc chấn động thế giới mới có lí tưởng)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 4 ✗ (Sai). Không phải đợi làm việc vĩ đại mới là có lí tưởng; sống có lí tưởng thể hiện qua trách nhiệm, sự nỗ lực làm tốt từng việc nhỏ mỗi ngày.",
+    "points": 0.5
+  },
+  {
+    "id": "q-1-13",
+    "assignmentId": "assign-1",
+    "order": 13,
+    "content": "⚡ THỬ THÁCH 4 — “QUÉT” HÀNH VI TRONG 30 GIÂY (Nhận định 5)\n⏱️ Đánh giá tính Đúng (✓) hoặc Sai (✗):\n\n«5. Rèn luyện phẩm chất, năng lực và trách nhiệm với cộng đồng là việc học sinh có thể bắt đầu ngay.»",
+    "options": [
+      {
+        "key": "A",
+        "text": "✓ Đúng (Học sinh hoàn toàn có thể bắt tay thực hiện ngay từ những việc ở trường lớp, gia đình)"
+      },
+      {
+        "key": "B",
+        "text": "✗ Sai (Học sinh còn nhỏ tuổi, phải đợi đến khi ra trường mới bắt đầu)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 5 ✓ (Đúng). Tuổi 15 là giai đoạn vàng để học sinh bắt đầu rèn luyện đạo đức, tích lũy kiến thức và xây dựng ý thức trách nhiệm với cộng đồng.",
+    "points": 0.5
+  },
+  {
+    "id": "q-1-14",
+    "assignmentId": "assign-1",
+    "order": 14,
+    "content": "🔎 THỬ THÁCH 5 — AI ĐÃ “CÀI” SAI MỘT CHI TIẾT? (⏱️ 1 phút)\n\nMột AI viết:\n🤖 “Sống có lí tưởng là có một ước mơ mình yêu thích. Chỉ cần xác định được ước mơ ấy thì đã là sống có lí tưởng, không nhất thiết phải hành động để thực hiện.”\n\nCó 01 chi tiết quan trọng chưa hợp lí. Em hãy phát hiện phần sai và chọn miếng vá thích hợp nhất:",
+    "options": [
+      {
+        "key": "A",
+        "text": "Lí tưởng chỉ dành cho người trưởng thành."
+      },
+      {
+        "key": "B",
+        "text": "Cần nỗ lực/phấn đấu bằng hành động để thực hiện mục đích."
+      },
+      {
+        "key": "C",
+        "text": "Lí tưởng càng khó thực hiện càng tốt."
+      },
+      {
+        "key": "D",
+        "text": "Chỉ cần thay đổi ước mơ thường xuyên theo xu hướng."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án giáo viên: Chọn “Cần nỗ lực/phấn đấu bằng hành động để thực hiện mục đích.” AI sai ở chỗ nói rằng \"không nhất thiết phải hành động\", vì lí tưởng bắt buộc phải đi liền với hành động thực tiễn.",
+    "points": 1
+  },
+  {
+    "id": "q-1-15",
+    "assignmentId": "assign-1",
+    "order": 15,
+    "content": "🎮 THỬ THÁCH 6 — “NẾU LÀ EM?” (⏱️ 2 phút | Giải quyết tình huống)\n\n• Tình huống:\nMai muốn sau này làm một công việc có ích cho cộng đồng. Nhưng gần đây Mai thường thức khuya xem video, đi học thiếu tập trung và nghĩ:\n“Lí tưởng là chuyện của tương lai. Lớp 9 chưa cần làm gì cả.”\n\nNếu là bạn của Mai, em sẽ gửi cho Mai 02 nút hành động đúng đắn nào?",
+    "options": [
+      {
+        "key": "A",
+        "text": "📚 Xây dựng lại thói quen học tập + 💪 Rèn luyện phẩm chất, sức khỏe và năng lực từ bây giờ."
+      },
+      {
+        "key": "B",
+        "text": "📱 Xem tiếp, sau này thay đổi cũng được + 💤 Chờ đến khi có cảm hứng mới bắt đầu."
+      },
+      {
+        "key": "C",
+        "text": "👀 Chỉ cần theo dõi những người thành công trên mạng + 📱 Xem tiếp video giải trí."
+      },
+      {
+        "key": "D",
+        "text": "💤 Chờ đến khi có cảm hứng mới bắt đầu + 👀 Theo dõi người thành công trên mạng."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 📚 Xây dựng lại thói quen học tập + 💪 Rèn luyện phẩm chất, sức khỏe và năng lực từ bây giờ. Mai cần hiểu rằng tương lai được dệt nên từ những thói quen tốt ngay hôm nay.",
+    "points": 1
+  },
+  {
+    "id": "q-1-16",
+    "assignmentId": "assign-1",
+    "order": 16,
+    "content": "🪜 THỬ THÁCH 7 — XẾP ĐÚNG “ĐƯỜNG ĐI” (⏱️ 1 phút | Sắp xếp hành trình)\n\nMột học sinh có 4 “mảnh ghép”:\nA. Hành động\nB. Xác định mục đích tốt đẹp\nC. Kiên trì điều chỉnh và tiếp tục\nD. Lập kế hoạch\n\nHãy sắp xếp thành một hành trình hợp lí:",
+    "options": [
+      {
+        "key": "A",
+        "text": "B → D → A → C"
+      },
+      {
+        "key": "B",
+        "text": "A → B → C → D"
+      },
+      {
+        "key": "C",
+        "text": "D → A → B → C"
+      },
+      {
+        "key": "D",
+        "text": "B → A → D → C"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: B → D → A → C (Xác định mục đích tốt đẹp → Lập kế hoạch → Bắt tay hành động → Kiên trì điều chỉnh và tiếp tục).",
+    "points": 1
+  },
+  {
+    "id": "q-1-17",
+    "assignmentId": "assign-1",
+    "order": 17,
+    "content": "🇻🇳 THỬ THÁCH 8 — THANH NIÊN VIỆT NAM HÔM NAY (⏱️ 1 phút | Ba lô thanh niên)\n\nCho 7 thẻ hành vi và thói quen:\n📚 HỌC TẬP | 💪 RÈN LUYỆN | 🤝 HỢP TÁC | 🌱 CỐNG HIẾN | 🇻🇳 XÂY DỰNG VÀ BẢO VỆ TỔ QUỐC | 😴 Ỷ LẠI | 🙈 THỜ Ơ\n\nHãy chọn đúng 5 thẻ xứng đáng đưa vào “BA LÔ THANH NIÊN VIỆT NAM”:",
+    "options": [
+      {
+        "key": "A",
+        "text": "📚 Học tập – 💪 Rèn luyện – 🤝 Hợp tác – 🌱 Cống hiến – 🇻🇳 Xây dựng và bảo vệ Tổ quốc"
+      },
+      {
+        "key": "B",
+        "text": "Học tập – Rèn luyện – Ỷ lại – Thờ ơ – Hợp tác"
+      },
+      {
+        "key": "C",
+        "text": "Cống hiến – Thờ ơ – Hợp tác – Học tập – Ỷ lại"
+      },
+      {
+        "key": "D",
+        "text": "Xây dựng và bảo vệ Tổ quốc – Ỷ lại – Rèn luyện – Thờ ơ – Cống hiến"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: Học tập – Rèn luyện – Hợp tác – Cống hiến – Xây dựng và bảo vệ Tổ quốc. Cần kiên quyết loại bỏ 2 thói xấu tiêu cực là \"Ỷ lại\" và \"Thờ ơ\".",
+    "points": 1
+  },
+  {
+    "id": "q-1-18",
+    "assignmentId": "assign-1",
+    "order": 18,
+    "content": "❤️ CHỐT PHIẾU — “1% TỐT HƠN TỪ NGÀY MAI” (⏱️ 1 phút | Vận dụng cá nhân)\n\n«Không cần viết lí tưởng thật to lớn. Lí tưởng cho ta hướng đi. Hành động hôm nay đưa ta đến gần hướng đi ấy.»\n\n🏆 THANH TIẾN TRÌNH: HIỂU BÀI 🧠 → NHỚ BÀI 🔑 → BIẾT LÀM 💪 → MUỐN TIẾN LÊN 🚀\nChọn đúng cam kết 7 ngày thiết thực nhất của em:",
+    "options": [
+      {
+        "key": "A",
+        "text": "Chọn 01 việc nhỏ có thể làm ngay (tập trung học, bớt 20 phút điện thoại, hoàn thành việc trì hoãn, giúp đỡ người khác) và kiên trì thực hiện trong 7 ngày."
+      },
+      {
+        "key": "B",
+        "text": "Đặt ra kế hoạch vĩ mô xa vời nhưng vẫn giữ nguyên thói quen thức khuya và lười biếng."
+      },
+      {
+        "key": "C",
+        "text": "Cho rằng lứa tuổi học sinh lớp 8, lớp 9 chưa cần rèn luyện phẩm chất hay thói quen tốt."
+      },
+      {
+        "key": "D",
+        "text": "Chỉ rèn luyện khi có cô giáo hoặc cha mẹ nhắc nhở, không có ý thức tự giác."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: Tinh thần của Chốt phiếu là \"1% tốt hơn từ ngày mai\", học sinh chọn 01 việc nhỏ có thể bắt đầu ngay và kiên trì rèn luyện thói quen tốt trong 7 ngày.",
+    "points": 0.5
+  },
+  {
+    "id": "q-2-1",
+    "assignmentId": "assign-3",
+    "order": 1,
+    "content": "🧠 CỬA 1 — AI THỰC SỰ KHOAN DUNG?\n⏱️ 1 phút | Chọn đáp án\n\nTrong giờ hoạt động nhóm, Huy vô ý làm mất phần dữ liệu cả nhóm vừa hoàn thành. Huy nhận lỗi và cố gắng khắc phục.\n\nBạn nào dưới đây có cách ứng xử phù hợp nhất?",
+    "options": [
+      {
+        "key": "A",
+        "text": "“Thôi, từ giờ cậu đừng tham gia nhóm nữa.”"
+      },
+      {
+        "key": "B",
+        "text": "“Không sao, cậu chẳng có lỗi gì cả.”"
+      },
+      {
+        "key": "C",
+        "text": "“Mình rất tiếc vì mất dữ liệu, nhưng cậu đã nhận lỗi. Cùng làm lại nhé.”"
+      },
+      {
+        "key": "D",
+        "text": "Không nói gì nhưng đăng chuyện của Huy lên nhóm lớp."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án giáo viên: C. Bạn biết bày tỏ cảm xúc thật (“rất tiếc vì mất dữ liệu”), nhưng ghi nhận thái độ nhận lỗi của bạn và rộng lòng tạo cơ hội cùng làm lại. Đây là biểu hiện chuẩn xác nhất của lòng khoan dung.",
+    "points": 1
+  },
+  {
+    "id": "q-2-2",
+    "assignmentId": "assign-3",
+    "order": 2,
+    "content": "🔑 CỬA 1 — CHÌA KHÓA KHOAN DUNG\n⏱️ Điền từ khóa thích hợp vào chỗ trống\n\n«Khoan dung không phải là __________ lỗi sai, mà là biết ứng xử rộng lượng, tôn trọng và tạo cơ hội để người mắc lỗi __________.»\n\nCặp từ/cụm từ thích hợp nhất lần lượt là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "bao che (hoặc bỏ qua) / sửa sai (hoặc khắc phục)"
+      },
+      {
+        "key": "B",
+        "text": "trừng phạt / xin lỗi"
+      },
+      {
+        "key": "C",
+        "text": "phủ nhận / đền bù"
+      },
+      {
+        "key": "D",
+        "text": "nhắc lại / rút lui"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: Từ khóa gợi ý: bao che/bỏ qua – sửa sai. Khoan dung không đồng nghĩa với việc dung túng, che giấu cái sai, mà là mở lòng tha thứ và giúp đỡ người mắc lỗi có cơ hội sửa đổi.",
+    "points": 0.5
+  },
+  {
+    "id": "q-2-3",
+    "assignmentId": "assign-3",
+    "order": 3,
+    "content": "🔍 CỬA 2 — “KHOAN DUNG” HAY “KHÔNG PHẢI KHOAN DUNG”?\n⏱️ 1,5 phút | Phân loại thẻ\n\nCho 6 thẻ hành vi:\nA. Tha thứ khi người mắc lỗi biết hối hận\nB. Chấp nhận mọi việc làm sai trái\nC. Tôn trọng sự khác biệt\nD. Nhắc lại lỗi cũ để chế giễu người khác\nE. Cho người khác cơ hội sửa sai\nF. Bao che cho bạn vì sợ mất tình bạn\n\nPhương án phân loại chính xác vào 2 chiếc hộp [💚 KHOAN DUNG] và [🚫 KHÔNG PHẢI KHOAN DUNG] là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "💚 KHOAN DUNG: A – C – E  |  🚫 KHÔNG PHẢI KHOAN DUNG: B – D – F"
+      },
+      {
+        "key": "B",
+        "text": "💚 KHOAN DUNG: A – B – C  |  🚫 KHÔNG PHẢI KHOAN DUNG: D – E – F"
+      },
+      {
+        "key": "C",
+        "text": "💚 KHOAN DUNG: B – D – F  |  🚫 KHÔNG PHẢI KHOAN DUNG: A – C – E"
+      },
+      {
+        "key": "D",
+        "text": "💚 KHOAN DUNG: C – E – F  |  🚫 KHÔNG PHẢI KHOAN DUNG: A – B – D"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: Khoan dung: A – C – E (Tha thứ khi biết hối hận, Tôn trọng sự khác biệt, Cho cơ hội sửa sai). Không phải khoan dung: B – D – F (Chấp nhận việc làm sai trái, Nhắc lại lỗi cũ để chế giễu, Bao che cho bạn).",
+    "points": 1
+  },
+  {
+    "id": "q-2-4",
+    "assignmentId": "assign-3",
+    "order": 4,
+    "content": "⭐ CỬA 2 — BẪY NẰM Ở ĐÂU? (Bẫy tư duy)\n\nKhoan dung không có nghĩa là đồng ý với mọi điều người khác làm.\n\nHoàn thành nguyên tắc phân biệt then chốt sau:\n«THA THỨ ≠ __________ CHO CÁI SAI»",
+    "options": [
+      {
+        "key": "A",
+        "text": "BAO CHE (hoặc BỎ QUA / DUNG TÚNG)"
+      },
+      {
+        "key": "B",
+        "text": "TÔN TRỌNG"
+      },
+      {
+        "key": "C",
+        "text": "GÓP Ý"
+      },
+      {
+        "key": "D",
+        "text": "LẮNG NGHE"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: Bẫy: Tha thứ ≠ bao che cho cái sai. Tha thứ là xuất phát từ sự độ lượng với con người, nhưng không bao giờ đồng lõa hay bao che cho hành vi sai trái.",
+    "points": 0.5
+  },
+  {
+    "id": "q-2-5",
+    "assignmentId": "assign-3",
+    "order": 5,
+    "content": "🧩 CỬA 3 — GHÉP “MẢNH TRÁI TIM”\n⏱️ 1,5 phút | Nối cặp\n\nNối từng Tình huống (1, 2, 3, 4) với Cách ứng xử phù hợp nhất (A, B, C, D):\n\n• TÌNH HUỐNG:\n1. Bạn thật lòng xin lỗi\n2. Bạn có sở thích khác mình\n3. Bạn mắc lỗi và muốn sửa\n4. Bạn rủ mình che giấu việc sai\n\n• CÁCH ỨNG XỬ:\nA. Tôn trọng\nB. Góp ý, không bao che\nC. Tha thứ\nD. Cho cơ hội\n\nMật mã ghép nối chính xác là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1–C ; 2–A ; 3–D ; 4–B"
+      },
+      {
+        "key": "B",
+        "text": "1–A ; 2–C ; 3–B ; 4–D"
+      },
+      {
+        "key": "C",
+        "text": "1–C ; 2–B ; 3–A ; 4–D"
+      },
+      {
+        "key": "D",
+        "text": "1–D ; 2–A ; 3–C ; 4–B"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 1–C (Bạn thật lòng xin lỗi → Tha thứ) ; 2–A (Bạn có sở thích khác mình → Tôn trọng) ; 3–D (Bạn mắc lỗi và muốn sửa → Cho cơ hội) ; 4–B (Bạn rủ mình che giấu việc sai → Góp ý, không bao che).",
+    "points": 1
+  },
+  {
+    "id": "q-2-6",
+    "assignmentId": "assign-3",
+    "order": 6,
+    "content": "🚦 CỬA 4 — MÁY QUÉT “ĐÚNG HAY SAI?” (Nhận định 1)\n⏱️ Đánh giá tính Đúng (✓) hoặc Sai (✗):\n\n«1. Khoan dung là tha thứ cho người biết hối hận và sửa chữa.»",
+    "options": [
+      {
+        "key": "A",
+        "text": "✓ Đúng (Khoan dung là mở lòng tha thứ cho người biết nhận lỗi và muốn sửa chữa)"
+      },
+      {
+        "key": "B",
+        "text": "✗ Sai (Dù hối hận cũng không bao giờ được tha thứ)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 1 ✓ (Đúng). Rộng lòng tha thứ cho người thực lòng ăn năn và muốn sửa chữa chính là bản chất của khoan dung.",
+    "points": 0.5
+  },
+  {
+    "id": "q-2-7",
+    "assignmentId": "assign-3",
+    "order": 7,
+    "content": "🚦 CỬA 4 — MÁY QUÉT “ĐÚNG HAY SAI?” (Nhận định 2)\n⏱️ Đánh giá tính Đúng (✓) hoặc Sai (✗):\n\n«2. Đã khoan dung thì không nên góp ý lỗi của người khác.»",
+    "options": [
+      {
+        "key": "A",
+        "text": "✗ Sai (Khoan dung vẫn cần góp ý chân thành để người mắc lỗi nhận ra và tiến bộ)"
+      },
+      {
+        "key": "B",
+        "text": "✓ Đúng (Khoan dung là phải im lặng, không được nói đến lỗi lầm của người khác)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 2 ✗ (Sai). Khoan dung chân chính không phải là im lặng bỏ mặc, mà luôn đi kèm với sự chân thành góp ý để bạn nhìn ra sai lầm và tiến bộ.",
+    "points": 0.5
+  },
+  {
+    "id": "q-2-8",
+    "assignmentId": "assign-3",
+    "order": 8,
+    "content": "🚦 CỬA 4 — MÁY QUÉT “ĐÚNG HAY SAI?” (Nhận định 3)\n⏱️ Đánh giá tính Đúng (✓) hoặc Sai (✗):\n\n«3. Tôn trọng sự khác biệt của người khác là biểu hiện của khoan dung.»",
+    "options": [
+      {
+        "key": "A",
+        "text": "✓ Đúng (Tôn trọng sự khác biệt về sở thích, tính cách lành mạnh của mọi người)"
+      },
+      {
+        "key": "B",
+        "text": "✗ Sai (Khoan dung chỉ liên quan đến tha thứ lỗi lầm, không liên quan đến sự khác biệt)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 3 ✓ (Đúng). Tôn trọng sở thích, cá tính và sự khác biệt tích cực của người khác là một biểu hiện quan trọng của lòng khoan dung.",
+    "points": 0.5
+  },
+  {
+    "id": "q-2-9",
+    "assignmentId": "assign-3",
+    "order": 9,
+    "content": "🚦 CỬA 4 — MÁY QUÉT “ĐÚNG HAY SAI?” (Nhận định 4)\n⏱️ Đánh giá tính Đúng (✓) hoặc Sai (✗):\n\n«4. Bao che cho hành vi sai trái của bạn là khoan dung.»",
+    "options": [
+      {
+        "key": "A",
+        "text": "✗ Sai (Bao che là tiếp tay cho điều sai trái, làm hại bạn bè và tập thể)"
+      },
+      {
+        "key": "B",
+        "text": "✓ Đúng (Đã là bạn thân thì phải bao che khuyết điểm cho nhau)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 4 ✗ (Sai). Bao che là tiếp tay cho điều sai trái, làm hại bạn và tập thể, hoàn toàn trái ngược với tinh thần khoan dung.",
+    "points": 0.5
+  },
+  {
+    "id": "q-2-10",
+    "assignmentId": "assign-3",
+    "order": 10,
+    "content": "🚦 CỬA 4 — MÁY QUÉT “ĐÚNG HAY SAI?” (Nhận định 5)\n⏱️ Đánh giá tính Đúng (✓) hoặc Sai (✗):\n\n«5. Người mắc lỗi vẫn có thể xứng đáng nhận cơ hội sửa sai.»",
+    "options": [
+      {
+        "key": "A",
+        "text": "✓ Đúng (Ai cũng có thể vấp ngã; người biết sửa lỗi xứng đáng được trao cơ hội)"
+      },
+      {
+        "key": "B",
+        "text": "✗ Sai (Đã mắc lỗi một lần là vĩnh viễn mất cơ hội làm lại)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 5 ✓ (Đúng). Bất kỳ ai cũng có thể vấp ngã; người có lòng khoan dung luôn sẵn sàng mở lòng trao cơ hội thứ hai cho người biết nỗ lực sửa chữa.",
+    "points": 0.5
+  },
+  {
+    "id": "q-2-11",
+    "assignmentId": "assign-3",
+    "order": 11,
+    "content": "🤖 CỬA 5 — AI ĐANG HIỂU SAI!\n⏱️ 1 phút | Tìm điểm chưa hợp lí\n\nMột AI trả lời:\n🤖 “Nếu thực sự khoan dung với bạn bè thì khi bạn làm sai, chúng ta nên bỏ qua và không cần góp ý, vì góp ý sẽ khiến bạn buồn.”\n\n🚨 Có 01 “virus tư duy” trong câu trên. Hãy chọn bản vá lỗi đúng đắn nhất:",
+    "options": [
+      {
+        "key": "A",
+        "text": "Không bao giờ tha thứ khi người khác mắc lỗi."
+      },
+      {
+        "key": "B",
+        "text": "Khoan dung là đồng ý với mọi hành động của bạn."
+      },
+      {
+        "key": "C",
+        "text": "Có thể tha thứ nhưng vẫn cần góp ý để bạn nhận ra và sửa lỗi."
+      },
+      {
+        "key": "D",
+        "text": "Chỉ khoan dung với người thân."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án giáo viên: C. Bản vá chuẩn: “Có thể tha thứ nhưng vẫn cần góp ý để bạn nhận ra và sửa lỗi.” Khoan dung không phải là sự dễ dãi mù quáng làm ngơ trước khuyết điểm.",
+    "points": 1
+  },
+  {
+    "id": "q-2-12",
+    "assignmentId": "assign-3",
+    "order": 12,
+    "content": "⚖️ CỬA 6 — “THA THỨ HAY BAO CHE?”\n⏱️ 2 phút | Giải quyết tình huống\n\nNam phát hiện người bạn thân đã gian lận trong một bài kiểm tra. Bạn nói:\n“Cậu là bạn thân thì phải giữ bí mật cho mình chứ! Biết tha thứ mới là khoan dung.”\n\nNếu là Nam, em nên làm gì?\n🔐 MẬT MÃ: KHOAN DUNG ≠ BAO CHE",
+    "options": [
+      {
+        "key": "A",
+        "text": "Giữ kín mọi chuyện vì tình bạn quan trọng nhất."
+      },
+      {
+        "key": "B",
+        "text": "Chấm dứt tình bạn ngay lập tức."
+      },
+      {
+        "key": "C",
+        "text": "Khuyên bạn nhận lỗi, sửa sai và không tiếp tục gian lận."
+      },
+      {
+        "key": "D",
+        "text": "Đăng câu chuyện lên mạng để mọi người phê phán bạn."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án giáo viên: C. Đây là câu phân hóa quan trọng: học sinh phải nhận ra ranh giới giữa khoan dung và bao che hành vi sai. Giữ bí mật là bao che làm hại bạn; Nam cần chân thành khuyên bạn dũng cảm nhận lỗi và sửa sai.",
+    "points": 1
+  },
+  {
+    "id": "q-2-13",
+    "assignmentId": "assign-3",
+    "order": 13,
+    "content": "🎭 CỬA 7 — 3 GIÂY TRƯỚC KHI PHẢN ỨNG\n⏱️ 2 phút | Sắp xếp trình tự\n\nBạn cùng lớp nói một câu khiến em rất khó chịu. Sau đó bạn nhận ra mình quá lời và xin lỗi.\nBốn phản ứng đang bị xáo trộn:\nA. Chọn cách ứng xử phù hợp.\nB. Nghe người bạn nói.\nC. Bình tĩnh lại.\nD. Xem bạn có nhận lỗi và muốn sửa không.\n\nHãy sắp xếp 4 bước trên thành “công thức ứng xử” chuẩn xác nhất:",
+    "options": [
+      {
+        "key": "A",
+        "text": "C → B → D → A"
+      },
+      {
+        "key": "B",
+        "text": "B → C → A → D"
+      },
+      {
+        "key": "C",
+        "text": "C → A → B → D"
+      },
+      {
+        "key": "D",
+        "text": "D → B → C → A"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: C → B → D → A (Bình tĩnh lại → Nghe người bạn nói → Xem bạn có nhận lỗi và muốn sửa không → Chọn cách ứng xử phù hợp). Đây là công thức làm chủ cảm xúc và ứng xử khoan dung trong đời sống.",
+    "points": 1
+  },
+  {
+    "id": "q-2-14",
+    "assignmentId": "assign-3",
+    "order": 14,
+    "content": "🎯 CỬA 8 — AI XỨNG ĐÁNG NHẬN “CƠ HỘI THỨ HAI”?\n⏱️ 1,5 phút | Chọn trường hợp\n\nCho 4 trường hợp:\n① An làm bạn buồn, chủ động xin lỗi và cố gắng không lặp lại.\n② Bình liên tục bắt nạt bạn nhưng nói: “Cậu phải khoan dung với tớ.”\n③ Chi làm hỏng đồ của bạn, nhận lỗi và đề nghị khắc phục.\n④ Dũng cố tình vi phạm nhiều lần rồi yêu cầu mọi người “bỏ qua hết”.\n\nHai trường hợp nào thể hiện rõ nhất việc nên tạo cơ hội để sửa sai?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Trường hợp ① và ③"
+      },
+      {
+        "key": "B",
+        "text": "Trường hợp ① và ②"
+      },
+      {
+        "key": "C",
+        "text": "Trường hợp ② và ④"
+      },
+      {
+        "key": "D",
+        "text": "Trường hợp ③ và ④"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: ① và ③. Cả An và Chi đều có tinh thần tự giác nhận lỗi, biết hối hận và chủ động có hành động khắc phục cụ thể, do đó hoàn toàn xứng đáng được trao cơ hội thứ hai.",
+    "points": 1
+  },
+  {
+    "id": "q-2-15",
+    "assignmentId": "assign-3",
+    "order": 15,
+    "content": "🌉 CỬA 9 — XÂY “CÂY CẦU KHOAN DUNG”\n⏱️ 1 phút | Điền từ khóa\n\nTừ trong ngân hàng: TÔN TRỌNG – THA THỨ – SỬA SAI – BAO CHE\n\n🤝 TÔI\n[...Nhịp 1...] sự khác biệt\n      ↓\nBiết [...Nhịp 2...] khi phù hợp\n      ↓\nCho người khác cơ hội [...Nhịp 3...]\n      ↓\n❤️ MỐI QUAN HỆ TỐT ĐẸP\n\nThứ tự các từ khóa cần đặt lên 3 nhịp của cây cầu là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "Tôn trọng → Tha thứ → Sửa sai"
+      },
+      {
+        "key": "B",
+        "text": "Tha thứ → Tôn trọng → Sửa sai"
+      },
+      {
+        "key": "C",
+        "text": "Bao che → Tha thứ → Tôn trọng"
+      },
+      {
+        "key": "D",
+        "text": "Tôn trọng → Sửa sai → Bao che"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: Tôn trọng sự khác biệt → Biết tha thứ khi phù hợp → Cho người khác cơ hội sửa sai → Mối quan hệ tốt đẹp.",
+    "points": 0.5
+  },
+  {
+    "id": "q-2-16",
+    "assignmentId": "assign-3",
+    "order": 16,
+    "content": "🚫 CỬA 9 — TỪ NÀO KHÔNG ĐƯỢC BƯỚC LÊN CÂY CẦU KHOAN DUNG?\n\nTrong ngân hàng từ [TÔN TRỌNG – THA THỨ – SỬA SAI – BAO CHE], từ tiêu cực nào bị loại, tuyệt đối KHÔNG ĐƯỢC bước lên Cây cầu khoan dung?",
+    "options": [
+      {
+        "key": "A",
+        "text": "BAO CHE"
+      },
+      {
+        "key": "B",
+        "text": "TÔN TRỌNG"
+      },
+      {
+        "key": "C",
+        "text": "THA THỨ"
+      },
+      {
+        "key": "D",
+        "text": "SỬA SAI"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: Từ bị loại: Bao che. “Bao che” sẽ làm sập chiếc cầu đạo đức và niềm tin giữa mọi người.",
+    "points": 0.5
+  },
+  {
+    "id": "q-2-17",
+    "assignmentId": "assign-3",
+    "order": 17,
+    "content": "💥 CỬA 10 — “NÚT NÀO EM SẼ BẤM?”\n⏱️ 1 phút | Vận dụng cá nhân\n\nMột người bạn từng khiến em không vui nhưng đã chân thành xin lỗi.\nEm có các nút bấm dưới đây. Nút nào em sẽ bấm để thể hiện sự khoan dung và xây dựng mối quan hệ tốt đẹp?",
+    "options": [
+      {
+        "key": "A",
+        "text": "🔥 Nút TRẢ ĐŨA"
+      },
+      {
+        "key": "B",
+        "text": "📱 Nút ĐĂNG LÊN MẠNG"
+      },
+      {
+        "key": "C",
+        "text": "🧊 Nút GHÉT MÃI"
+      },
+      {
+        "key": "D",
+        "text": "💛 Nút LẮNG NGHE – GÓP Ý – CHO CƠ HỘI"
+      }
+    ],
+    "correctOption": "D",
+    "explanation": "Đáp án giáo viên: 💛 LẮNG NGHE – GÓP Ý – CHO CƠ HỘI. Rộng lòng tha thứ giúp hàn gắn vết thương và đem lại sự thanh thản, vững bền cho tình bạn.",
+    "points": 0.5
+  },
+  {
+    "id": "q-2-18",
+    "assignmentId": "assign-3",
+    "order": 18,
+    "content": "🌱 EXIT TICKET — “KHOAN DUNG 24H”\n⏱️ 30 giây | Cam kết chuyển hóa thành hành vi\n\n«Rộng lòng không làm chúng ta yếu đi. Nó giúp chúng ta biết ứng xử nhân văn nhưng vẫn đúng đắn.»\n\n🏆 THANH TIẾN TRÌNH: HIỂU 🧠 → NHỚ 🔑 → BIẾT CHỌN ⚖️ → BIẾT ỨNG XỬ ❤️\nNgày mai, em muốn thử 01 hành động nào để rèn luyện lòng khoan dung?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Bình tĩnh trước khi nổi giận và lắng nghe người khác nói hết câu."
+      },
+      {
+        "key": "B",
+        "text": "Tôn trọng sự khác biệt, không chế giễu bạn bè trong lớp."
+      },
+      {
+        "key": "C",
+        "text": "Không bao giờ nhắc lại lỗi cũ để làm tổn thương người khác."
+      },
+      {
+        "key": "D",
+        "text": "Cho một người biết nhận lỗi một cơ hội để làm tốt hơn."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: Câu vận dụng cá nhân; không chấm cứng lựa chọn Exit Ticket. Cả 4 hành động đều là những cam kết tuyệt vời thể hiện tinh thần sống khoan dung.",
+    "points": 0.5
+  },
+  {
+    "id": "q-3-1",
+    "assignmentId": "assign-4",
+    "order": 1,
+    "content": "🔍 NHIỆM VỤ 1 — “QUÉT” HOẠT ĐỘNG (⏱️ 1 phút | Chọn đáp án)\n\nHoạt động nào dưới đây thể hiện rõ nhất mục đích mang lại lợi ích chung cho cộng đồng?\n\n🔑 Mật mã: Hoạt động cộng đồng hướng tới LỢI ÍCH CHUNG.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Minh chạy bộ mỗi chiều để nâng cao sức khỏe cá nhân."
+      },
+      {
+        "key": "B",
+        "text": "Nhóm của Hà trồng cây và chăm sóc khuôn viên chung của trường."
+      },
+      {
+        "key": "C",
+        "text": "Nam học tiếng Anh để đạt điểm cao trong kì thi."
+      },
+      {
+        "key": "D",
+        "text": "Linh tiết kiệm tiền để mua đôi giày mình thích."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Nhóm của Hà trồng cây và chăm sóc khuôn viên chung của trường. Hoạt động cộng đồng là những việc làm tự nguyện của các cá nhân hoặc tập thể nhằm mang lại lợi ích chung cho xã hội, nhà trường và tập thể.",
+    "points": 0.8
+  },
+  {
+    "id": "q-3-2",
+    "assignmentId": "assign-4",
+    "order": 2,
+    "content": "🎒 NHIỆM VỤ 2 — CHIẾC BA LÔ CỘNG ĐỒNG (⏱️ 1 phút | Phân loại hoạt động)\n\nHãy chọn tổ hợp 5 thẻ phù hợp nhất để đưa vào chiếc BA LÔ CỘNG ĐỒNG:\n\n1. 🌳 Trồng cây ở trường\n2. 📚 Quyên góp sách phù hợp cho thư viện vùng khó khăn\n3. 🎮 Chơi game giải trí một mình\n4. 🧹 Cùng làm sạch khu vực công cộng\n5. 🏃 Tập chạy để cải thiện thành tích cá nhân\n6. ❤️ Tham gia hoạt động hỗ trợ người có hoàn cảnh khó khăn\n7. 🏛️ Tham gia giữ gìn, phát huy giá trị văn hóa địa phương\n\n🎒 5 thẻ hợp lệ trong Ba lô cộng đồng là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1, 2, 4, 6, 7 (Trồng cây; Quyên góp sách; Làm sạch khu vực công cộng; Hỗ trợ người khó khăn; Giữ gìn văn hóa địa phương)"
+      },
+      {
+        "key": "B",
+        "text": "1, 3, 4, 5, 7"
+      },
+      {
+        "key": "C",
+        "text": "2, 3, 5, 6, 7"
+      },
+      {
+        "key": "D",
+        "text": "1, 2, 3, 4, 5"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A (Gồm 5 thẻ: 1, 2, 4, 6, 7). Các dạng hoạt động này được xây dựng từ nhóm hoạt động cộng đồng mà SGK đề cập, như hoạt động nhân đạo, bảo vệ môi trường – cảnh quan và phát huy truyền thống văn hóa địa phương.",
+    "points": 0.8
+  },
+  {
+    "id": "q-3-3",
+    "assignmentId": "assign-4",
+    "order": 3,
+    "content": "🧩 NHIỆM VỤ 3 — NỐI “VIỆC LÀM – GIÁ TRỊ” (⏱️ 1,5 phút | Nối cặp)\n\nNối từng VIỆC LÀM (1, 2, 3, 4) với GIÁ TRỊ TẠO RA (A, B, C, D) tương ứng:\n\n• VIỆC LÀM:\n1. Trồng và chăm sóc cây\n2. Quyên góp sách phù hợp\n3. Tham gia hoạt động tại di tích\n4. Cùng nhóm hoàn thành việc chung\n\n• GIÁ TRỊ TẠO RA:\nA. Chia sẻ\nB. Giữ gìn văn hóa\nC. Môi trường\nD. Hợp tác\n\n✍️ MẬT MÃ GHÉP NỐI CHÍNH XAC LÀ:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1–C ; 2–A ; 3–B ; 4–D"
+      },
+      {
+        "key": "B",
+        "text": "1–A ; 2–C ; 3–D ; 4–B"
+      },
+      {
+        "key": "C",
+        "text": "1–C ; 2–B ; 3–A ; 4–D"
+      },
+      {
+        "key": "D",
+        "text": "1–D ; 2–A ; 3–B ; 4–C"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: 1–C ; 2–A ; 3–B ; 4–D.\n• 1. Trồng và chăm sóc cây → C. Môi trường\n• 2. Quyên góp sách phù hợp → A. Chia sẻ\n• 3. Tham gia hoạt động tại di tích → B. Giữ gìn văn hóa\n• 4. Cùng nhóm hoàn thành việc chung → D. Hợp tác",
+    "points": 0.9
+  },
+  {
+    "id": "q-3-4",
+    "assignmentId": "assign-4",
+    "order": 4,
+    "content": "🚦 NHIỆM VỤ 4 — “ĐÈN XANH HAY ĐÈN ĐỎ?” (⏱️ 1,5 phút | Đúng/Sai)\n\nĐánh giá tính Đúng (✓) hoặc Sai (✗) của 5 phát biểu sau:\n\n1. Hoạt động cộng đồng hướng đến lợi ích chung.\n2. Học sinh còn nhỏ nên chưa có trách nhiệm với cộng đồng.\n3. Tham gia hoạt động cộng đồng có thể giúp bản thân trưởng thành hơn.\n4. Chỉ những hoạt động quyên góp tiền mới được coi là hoạt động cộng đồng.\n5. Học sinh nên lựa chọn hoạt động phù hợp với khả năng và lứa tuổi.\n\n👉 Trình tự nhận định Đúng (✓) / Sai (✗) chính xác là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1-Đúng (✓) | 2-Sai (✗) | 3-Đúng (✓) | 4-Sai (✗) | 5-Đúng (✓)"
+      },
+      {
+        "key": "B",
+        "text": "1-Đúng (✓) | 2-Đúng (✓) | 3-Đúng (✓) | 4-Sai (✗) | 5-Sai (✗)"
+      },
+      {
+        "key": "C",
+        "text": "1-Sai (✗) | 2-Sai (✗) | 3-Đúng (✓) | 4-Đúng (✓) | 5-Đúng (✓)"
+      },
+      {
+        "key": "D",
+        "text": "1-Đúng (✓) | 2-Sai (✗) | 3-Sai (✗) | 4-Sai (✗) | 5-Đúng (✓)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: 1 ✓ – 2 ✗ – 3 ✓ – 4 ✗ – 5 ✓.\n• Phát biểu 2 sai: Học sinh dù còn ngồi trên ghế nhà trường vẫn là thành viên cộng đồng và cần có trách nhiệm tham gia các hoạt động vừa sức.\n• Phát biểu 4 sai: Hoạt động cộng đồng rất phong phú, không chỉ riêng quyên góp tiền mà còn là ngày công, trí tuệ, tinh thần chia sẻ...",
+    "points": 0.9
+  },
+  {
+    "id": "q-3-5",
+    "assignmentId": "assign-4",
+    "order": 5,
+    "content": "🤖 NHIỆM VỤ 5 — AI ĐÃ HIỂU SAI Ở ĐÂU? (⏱️ 1 phút | Tìm điểm chưa hợp lí)\n\nMột trí tuệ nhân tạo (AI) đưa ra kết luận:\n🤖 “Hoạt động cộng đồng chủ yếu đem lại lợi ích cho người được giúp đỡ. Người tham gia hầu như không nhận được giá trị gì cho bản thân.”\n\n🚨 Phát hiện lỗi! Chọn bản sửa đúng và đầy đủ nhất:",
+    "options": [
+      {
+        "key": "A",
+        "text": "Chỉ người trưởng thành mới nhận được lợi ích khi tham gia."
+      },
+      {
+        "key": "B",
+        "text": "Người tham gia cũng có thể mở rộng hiểu biết, rèn trách nhiệm, khả năng hợp tác và nâng cao giá trị bản thân."
+      },
+      {
+        "key": "C",
+        "text": "Tham gia cộng đồng chủ yếu để được khen thưởng và tính điểm thi đua."
+      },
+      {
+        "key": "D",
+        "text": "Hoạt động cộng đồng chỉ cần thiết khi xã hội gặp khó khăn hay dịch bệnh."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. SGK xác định ý nghĩa ở cả hai chiều: đối với cá nhân, việc tham gia giúp mở rộng hiểu biết, hình thành trách nhiệm và đóng góp công sức, trí tuệ, rèn luyện kỹ năng hợp tác; đối với cộng đồng, hoạt động chung phát huy sức mạnh các thành viên và lan tỏa những giá trị tích cực.",
+    "points": 0.8
+  },
+  {
+    "id": "q-3-6",
+    "assignmentId": "assign-4",
+    "order": 6,
+    "content": "⚖️ NHIỆM VỤ 6 — “TÍCH CỰC” KHÁC “CÓ MẶT” (⏱️ 1,5 phút | Phân loại thái độ)\n\nLớp 9A tổ chức “Ngày Chủ nhật xanh”. Hãy phân loại các hành vi sau:\n\nA. Mai đăng kí nhiệm vụ và hoàn thành đúng phần việc.\nB. Hùng đến chụp ảnh rồi ngồi chơi.\nC. An hoàn thành việc của mình rồi hỗ trợ nhóm khác.\nD. Tú nói: “Không có điểm thì tham gia làm gì?”\nE. Linh chủ động chuẩn bị dụng cụ theo phân công.\nF. Nam có mặt nhưng liên tục tìm cách né việc.\n\n🟢 THAM GIA TÍCH CỰC vs 🔴 THAM GIA HÌNH THỨC / THỜ Ơ:",
+    "options": [
+      {
+        "key": "A",
+        "text": "Tích cực: A – C – E | Hình thức / thờ ơ: B – D – F"
+      },
+      {
+        "key": "B",
+        "text": "Tích cực: A – B – C | Hình thức / thờ ơ: D – E – F"
+      },
+      {
+        "key": "C",
+        "text": "Tích cực: C – E – F | Hình thức / thờ ơ: A – B – D"
+      },
+      {
+        "key": "D",
+        "text": "Tích cực: A – D – E | Hình thức / thờ ơ: B – C – F"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: Tích cực: A – C – E | Hình thức/thờ ơ: B – D – F.\n💡 CHÌA KHÓA: “Có mặt” chưa chắc đã là “tích cực tham gia”. Sự tích cực xuất phát từ sự chủ động, tinh thần trách nhiệm và lòng nhiệt tình vì công việc chung.",
+    "points": 0.9
+  },
+  {
+    "id": "q-3-7",
+    "assignmentId": "assign-4",
+    "order": 7,
+    "content": "🧠 NHIỆM VỤ 7 — THỬ THÁCH “4 BƯỚC VÀO CUỘC” (⏱️ 1 phút | Sắp xếp quy trình)\n\nMột hoạt động trồng cây của trường sắp diễn ra. Các bước bị đảo lộn:\n\nA. Hoàn thành phần việc có trách nhiệm.\nB. Tìm hiểu hoạt động.\nC. Cùng nhìn lại kết quả.\nD. Chọn nhiệm vụ phù hợp với khả năng.\n\n👉 Trình tự sắp xếp đúng theo các bước tham gia hoạt động cộng đồng là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "B → D → A → C"
+      },
+      {
+        "key": "B",
+        "text": "A → B → D → C"
+      },
+      {
+        "key": "C",
+        "text": "B → A → D → C"
+      },
+      {
+        "key": "D",
+        "text": "D → B → A → C"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: B → D → A → C.\n• Bước 1 (B): Tìm hiểu hoạt động.\n• Bước 2 (D): Chọn nhiệm vụ phù hợp với khả năng.\n• Bước 3 (A): Hoàn thành phần việc có trách nhiệm.\n• Bước 4 (C): Cùng nhìn lại kết quả để rút kinh nghiệm và biểu dương.",
+    "points": 0.8
+  },
+  {
+    "id": "q-3-8",
+    "assignmentId": "assign-4",
+    "order": 8,
+    "content": "💥 NHIỆM VỤ 8 — “THỨ BẢY NÀY TỚ BẬN!” (⏱️ 2 phút | Giải quyết tình huống)\n\nTrường tổ chức hoạt động làm sạch khu vực công cộng vào sáng thứ Bảy. Tuấn nói: “Việc đó chẳng liên quan đến mình. Có người khác làm rồi. Tớ ở nhà chơi game.”\n\nNếu là bạn của Tuấn, em sẽ nhắn câu nào để thuyết phục bạn phù hợp và văn minh nhất?",
+    "options": [
+      {
+        "key": "A",
+        "text": "“Ừ, thiếu một người cũng chẳng sao đâu.”"
+      },
+      {
+        "key": "B",
+        "text": "“Đi đi, vì cô giáo có thể cộng điểm đấy.”"
+      },
+      {
+        "key": "C",
+        "text": "“Mỗi người góp một phần thì việc chung mới tốt hơn. Nếu phù hợp, chúng mình cùng tham gia nhé!”"
+      },
+      {
+        "key": "D",
+        "text": "“Không tham gia thì cậu là người xấu.”"
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. “Mỗi người góp một phần thì việc chung mới tốt hơn. Nếu phù hợp, chúng mình cùng tham gia nhé!”. Lời khuyên này chân thành, tôn trọng bạn bè và nhấn mạnh giá trị đóng góp tích cực của từng cá nhân vào việc chung của trường lớp.",
+    "points": 0.9
+  },
+  {
+    "id": "q-3-9",
+    "assignmentId": "assign-4",
+    "order": 9,
+    "content": "🕵️ NHIỆM VỤ 9 — “BẪY VIỆC TỐT” (⏱️ 1 phút | Tìm điểm chưa hợp lí)\n\nMột nhóm học sinh muốn giúp người có hoàn cảnh khó khăn. Nhóm đưa ra kế hoạch:\n“Chúng mình sẽ quay thật gần khuôn mặt người nhận quà, hỏi hoàn cảnh riêng tư rồi đăng video công khai để chứng minh nhóm đã làm việc tốt.”\n\n⚠️ Chi tiết nào trong kế hoạch trên cần điều chỉnh nhất?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Không nên tổ chức hoạt động giúp đỡ người có hoàn cảnh khó khăn."
+      },
+      {
+        "key": "B",
+        "text": "Cần tôn trọng người được hỗ trợ, tránh công khai hình ảnh/thông tin riêng tư khi chưa phù hợp hoặc chưa được đồng ý."
+      },
+      {
+        "key": "C",
+        "text": "Chỉ nên tặng những món quà thật đắt tiền mới có giá trị."
+      },
+      {
+        "key": "D",
+        "text": "Chỉ người lớn mới được tham gia hoạt động cộng đồng."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Cần tôn trọng người được hỗ trợ, tránh công khai hình ảnh/thông tin riêng tư khi chưa phù hợp hoặc chưa được đồng ý.\n🔑 THÔNG ĐIỆP: Việc tốt + cách làm phù hợp = giá trị tích cực thực sự.",
+    "points": 0.9
+  },
+  {
+    "id": "q-3-10",
+    "assignmentId": "assign-4",
+    "order": 10,
+    "content": "🗺️ NHIỆM VỤ 10 — CHỌN ĐÚNG “TRẠM” (⏱️ 1 phút | Nối theo sở trường)\n\nKhông phải ai cũng phải làm cùng một việc. Nối từng THẾ MẠNH (1, 2, 3, 4) với VIỆC EM CÓ THỂ LÀM (A, B, C, D) phù hợp nhất:\n\n• THẾ MẠNH:\n1. 🎨 Vẽ đẹp\n2. 💻 Công nghệ\n3. 🗣️ Giao tiếp tốt\n4. 📋 Sắp xếp tốt\n\n• VIỆC EM CÓ THỂ LÀM:\nA. Hỗ trợ tổ chức, phân công\nB. Thiết kế poster\nC. Làm sản phẩm truyền thông số\nD. Tuyên truyền, vận động\n\n👉 Mật mã nối cặp chính xác là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1–B ; 2–C ; 3–D ; 4–A"
+      },
+      {
+        "key": "B",
+        "text": "1–A ; 2–C ; 3–D ; 4–B"
+      },
+      {
+        "key": "C",
+        "text": "1–C ; 2–B ; 3–A ; 4–D"
+      },
+      {
+        "key": "D",
+        "text": "1–B ; 2–D ; 3–C ; 4–A"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: 1–B ; 2–C ; 3–D ; 4–A.\n• 1. 🎨 Vẽ đẹp → B. Thiết kế poster\n• 2. 💻 Công nghệ → C. Làm sản phẩm truyền thông số\n• 3. 🗣️ Giao tiếp tốt → D. Tuyên truyền, vận động\n• 4. 📋 Sắp xếp tốt → A. Hỗ trợ tổ chức, phân công\n🌟 Thông điệp: Không cần giống nhau để cùng tạo ra giá trị.",
+    "points": 0.8
+  },
+  {
+    "id": "q-3-11",
+    "assignmentId": "assign-4",
+    "order": 11,
+    "content": "❤️ NHIỆM VỤ CUỐI — “NẾU CHỈ CÓ 30 PHÚT?” (⏱️ 1 phút | Vận dụng & Cam kết)\n\nTuần này em chỉ có 30 phút để làm một việc có ích cho cộng đồng. Em lựa chọn hành động thiết thực nào?\n\n✋ “CAM KẾT 30 PHÚT”: Mỗi việc làm dù nhỏ nhưng xuất phát từ ý thức tự giác đều góp phần xây dựng trường lớp và xã hội tốt đẹp hơn!",
+    "options": [
+      {
+        "key": "A",
+        "text": "🌱 Chăm sóc một khu vực cây xanh tại trường hoặc khu dân cư."
+      },
+      {
+        "key": "B",
+        "text": "♻️ Phân loại hoặc dọn rác ở khu vực công cộng phù hợp."
+      },
+      {
+        "key": "C",
+        "text": "📚 Sắp xếp góc học tập, tủ sách dùng chung hoặc chia sẻ sách hay cho bạn bè."
+      },
+      {
+        "key": "D",
+        "text": "👴 Giúp đỡ một người xung quanh (người già, em nhỏ, người khó khăn) một việc vừa sức."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: Câu hỏi mở vận dụng. Mọi lựa chọn tích cực hướng tới lợi ích cộng đồng và phù hợp với lứa tuổi học sinh đều được ghi nhận trọn vẹn điểm số. Chúc mừng em đã đưa ra cam kết hành động!",
+    "points": 0.7
+  },
+  {
+    "id": "q-3-12",
+    "assignmentId": "assign-4",
+    "order": 12,
+    "content": "🎁 EXIT TICKET — MỞ KHÓA BÀI HỌC (Mật mã kết bài)\n\nChọn 3 từ khóa tích cực nhất em muốn mang ra khỏi lớp học hôm nay trong số các từ:\n[TRÁCH NHIỆM – THỜ Ơ – HỢP TÁC – ÍCH KỈ – CHỦ ĐỘNG – NÉ TRÁNH]\n\n🌍 “CỘNG ĐỒNG” CÓ MỘT CHỮ ĐỒNG:\nKhông phải chờ một người làm tất cả, mà là mỗi người cùng góp một phần.\n\n🔐 Mật mã của em là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "TRÁCH NHIỆM – HỢP TÁC – CHỦ ĐỘNG"
+      },
+      {
+        "key": "B",
+        "text": "THỜ Ơ – ÍCH KỈ – NÉ TRÁNH"
+      },
+      {
+        "key": "C",
+        "text": "HỢP TÁC – THỜ Ơ – ÍCH KỈ"
+      },
+      {
+        "key": "D",
+        "text": "TRÁCH NHIỆM – NÉ TRÁNH – CHỦ ĐỘNG"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án giáo viên: TRÁCH NHIỆM – HỢP TÁC – CHỦ ĐỘNG.\nBa phẩm chất này giúp chúng ta không thờ ơ, không né tránh hay ích kỉ, mà luôn biết chung tay vì sự phát triển của tập thể và cộng đồng xã hội.",
+    "points": 0.7
+  },
+  {
+    "id": "q-4-1",
+    "assignmentId": "assign-5",
+    "order": 1,
+    "content": "🔍 HỒ SƠ 1 — “BẠN THÂN CỦA TỚ” (⏱️ 1 phút | Chọn đáp án)\n\nLớp bình chọn sản phẩm thuyết trình tốt nhất. Sản phẩm của bạn thân Mai đẹp nhưng thiếu một nội dung quan trọng. Một sản phẩm khác đầy đủ hơn.\n\nMai nên:\n\n🔐 TỪ KHÓA: Đánh giá dựa trên TIÊU CHÍ/CĂN CỨ, không dựa trên quan hệ thân – sơ.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Chọn bạn thân vì “bạn bè phải ủng hộ nhau”."
+      },
+      {
+        "key": "B",
+        "text": "Chọn sản phẩm đáp ứng tốt hơn các tiêu chí đã thống nhất."
+      },
+      {
+        "key": "C",
+        "text": "Không đánh giá để khỏi mất lòng."
+      },
+      {
+        "key": "D",
+        "text": "Thuyết phục mọi người bỏ qua phần thiếu của bạn."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Chọn sản phẩm đáp ứng tốt hơn các tiêu chí đã thống nhất.\n🔐 Từ khóa: TIÊU CHÍ / CĂN CỨ. Đánh giá dựa trên tiêu chí, không dựa trên quan hệ thân – sơ. Khách quan là nhìn nhận, đánh giá sự vật, hiện tượng đúng với thực tế, không để tình cảm hay định kiến chi phối.",
+    "points": 0.8
+  },
+  {
+    "id": "q-4-2",
+    "assignmentId": "assign-5",
+    "order": 2,
+    "content": "🧠 HỒ SƠ 2 — “MẮT KÍNH KHÁCH QUAN” (⏱️ 1 phút | Kéo – thả / Chọn thẻ đúng)\n\nCho 6 thẻ thông tin:\nA. Xem xét sự việc từ nhiều phía\nB. Tin ngay người mình thích\nC. Dựa vào thông tin, căn cứ phù hợp\nD. Không để định kiến chi phối\nE. Chỉ nghe người nói trước\nF. Đánh giá đúng sự việc\n\n🔍 Đưa 4 thẻ đúng vào MẮT KÍNH KHÁCH QUAN và xác định 2 thẻ cần LOẠI BỎ 🗑️:\n(SGK: Biểu hiện của khách quan gắn với việc nhìn nhận sự vật, sự việc đúng đắn, không để định kiến và thiên vị chi phối).",
+    "options": [
+      {
+        "key": "A",
+        "text": "🔍 Mắt kính khách quan: A, C, D, F | 🗑️ Loại bỏ: B, E"
+      },
+      {
+        "key": "B",
+        "text": "🔍 Mắt kính khách quan: A, B, C, D | 🗑️ Loại bỏ: E, F"
+      },
+      {
+        "key": "C",
+        "text": "🔍 Mắt kính khách quan: B, C, E, F | 🗑️ Loại bỏ: A, D"
+      },
+      {
+        "key": "D",
+        "text": "🔍 Mắt kính khách quan: C, D, E, F | 🗑️ Loại bỏ: A, B"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Đưa vào kính: A – C – D – F; Loại: B – E.\n- Thẻ đúng đưa vào kính: Xem xét sự việc từ nhiều phía (A), Dựa vào thông tin, căn cứ phù hợp (C), Không để định kiến chi phối (D), Đánh giá đúng sự việc (F).\n- Loại bỏ: Tin ngay người mình thích (B) và Chỉ nghe người nói trước (E) vì đây là các biểu hiện chủ quan, thiên vị.",
+    "points": 0.8
+  },
+  {
+    "id": "q-4-3",
+    "assignmentId": "assign-5",
+    "order": 3,
+    "content": "⚡ HỒ SƠ 3 — “3 GIÂY PHÂN LOẠI” (⏱️ 1 phút | Phân loại hành vi)\n\nĐưa mỗi thẻ hành vi vào đúng vùng:\nA. Nghe cả hai bạn trước khi kết luận.\nB. Bênh bạn thân dù biết bạn sai.\nC. Chấm sản phẩm theo tiêu chí chung.\nD. Ghét một bạn nên mặc định bạn ấy có lỗi.\nE. Kiểm tra lại thông tin trước khi nhận xét.\nF. Chỉ tin lời người mình quý.\n\n👉 Cách phân loại chính xác giữa [🟢 KHÁCH QUAN] và [🔴 THIẾU KHÁCH QUAN] là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "🟢 KHÁCH QUAN: A, C, E | 🔴 THIẾU KHÁCH QUAN: B, D, F"
+      },
+      {
+        "key": "B",
+        "text": "🟢 KHÁCH QUAN: A, B, C | 🔴 THIẾU KHÁCH QUAN: D, E, F"
+      },
+      {
+        "key": "C",
+        "text": "🟢 KHÁCH QUAN: B, D, F | 🔴 THIẾU KHÁCH QUAN: A, C, E"
+      },
+      {
+        "key": "D",
+        "text": "🟢 KHÁCH QUAN: A, E, F | 🔴 THIẾU KHÁCH QUAN: B, C, D"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Khách quan: A – C – E; Thiếu khách quan: B – D – F.\n- Khách quan: Lắng nghe hai phía (A), chấm theo tiêu chí chung (C), kiểm tra lại thông tin (E).\n- Thiếu khách quan: Bênh bạn thân dù sai (B), định kiến ghét ai thì mặc định có lỗi (D), chỉ tin lời người mình quý (F).",
+    "points": 0.8
+  },
+  {
+    "id": "q-4-4",
+    "assignmentId": "assign-5",
+    "order": 4,
+    "content": "⚖️ HỒ SƠ 4 — “CHIA ĐỀU = CÔNG BẰNG?” (⏱️ 1,5 phút | Bẫy tư duy)\n\nNhóm có 4 bạn cùng làm dự án học tập:\n• An: hoàn thành 40% công việc.\n• Bình: hoàn thành 30% công việc.\n• Chi: hoàn thành 20% công việc.\n• Dũng: hoàn thành 10% công việc.\n\nNhóm được quyền phân chia 10 điểm thưởng đóng góp. Cách nào hợp lí và công bằng hơn?\n\n💥 MẬT MÃ QUAN TRỌNG: CÔNG BẰNG không phải lúc nào cũng = CHIA ________.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mỗi người 2,5 điểm vì công bằng là phải bằng nhau chia đều."
+      },
+      {
+        "key": "B",
+        "text": "Phân chia có căn cứ vào mức đóng góp thực tế của từng người (An 4đ, Bình 3đ, Chi 2đ, Dũng 1đ)."
+      },
+      {
+        "key": "C",
+        "text": "Nhóm trưởng tự nhận nhiều điểm nhất vì có công phụ trách chung."
+      },
+      {
+        "key": "D",
+        "text": "Bạn nào thân với nhóm trưởng hơn thì được nhận nhiều điểm hơn."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Phân chia có căn cứ vào mức đóng góp thực tế của từng người.\n💥 Mật mã: ĐỀU. Công bằng không phải lúc nào cũng là chia đều! Công bằng là đánh giá, thụ hưởng tương xứng với năng lực, công sức đóng góp thực tế và hoàn cảnh cụ thể của từng người.",
+    "points": 0.9
+  },
+  {
+    "id": "q-4-5",
+    "assignmentId": "assign-5",
+    "order": 5,
+    "content": "🚦 HỒ SƠ 5 — “ĐÚNG HAY SAI?” (⏱️ 1 phút | Nhận định Đúng/Sai)\n\nĐánh giá tính Đúng (✓) hoặc Sai (✗) của 5 nhận định sau:\n1. Khách quan đòi hỏi tránh thiên vị khi đánh giá.\n2. Công bằng nghĩa là mọi người luôn nhận phần giống hệt nhau.\n3. Tình cảm cá nhân có thể làm chúng ta đánh giá thiếu khách quan.\n4. Muốn khách quan nên xem xét thông tin phù hợp trước khi kết luận.\n5. Công bằng góp phần tạo sự tôn trọng và những quan hệ tốt đẹp.\n\n👉 Kết quả đánh giá tuần tự từ câu 1 đến câu 5 là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1 Đúng (✓) — 2 Sai (✗) — 3 Đúng (✓) — 4 Đúng (✓) — 5 Đúng (✓)"
+      },
+      {
+        "key": "B",
+        "text": "1 Đúng (✓) — 2 Đúng (✓) — 3 Đúng (✓) — 4 Đúng (✓) — 5 Đúng (✓)"
+      },
+      {
+        "key": "C",
+        "text": "1 Đúng (✓) — 2 Sai (✗) — 3 Sai (✗) — 4 Đúng (✓) — 5 Sai (✗)"
+      },
+      {
+        "key": "D",
+        "text": "1 Sai (✗) — 2 Sai (✗) — 3 Đúng (✓) — 4 Đúng (✓) — 5 Đúng (✓)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1 ✓ – 2 ✗ – 3 ✓ – 4 ✓ – 5 ✓.\nNhận định 2 Sai (✗) vì công bằng không phải cào bằng hay luôn nhận phần giống hệt nhau. Các nhận định 1, 3, 4, 5 đều hoàn toàn Đúng (✓) theo chuẩn kiến thức SGK GDCD 9.",
+    "points": 0.9
+  },
+  {
+    "id": "q-4-6",
+    "assignmentId": "assign-5",
+    "order": 6,
+    "content": "🤖 HỒ SƠ 6 — “AI ĐANG LẬP LUẬN SAI” (⏱️ 1 phút | Tìm điểm chưa hợp lí)\n\nMột trí tuệ nhân tạo (AI) đưa ra kết luận:\n🤖 “Hai học sinh cùng vi phạm một nội quy thì muốn công bằng, trong mọi trường hợp phải xử lí hoàn toàn giống nhau, không cần xem xét bất cứ yếu tố nào khác.”\n\n🚨 Hãy chọn bản vá (sửa lỗi lập luận) phù hợp nhất:\n🔑 Nhớ: CÔNG BẰNG ≠ MÁY MÓC.",
+    "options": [
+      {
+        "key": "A",
+        "text": "AI đúng hoàn toàn vì nội quy quy định thế nào thì cứ máy móc phạt y như vậy trong mọi trường hợp."
+      },
+      {
+        "key": "B",
+        "text": "Cần căn cứ quy định và xem xét những yếu tố liên quan của từng trường hợp (nguyên nhân, hoàn cảnh, thái độ) trước khi quyết định."
+      },
+      {
+        "key": "C",
+        "text": "Học sinh học giỏi nên luôn luôn được xử lí nhẹ hơn các bạn khác."
+      },
+      {
+        "key": "D",
+        "text": "Học sinh được giáo viên yêu quý nên được ưu tiên giảm mức phạt."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Cần căn cứ quy định và xem xét những yếu tố liên quan của từng trường hợp trước khi quyết định.\n🔑 Ghi nhớ: CÔNG BẰNG ≠ MÁY MÓC. Cần kết hợp giữa nguyên tắc quy định chung với việc xem xét thấu đáo hoàn cảnh cụ thể để đảm bảo sự công bằng thực chất.",
+    "points": 0.8
+  },
+  {
+    "id": "q-4-7",
+    "assignmentId": "assign-5",
+    "order": 7,
+    "content": "🕵️ HỒ SƠ 7 — “TIN NHẮN 10 GIÂY” (⏱️ 1,5 phút | Sắp xếp quy trình ứng xử)\n\nEm nhận được tin nhắn: “Bạn K nói xấu cậu trong nhóm khác đấy!”. Em cảm thấy rất tức giận.\n\nHãy sắp xếp lại 4 bước ứng xử theo đúng trình tự chuẩn mực:\nA. Đưa ra cách ứng xử sau khi có đủ căn cứ.\nB. Bình tĩnh, chưa vội kết luận.\nC. Kiểm tra thông tin.\nD. Lắng nghe những người liên quan.\n\n🧠 Công thức: DỪNG → KIỂM TRA → NGHE → QUYẾT ĐỊNH\n👉 Thứ tự sắp xếp đúng là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "B → C → D → A (Bình tĩnh → Kiểm tra thông tin → Lắng nghe → Ứng xử có căn cứ)"
+      },
+      {
+        "key": "B",
+        "text": "A → B → C → D"
+      },
+      {
+        "key": "C",
+        "text": "C → D → B → A"
+      },
+      {
+        "key": "D",
+        "text": "B → D → C → A"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. B → C → D → A.\nCông thức chuẩn mực: DỪNG (B. Bình tĩnh, chưa vội kết luận) → KIỂM TRA (C. Kiểm tra thông tin) → NGHE (D. Lắng nghe những người liên quan) → QUYẾT ĐỊNH (A. Đưa ra cách ứng xử sau khi có đủ căn cứ).",
+    "points": 0.8
+  },
+  {
+    "id": "q-4-8",
+    "assignmentId": "assign-5",
+    "order": 8,
+    "content": "🎯 HỒ SƠ 8 — “CÙNG 10 QUYỂN SÁCH” (⏱️ 1 phút | Chọn phương án & Câu hỏi IQ)\n\nLớp có 10 bộ tài liệu hỗ trợ học tập để cho học sinh mượn. Có 20 bạn đăng kí nhưng một số bạn chưa có tài liệu để học, số còn lại đã có tài liệu riêng ở nhà.\n\nCách giải quyết nào dưới đây là HỢP LÍ và CÔNG BẰNG NHẤT?\n💡 Kèm theo câu hỏi IQ: “Bằng nhau và công bằng có phải lúc nào cũng giống nhau?”",
+    "options": [
+      {
+        "key": "A",
+        "text": "Bốc thăm ngay may rủi, không cần biết hoàn cảnh từng bạn (Câu hỏi IQ: Có)"
+      },
+      {
+        "key": "B",
+        "text": "Ưu tiên cho 10 bạn thân của lớp trưởng và ban cán sự mượn trước (Câu hỏi IQ: Có)"
+      },
+      {
+        "key": "C",
+        "text": "Xác định tiêu chí phù hợp và ưu tiên những bạn thực sự đang thiếu tài liệu (Câu hỏi IQ: Không)"
+      },
+      {
+        "key": "D",
+        "text": "Chia mỗi bạn nửa bộ tài liệu cho bằng nhau (Câu hỏi IQ: Có)"
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Xác định tiêu chí phù hợp và ưu tiên những bạn thực sự đang thiếu tài liệu; Câu hỏi IQ: Không.\nBằng nhau và công bằng không phải lúc nào cũng giống nhau. Phân bổ nguồn lực dựa trên nhu cầu thực tế chính là biểu hiện của sự công bằng và nhân văn trong học đường.",
+    "points": 0.9
+  },
+  {
+    "id": "q-4-9",
+    "assignmentId": "assign-5",
+    "order": 9,
+    "content": "🎭 HỒ SƠ 9 — “ĐỔI VAI 5 GIÂY” (⏱️ 1 phút | Nối cặp hành động)\n\nNối mỗi TÌNH HUỐNG (1, 2, 3, 4) với HÀNH ĐỘNG PHÙ HỢP (A, B, C, D):\n\n• TÌNH HUỐNG:\n1. Hai bạn tranh cãi\n2. Chấm sản phẩm nhóm\n3. Nhận một tin chưa rõ nguồn\n4. Bạn thân mắc lỗi\n\n• HÀNH ĐỘNG:\nA. Dựa vào tiêu chí chung\nB. Kiểm chứng\nC. Nghe cả hai phía\nD. Không bao che\n\n👉 Cặp ghép nối chuẩn mực là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1–C ; 2–A ; 3–B ; 4–D (1–Nghe cả hai phía ; 2–Dựa vào tiêu chí chung ; 3–Kiểm chứng ; 4–Không bao che)"
+      },
+      {
+        "key": "B",
+        "text": "1–A ; 2–C ; 3–B ; 4–D"
+      },
+      {
+        "key": "C",
+        "text": "1–C ; 2–B ; 3–A ; 4–D"
+      },
+      {
+        "key": "D",
+        "text": "1–B ; 2–A ; 3–D ; 4–C"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1–C ; 2–A ; 3–B ; 4–D.\n- 1. Hai bạn tranh cãi → C. Nghe cả hai phía\n- 2. Chấm sản phẩm nhóm → A. Dựa vào tiêu chí chung\n- 3. Nhận một tin chưa rõ nguồn → B. Kiểm chứng\n- 4. Bạn thân mắc lỗi → D. Không bao che",
+    "points": 0.9
+  },
+  {
+    "id": "q-4-10",
+    "assignmentId": "assign-5",
+    "order": 10,
+    "content": "🔥 HỒ SƠ 10 — “BẠN THÂN HAY LẼ PHẢI?” (⏱️ 1,5 phút | Giải quyết tình huống)\n\nTrong giờ kiểm tra, em nhìn thấy bạn thân sử dụng tài liệu trái quy định. Sau giờ học, bạn nói:\n“Đừng nói gì nhé. Bạn thân phải bảo vệ nhau chứ!”\n\nEm nên ứng xử như thế nào?\n🔐 MẬT MÃ: TÔN TRỌNG BẠN ≠ ____________ CÁI SAI.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Đồng ý vì tình bạn thân thiết quan trọng hơn tất cả mọi nội quy."
+      },
+      {
+        "key": "B",
+        "text": "Đăng ngay chuyện đó lên nhóm lớp mạng xã hội để mọi người biết."
+      },
+      {
+        "key": "C",
+        "text": "Nói rõ hành vi đó không đúng, khuyên bạn dũng cảm nhận lỗi và không tái phạm."
+      },
+      {
+        "key": "D",
+        "text": "Giả vờ không biết để khỏi mất lòng bạn thân."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Nói rõ hành vi đó không đúng, khuyên bạn nhận lỗi và không tái phạm.\n🔐 Mật mã: BAO CHE. Tôn trọng bạn ≠ BAO CHE cái sai. Giúp bạn nhận ra sai lầm để tiến bộ mới là tình bạn chân thành và bảo vệ sự công bằng trong tập thể.",
+    "points": 0.9
+  },
+  {
+    "id": "q-4-11",
+    "assignmentId": "assign-5",
+    "order": 11,
+    "content": "💎 THỬ THÁCH CUỐI — “CHIẾC CÂN 5 GIÂY” (⏱️ 1 phút | Điền từ khóa)\n\nCho 5 từ khóa: SỰ THẬT – THIÊN VỊ – TIÊU CHÍ – LẼ PHẢI – CẢM TÍNH.\nHãy điền các từ khóa vào hai đĩa cân và xác định từ còn lại cần loại bỏ:\n\n🔍 KHÁCH QUAN:\nDựa vào (1) __________ ↓ Tránh (2) __________\n\n⚖️ CÔNG BẰNG:\nDựa vào (3) __________ phù hợp ↓ Tôn trọng (4) __________\n\n🗑️ Từ còn lại là: (5) ________________\n\n👉 Cách điền chuẩn xác là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "Khách quan: (1) SỰ THẬT → tránh (2) THIÊN VỊ | Công bằng: (3) TIÊU CHÍ → tôn trọng (4) LẼ PHẢI | Từ loại: (5) CẢM TÍNH"
+      },
+      {
+        "key": "B",
+        "text": "Khách quan: (1) CẢM TÍNH → tránh (2) THIÊN VỊ | Công bằng: (3) TIÊU CHÍ → tôn trọng (4) SỰ THẬT | Từ loại: (5) LẼ PHẢI"
+      },
+      {
+        "key": "C",
+        "text": "Khách quan: (1) TIÊU CHÍ → tránh (2) CẢM TÍNH | Công bằng: (3) SỰ THẬT → tôn trọng (4) THIÊN VỊ | Từ loại: (5) LẼ PHẢI"
+      },
+      {
+        "key": "D",
+        "text": "Khách quan: (1) LẼ PHẢI → tránh (2) THIÊN VỊ | Công bằng: (3) CẢM TÍNH → tôn trọng (4) TIÊU CHÍ | Từ loại: (5) SỰ THẬT"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A.\n- Khách quan: Dựa vào SỰ THẬT → Tránh THIÊN VỊ.\n- Công bằng: Dựa vào TIÊU CHÍ phù hợp → Tôn trọng LẼ PHẢI.\n- Từ còn lại cần loại bỏ: CẢM TÍNH.",
+    "points": 0.8
+  },
+  {
+    "id": "q-4-12",
+    "assignmentId": "assign-5",
+    "order": 12,
+    "content": "❤️ EXIT TICKET — “NÚT DỪNG 3 GIÂY” (Cam kết hành động & Mở khóa bài học)\n\nLần tới khi em chuẩn bị kết luận về một người chỉ vì nghe một phía, em sẽ làm gì?\n\n🌱 THỬ THÁCH 24 GIỜ: Trước một lời nhận xét về người khác, hãy tự hỏi: “Mình đã có đủ căn cứ chưa?”\n\n🏆 THANH TIẾN TRÌNH: NHÌN ĐÚNG → NGHĨ KĨ → ĐÁNH GIÁ ĐÚNG → ỨNG XỬ PHÙ HỢP\n• Tôi phân biệt được khách quan – thiên vị.\n• Tôi hiểu công bằng không phải lúc nào cũng chia đều.\n• Tôi biết cần kiểm tra thông tin trước khi kết luận.\n• Tôi biết không để quan hệ thân – sơ làm lệch đánh giá.",
+    "options": [
+      {
+        "key": "A",
+        "text": "🔍 Dừng lại – kiểm tra – lắng nghe thêm để có đủ căn cứ trước khi đưa ra nhận xét hoặc quyết định."
+      },
+      {
+        "key": "B",
+        "text": "📢 Kể ngay cho người khác nghe theo phản xạ để mọi người cùng bàn tán."
+      },
+      {
+        "key": "C",
+        "text": "😡 Phản ứng ngay lập tức theo cảm xúc tức giận ban đầu."
+      },
+      {
+        "key": "D",
+        "text": "👥 Tin và làm theo ý kiến của số đông mà không cần kiểm chứng."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 🔍 Dừng lại – kiểm tra – lắng nghe thêm.\nĐây là hành động mẫu mực của “Thẩm phán 15 tuổi”: luôn bình tĩnh, tôn trọng sự thật khách quan và bảo vệ lẽ phải công bằng.",
+    "points": 0.7
+  },
+  {
+    "id": "q-5-1",
+    "assignmentId": "assign-6",
+    "order": 1,
+    "content": "🔐 MẬT MÃ 1 — “ĐÂU LÀ HOÀ BÌNH?” (⏱️ 1 phút | Chọn đáp án)\n\nBức tranh nào diễn tả đầy đủ nhất một cuộc sống hoà bình?\n\n🔑 MẬT MÃ: HOÀ BÌNH ≠ chỉ “không có ____________”.\n(SGK xác định hoà bình trước hết là tình trạng không có chiến tranh hay xung đột vũ trang, đồng thời con người được sống trong môi trường xã hội an toàn, hạnh phúc).",
+    "options": [
+      {
+        "key": "A",
+        "text": "Không có tiếng súng nhưng mọi người luôn sống trong sợ hãi."
+      },
+      {
+        "key": "B",
+        "text": "Không xảy ra chiến tranh, con người được sống an toàn, bình yên và có điều kiện phát triển."
+      },
+      {
+        "key": "C",
+        "text": "Không ai tranh luận với bất cứ ai."
+      },
+      {
+        "key": "D",
+        "text": "Mọi người đều phải có suy nghĩ giống nhau."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Không xảy ra chiến tranh, con người được sống an toàn, bình yên và có điều kiện phát triển.\n🔑 Mật mã: CHIẾN TRANH / XUNG ĐỘT VŨ TRANG. Hòa bình không chỉ đơn thuần là không có chiến tranh, mà con người còn được sống trong môi trường an toàn, bình yên, tự do và phát triển toàn diện.",
+    "points": 0.8
+  },
+  {
+    "id": "q-5-2",
+    "assignmentId": "assign-6",
+    "order": 2,
+    "content": "🛰️ MẬT MÃ 2 — “RADAR HOÀ BÌNH” (⏱️ 1 phút | Phân loại tín hiệu)\n\nCho 6 thẻ hành vi:\nA. Hai bạn bất đồng nhưng bình tĩnh trao đổi.\nB. Chế giễu bạn vì khác dân tộc/văn hoá.\nC. Tôn trọng sự khác biệt.\nD. Dùng bạo lực để buộc người khác nghe mình.\nE. Hợp tác để giải quyết vấn đề chung.\nF. Kích động mọi người trả đũa.\n\n👉 Đưa các thẻ vào đúng vùng giữa [🟢 TÍN HIỆU HOÀ BÌNH] và [🔴 TÍN HIỆU NGUY CƠ]:",
+    "options": [
+      {
+        "key": "A",
+        "text": "🟢 TÍN HIỆU HOÀ BÌNH: A, C, E | 🔴 TÍN HIỆU NGUY CƠ: B, D, F"
+      },
+      {
+        "key": "B",
+        "text": "🟢 TÍN HIỆU HOÀ BÌNH: A, B, C | 🔴 TÍN HIỆU NGUY CƠ: D, E, F"
+      },
+      {
+        "key": "C",
+        "text": "🟢 TÍN HIỆU HOÀ BÌNH: B, D, F | 🔴 TÍN HIỆU NGUY CƠ: A, C, E"
+      },
+      {
+        "key": "D",
+        "text": "🟢 TÍN HIỆU HOÀ BÌNH: A, E, F | 🔴 TÍN HIỆU NGUY CƠ: B, C, D"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Hoà bình: A – C – E ; Nguy cơ: B – D – F.\n- 🟢 Tín hiệu hoà bình: Bình tĩnh trao đổi (A), Tôn trọng sự khác biệt (C), Hợp tác cùng giải quyết việc chung (E).\n- 🔴 Tín hiệu nguy cơ: Chế giễu sự khác biệt (B), Dùng bạo lực cưỡng ép (D), Kích động trả đũa (F).",
+    "points": 0.8
+  },
+  {
+    "id": "q-5-3",
+    "assignmentId": "assign-6",
+    "order": 3,
+    "content": "🧩 MẬT MÃ 3 — GHÉP “VIỆC LÀM – GIÁ TRỊ” (⏱️ 1 phút | Nối cặp)\n\nNối mỗi VIỆC LÀM (1, 2, 3, 4) với GIÁ TRỊ (A, B, C, D) tương ứng:\n\n• VIỆC LÀM:\n1. Tôn trọng khác biệt\n2. Hai bên cùng trao đổi khi mâu thuẫn\n3. Cùng thực hiện một việc chung\n4. Không kích động trả đũa\n\n• GIÁ TRỊ:\nA. Hoà giải\nB. Hợp tác\nC. Tôn trọng\nD. Hạn chế xung đột\n\n👉 Mật mã ghép nối chính xác là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1–C ; 2–A ; 3–B ; 4–D (1–Tôn trọng ; 2–Hoà giải ; 3–Hợp tác ; 4–Hạn chế xung đột)"
+      },
+      {
+        "key": "B",
+        "text": "1–A ; 2–C ; 3–B ; 4–D"
+      },
+      {
+        "key": "C",
+        "text": "1–C ; 2–B ; 3–A ; 4–D"
+      },
+      {
+        "key": "D",
+        "text": "1–D ; 2–A ; 3–B ; 4–C"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1–C ; 2–A ; 3–B ; 4–D.\n- 1. Tôn trọng khác biệt → C. Tôn trọng\n- 2. Hai bên cùng trao đổi khi mâu thuẫn → A. Hoà giải\n- 3. Cùng thực hiện một việc chung → B. Hợp tác\n- 4. Không kích động trả đũa → D. Hạn chế xung đột",
+    "points": 0.8
+  },
+  {
+    "id": "q-5-4",
+    "assignmentId": "assign-6",
+    "order": 4,
+    "content": "🚦 MẬT MÃ 4 — “ĐÈN XANH / ĐÈN ĐỎ” (⏱️ 1,5 phút | Đúng/Sai)\n\nĐánh giá tính Đúng (✓) hoặc Sai (✗) của 5 nhận định sau:\n1. Hoà bình chỉ quan trọng với những nơi đang có chiến tranh.\n2. Bảo vệ hoà bình là trách nhiệm chung.\n3. Tôn trọng sự khác biệt góp phần xây dựng môi trường hoà bình.\n4. Muốn tránh xung đột thì tốt nhất không bao giờ nói điều mình không đồng ý.\n5. Mâu thuẫn nên được giải quyết bằng những biện pháp hoà bình phù hợp.\n\n👉 Kết quả đánh giá từ câu 1 đến câu 5 là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1-Sai (✗) — 2-Đúng (✓) — 3-Đúng (✓) — 4-Sai (✗) — 5-Đúng (✓)"
+      },
+      {
+        "key": "B",
+        "text": "1-Đúng (✓) — 2-Đúng (✓) — 3-Đúng (✓) — 4-Sai (✗) — 5-Đúng (✓)"
+      },
+      {
+        "key": "C",
+        "text": "1-Sai (✗) — 2-Sai (✗) — 3-Đúng (✓) — 4-Sai (✗) — 5-Đúng (✓)"
+      },
+      {
+        "key": "D",
+        "text": "1-Đúng (✓) — 2-Sai (✗) — 3-Sai (✗) — 4-Đúng (✓) — 5-Sai (✗)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1 ✗ – 2 ✓ – 3 ✓ – 4 ✗ – 5 ✓.\n- Nhận định 1 Sai (✗) vì hoà bình là giá trị vô giá cho tất cả mọi người, mọi quốc gia trên Trái Đất.\n- Nhận định 4 Sai (✗) vì im lặng né tránh sẽ tích tụ mâu thuẫn ngầm; cần biết bày tỏ ý kiến bằng đối thoại văn minh, tôn trọng.",
+    "points": 0.8
+  },
+  {
+    "id": "q-5-5",
+    "assignmentId": "assign-6",
+    "order": 5,
+    "content": "🤖 MẬT MÃ 5 — AI ĐÃ HIỂU SAI! (⏱️ 1 phút | Tìm điểm chưa hợp lí)\n\nMột AI đưa ra kết luận:\n🤖 “Muốn giữ hoà bình thì khi xảy ra mâu thuẫn, tốt nhất không nói gì và bỏ qua tất cả, vì tranh luận luôn gây mất đoàn kết.”\n\n🚨 Hãy chọn bản sửa đúng và chuẩn mực nhất:\n🧠 CHÌA KHÓA: HOÀ BÌNH ≠ NÉ TRÁNH MÂU THUẪN\n(Tài liệu nhấn mạnh việc chủ động giải quyết mâu thuẫn bằng biện pháp hoà bình và khi có xung đột cần dựa trên công lí, chính nghĩa, không thoả hiệp với nguyên tắc sai trái, bất công).",
+    "options": [
+      {
+        "key": "A",
+        "text": "Không bao giờ được có bất đồng trong tập thể."
+      },
+      {
+        "key": "B",
+        "text": "Có thể có bất đồng nhưng cần giải quyết bằng đối thoại, hoà giải và cách thức hoà bình phù hợp."
+      },
+      {
+        "key": "C",
+        "text": "Ai mạnh hơn thì người đó quyết định."
+      },
+      {
+        "key": "D",
+        "text": "Chỉ người lớn mới có trách nhiệm giải quyết mâu thuẫn."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Có thể có bất đồng nhưng cần giải quyết bằng đối thoại, hoà giải và cách thức hoà bình phù hợp.\n🧠 Chìa khóa: HOÀ BÌNH ≠ NÉ TRÁNH MÂU THUẪN. Cần tôn trọng công lí, chính nghĩa, chủ động đối thoại và tìm kiếm tiếng nói chung.",
+    "points": 0.8
+  },
+  {
+    "id": "q-5-6",
+    "assignmentId": "assign-6",
+    "order": 6,
+    "content": "💥 MẬT MÃ 6 — “TIN NHẮN LÚC 21:30” (⏱️ 1,5 phút | Giải quyết tình huống)\n\nHai bạn trong lớp đang mâu thuẫn. Một bạn nhắn vào nhóm:\n“Mai ra cổng trường giải quyết. Ai là bạn thì đi cùng!”\n\nEm nên ứng xử như thế nào?\n🔐 MẬT MÃ: BẢO VỆ HOÀ BÌNH CÓ THỂ BẮT ĐẦU TỪ VIỆC NGĂN MỘT ____________.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Đi cùng để “ủng hộ bạn” và chứng minh tình bạn."
+      },
+      {
+        "key": "B",
+        "text": "Chia sẻ tin nhắn cho nhiều người đến xem vụ việc."
+      },
+      {
+        "key": "C",
+        "text": "Khuyên các bạn dừng lại, không dùng bạo lực và tìm người lớn phù hợp hỗ trợ giải quyết."
+      },
+      {
+        "key": "D",
+        "text": "Bình luận kích động để xem chuyện gì xảy ra."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Khuyên các bạn dừng lại, không dùng bạo lực và tìm người lớn phù hợp hỗ trợ giải quyết.\n🔐 Mật mã: XUNG ĐỘT / ẨU ĐẢ. Ngăn chặn bạo lực học đường từ sớm chính là bảo vệ môi trường học tập bình yên, hoà bình.",
+    "points": 0.8
+  },
+  {
+    "id": "q-5-7",
+    "assignmentId": "assign-6",
+    "order": 7,
+    "content": "🧠 MẬT MÃ 7 — “4 BƯỚC HẠ NHIỆT” (⏱️ 1 phút | Sắp xếp quy trình)\n\nKhi một cuộc tranh cãi bắt đầu căng thẳng, 4 thẻ bị xáo trộn:\nA. Tìm phương án giải quyết phù hợp.\nB. Bình tĩnh, không kích động.\nC. Lắng nghe các bên.\nD. Xác định vấn đề gây mâu thuẫn.\n\n🧊 CÔNG THỨC HẠ NHIỆT: BÌNH TĨNH → HIỂU VẤN ĐỀ → LẮNG NGHE → GIẢI QUYẾT\n👉 Trình tự sắp xếp chuẩn xác là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "B → D → C → A (Bình tĩnh → Xác định vấn đề → Lắng nghe các bên → Tìm phương án giải quyết)"
+      },
+      {
+        "key": "B",
+        "text": "B → C → D → A"
+      },
+      {
+        "key": "C",
+        "text": "A → B → C → D"
+      },
+      {
+        "key": "D",
+        "text": "D → B → C → A"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. B → D → C → A.\nCông thức hạ nhiệt: B (Bình tĩnh, không kích động) → D (Xác định vấn đề gây mâu thuẫn) → C (Lắng nghe các bên) → A (Tìm phương án giải quyết phù hợp).",
+    "points": 0.8
+  },
+  {
+    "id": "q-5-8",
+    "assignmentId": "assign-6",
+    "order": 8,
+    "content": "⚖️ MẬT MÃ 8 — “HOÀ GIẢI HAY NHƯỢNG BỘ CÁI SAI?” (⏱️ 1 phút | Phân loại)\n\nĐánh giá 5 hành động sau theo 2 nhóm [🕊️ Góp phần hoà bình] và [⚠️ Không phù hợp]:\n1. Hai bên cùng tìm giải pháp.\n2. Im lặng trước hành vi bắt nạt để “khỏi rắc rối”.\n3. Tôn trọng ý kiến khác mình.\n4. Chấp nhận bất công chỉ để tránh tranh luận.\n5. Nhờ người phù hợp hỗ trợ khi xung đột vượt khả năng.\n\n💡 “BẪY IQ”: Hoà giải không đồng nghĩa với chấp nhận ____________.\n👉 Kết quả phân loại chính xác là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "🕊️ Góp phần hoà bình: 1, 3, 5 | ⚠️ Không phù hợp: 2, 4 (Bẫy IQ: Cái sai / Bất công)"
+      },
+      {
+        "key": "B",
+        "text": "🕊️ Góp phần hoà bình: 1, 2, 3 | ⚠️ Không phù hợp: 4, 5"
+      },
+      {
+        "key": "C",
+        "text": "🕊️ Góp phần hoà bình: 2, 4 | ⚠️ Không phù hợp: 1, 3, 5"
+      },
+      {
+        "key": "D",
+        "text": "🕊️ Góp phần hoà bình: 3, 4, 5 | ⚠️ Không phù hợp: 1, 2"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Góp phần hoà bình: 1, 3, 5; Không phù hợp: 2, 4.\n💡 Bẫy IQ: CÁI SAI / BẤT CÔNG. Hoà giải chân chính là dựa trên công lí và lẽ phải, không đồng nghĩa với nhượng bộ hay bao che cho cái sai, sự bắt nạt.",
+    "points": 0.8
+  },
+  {
+    "id": "q-5-9",
+    "assignmentId": "assign-6",
+    "order": 9,
+    "content": "📱 MẬT MÃ 9 — “CHIẾN TRANH BÀN PHÍM” (⏱️ 1,5 phút | Tìm điểm chưa hợp lí)\n\nTrong nhóm lớp, một bạn đăng:\n“Nhóm kia toàn những người chẳng ra gì. Mọi người vào bình luận cho họ biết tay!”\nMột số bạn bắt đầu dùng lời lẽ xúc phạm.\n\nEm có 4 nút:\n• 🔥 THÊM DẦU: Bình luận công kích cùng bạn.\n• 🔁 LAN TRUYỀN: Chụp màn hình gửi thêm nhóm khác.\n• 🕊️ HẠ NHIỆT: Không tham gia công kích; đề nghị dừng lời lẽ xúc phạm và giải quyết vấn đề cụ thể.\n• 🍿 XEM CHO VUI: Không can thiệp nhưng liên tục cổ vũ bằng biểu tượng cảm xúc.\n\n👉 Nút phù hợp nhất của Sứ giả Hoà bình là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "🕊️ HẠ NHIỆT: Không tham gia công kích; đề nghị dừng lời lẽ xúc phạm và giải quyết vấn đề cụ thể."
+      },
+      {
+        "key": "B",
+        "text": "🔥 THÊM DẦU: Bình luận công kích cùng bạn."
+      },
+      {
+        "key": "C",
+        "text": "🔁 LAN TRUYỀN: Chụp màn hình gửi thêm nhóm khác."
+      },
+      {
+        "key": "D",
+        "text": "🍿 XEM CHO VUI: Không can thiệp nhưng liên tục cổ vũ bằng biểu tượng cảm xúc."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 🕊️ HẠ NHIỆT. Sứ giả Hoà bình không hùa theo công kích trên mạng xã hội, giữ tinh thần khách quan và đề nghị mọi người tôn trọng nhau, đối thoại văn minh.",
+    "points": 0.8
+  },
+  {
+    "id": "q-5-10",
+    "assignmentId": "assign-6",
+    "order": 10,
+    "content": "🌍 MẬT MÃ 10 — “AI CÓ TRÁCH NHIỆM?” (⏱️ 1 phút | Kéo – thả / Chọn thẻ đúng)\n\nCó 6 thẻ chủ thể:\n1. 👩‍🎓 Học sinh\n2. 👨‍👩‍👧 Gia đình\n3. 🏫 Nhà trường\n4. 🌏 Cộng đồng\n5. 🏛️ Quốc gia\n6. 🤝 Cộng đồng quốc tế\n\nCâu hỏi: “Ai có trách nhiệm góp phần bảo vệ hoà bình?”\n👉 Kéo những thẻ đúng vào vòng tròn: 🕊️ BẢO VỆ HOÀ BÌNH.\n💥 BẪY IQ: Có thẻ nào phải bỏ ra ngoài không?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Cả 6 thẻ (1, 2, 3, 4, 5, 6) đều có trách nhiệm — Không bỏ thẻ nào ra ngoài!"
+      },
+      {
+        "key": "B",
+        "text": "Chỉ Quốc gia và Cộng đồng quốc tế (5, 6) — Bỏ các thẻ còn lại"
+      },
+      {
+        "key": "C",
+        "text": "Chỉ Học sinh và Nhà trường (1, 3) — Bỏ các thẻ còn lại"
+      },
+      {
+        "key": "D",
+        "text": "Chỉ Gia đình và Cộng đồng (2, 4) — Bỏ các thẻ còn lại"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Cả 6 thẻ đều có trách nhiệm; Không bỏ thẻ nào.\nBảo vệ hoà bình là sự nghiệp và trách nhiệm chung của toàn nhân loại: từ mỗi cá nhân học sinh, gia đình, nhà trường, cộng đồng cho đến quốc gia và toàn thế giới.",
+    "points": 0.7
+  },
+  {
+    "id": "q-5-11",
+    "assignmentId": "assign-6",
+    "order": 11,
+    "content": "🎒 MẬT MÃ 11 — “BA LÔ SỨ GIẢ HOÀ BÌNH” (⏱️ 1 phút | Chọn 5 thẻ)\n\nEm chuẩn bị hành trang và chỉ được mang đúng 5 thẻ tích cực vào Ba lô, để lại 3 thẻ tiêu cực:\n1. 🤝 HỢP TÁC\n2. 👂 LẮNG NGHE\n3. ❤️ TÔN TRỌNG\n4. 🗣️ ĐỐI THOẠI\n5. 🕊️ HOÀ GIẢI\n6. 🔥 KÍCH ĐỘNG\n7. 👊 BẠO LỰC\n8. 🚫 KÌ THỊ\n\n👉 Tổ hợp 5 thẻ mang vào Ba lô và 3 thẻ để lại là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "🎒 Mang 5 thẻ: Hợp tác, Lắng nghe, Tôn trọng, Đối thoại, Hoà giải | 🗑️ Để lại: Kích động, Bạo lực, Kì thị"
+      },
+      {
+        "key": "B",
+        "text": "🎒 Mang 5 thẻ: Hợp tác, Lắng nghe, Bạo lực, Kích động, Hoà giải | 🗑️ Để lại: Tôn trọng, Đối thoại, Kì thị"
+      },
+      {
+        "key": "C",
+        "text": "🎒 Mang 5 thẻ: Tôn trọng, Đối thoại, Kì thị, Bạo lực, Hoà giải | 🗑️ Để lại: Hợp tác, Lắng nghe, Kích động"
+      },
+      {
+        "key": "D",
+        "text": "🎒 Mang 5 thẻ: Kích động, Bạo lực, Kì thị, Lắng nghe, Tôn trọng | 🗑️ Để lại: Hợp tác, Đối thoại, Hoà giải"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Mang: Hợp tác – Lắng nghe – Tôn trọng – Đối thoại – Hoà giải. Để lại: Kích động – Bạo lực – Kì thị.\nĐây là bộ 5 hành trang phẩm chất văn minh không thể thiếu của một sứ giả hoà bình tuổi 15.",
+    "points": 0.7
+  },
+  {
+    "id": "q-5-12",
+    "assignmentId": "assign-6",
+    "order": 12,
+    "content": "🏫 MẬT MÃ CUỐI — “HOÀ BÌNH CÁCH EM BAO XA?” (⏱️ 1 phút | Vận dụng & Cam kết)\n\nKhông cần đợi đến khi trở thành người lớn mới có thể góp phần bảo vệ hoà bình. SGK GDCD 9 đặt trách nhiệm này ở chính mỗi học sinh: học điều hay lẽ phải, sống hài hoà văn minh, giải quyết mâu thuẫn bằng hoà giải, tôn trọng khác biệt và lên án chiến tranh phi nghĩa.\n\n🕊️ “NHIỆM VỤ 7 NGÀY” CỦA TÔI: Việc nào em cam kết thực sự có thể làm trong 7 ngày tới?",
+    "options": [
+      {
+        "key": "A",
+        "text": "🕊️ Tôi cam kết: Luôn tôn trọng khác biệt, không dùng lời xúc phạm khi tranh luận, chủ động hoà giải bất đồng và không chia sẻ nội dung kích động thù ghét."
+      },
+      {
+        "key": "B",
+        "text": "📢 Tranh luận gay gắt đến cùng để buộc người khác phải chịu thua."
+      },
+      {
+        "key": "C",
+        "text": "🍿 Đứng xem bạn bè mâu thuẫn như trò giải trí mà không can ngăn."
+      },
+      {
+        "key": "D",
+        "text": "🤐 Tuyệt đối không bao giờ nói ra suy nghĩ của mình để tránh va chạm."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Mật mã mở: Cam kết hành động vì hoà bình trong 7 ngày.\nHoà bình của thế giới rất lớn, nhưng văn hoá hoà bình có thể bắt đầu từ một lớp học rất nhỏ và từ từng hành vi tử tế mỗi ngày của chính em.",
+    "points": 0.7
+  },
+  {
+    "id": "q-5-13",
+    "assignmentId": "assign-6",
+    "order": 13,
+    "content": "🎁 EXIT TICKET — MẬT KHẨU RỜI LỚP (Mở khóa bài học)\n\nCho 7 từ khóa:\nĐỐI THOẠI – KÌ THỊ – TÔN TRỌNG – BẠO LỰC – HỢP TÁC – HOÀ GIẢI – KÍCH ĐỘNG\n\nHãy chọn đúng 4 từ khóa mở khóa tạo nên MẬT KHẨU RỜI LỚP:\n🌟 CÂU CHỐT: Hoà bình của thế giới rất lớn. Nhưng văn hoá hoà bình có thể bắt đầu từ một lớp học rất nhỏ.",
+    "options": [
+      {
+        "key": "A",
+        "text": "🔐 MẬT KHẨU: ĐỐI THOẠI + TÔN TRỌNG + HỢP TÁC + HOÀ GIẢI"
+      },
+      {
+        "key": "B",
+        "text": "🔐 MẬT KHẨU: KÌ THỊ + BẠO LỰC + KÍCH ĐỘNG + ĐỐI THOẠI"
+      },
+      {
+        "key": "C",
+        "text": "🔐 MẬT KHẨU: TÔN TRỌNG + BẠO LỰC + HOÀ GIẢI + KÍCH ĐỘNG"
+      },
+      {
+        "key": "D",
+        "text": "🔐 MẬT KHẨU: HỢP TÁC + KÌ THỊ + ĐỐI THOẠI + BẠO LỰC"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 🔐 Mật khẩu rời lớp: ĐỐI THOẠI – TÔN TRỌNG – HỢP TÁC – HOÀ GIẢI.\n4 trụ cột cốt lõi: Đối thoại chân thành, Tôn trọng sự khác biệt, Hợp tác cùng phát triển và Hoà giải bất đồng một cách văn minh.",
+    "points": 0.7
+  },
+  {
+    "id": "q-6-1",
+    "assignmentId": "assign-7",
+    "order": 1,
+    "content": "⏱️ LEVEL 1 — “AI ĐANG QUẢN LÍ THỜI GIAN?” (1 phút | Chọn đáp án)\n\nTối nay bốn bạn đều có bài kiểm tra vào sáng mai:\n• An: Xem điện thoại đến 21 giờ rồi mới nghĩ xem cần học gì.\n• Bình: Làm môn mình thích trước, việc gấp để sau.\n• Chi: Xác định việc cần hoàn thành, ưu tiên bài kiểm tra ngày mai, dự kiến thời gian và bắt đầu đúng giờ.\n• Dũng: Lập danh sách 12 việc và quyết tâm làm hết trong tối nay.\n\n👉 Ai là CEO thực thụ?\n🔐 Mật mã: Quản lí thời gian không phải làm thật nhiều, mà là sử dụng thời gian __________.",
+    "options": [
+      {
+        "key": "A",
+        "text": "An (xem điện thoại đến 21 giờ mới nghĩ xem học gì)"
+      },
+      {
+        "key": "B",
+        "text": "Bình (làm môn mình thích trước, việc gấp để sau)"
+      },
+      {
+        "key": "C",
+        "text": "Chi (xác định việc cần hoàn thành, ưu tiên bài kiểm tra mai, dự kiến giờ và bắt đầu đúng giờ)"
+      },
+      {
+        "key": "D",
+        "text": "Dũng (ôm đồm lập danh sách 12 việc quyết tâm làm hết trong một tối)"
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Chi xác định việc cần hoàn thành, ưu tiên bài kiểm tra ngày mai, dự kiến thời gian và bắt đầu đúng giờ.\n🔐 Mật mã: HỢP LÍ / HIỆU QUẢ. Quản lí thời gian không phải là làm thật nhiều, mà là sử dụng thời gian hợp lí, có thứ tự ưu tiên và bắt đầu đúng kế hoạch.",
+    "points": 0.8
+  },
+  {
+    "id": "q-6-2",
+    "assignmentId": "assign-7",
+    "order": 2,
+    "content": "🎒 LEVEL 2 — “BA LÔ 24 GIỜ” (1 phút | Kéo – thả / Chọn 5 thẻ đúng vào Ba lô)\n\nCho 8 thẻ hành vi và thói quen:\n1. 📋 Xác định việc cần làm\n2. ⭐ Xác định mức độ ưu tiên\n3. ⏰ Đặt thời hạn phù hợp\n4. 📱 Vừa học vừa kiểm tra tin nhắn\n5. 🗓️ Phân bổ thời gian\n6. 🎯 Thực hiện theo kế hoạch\n7. 😴 Đợi có cảm hứng mới làm\n8. 📚 Ôm càng nhiều việc càng tốt\n\n👉 Hãy chọn đúng 5 thẻ đưa vào Ba lô CEO và 3 thẻ cần loại bỏ:",
+    "options": [
+      {
+        "key": "A",
+        "text": "🎒 Mang 5 thẻ: Xác định việc cần làm – Xác định ưu tiên – Đặt thời hạn – Phân bổ thời gian – Thực hiện theo kế hoạch | 🗑️ Loại: Vừa học vừa xem tin nhắn – Đợi cảm hứng – Ôm càng nhiều việc càng tốt"
+      },
+      {
+        "key": "B",
+        "text": "🎒 Mang 5 thẻ: Vừa học vừa xem tin nhắn – Đợi cảm hứng – Ôm nhiều việc – Đặt thời hạn – Phân bổ thời gian | 🗑️ Loại: Xác định việc cần làm – Xác định ưu tiên – Thực hiện theo kế hoạch"
+      },
+      {
+        "key": "C",
+        "text": "🎒 Mang 5 thẻ: Xác định việc cần làm – Đợi cảm hứng – Vừa học vừa xem tin nhắn – Đặt thời hạn – Ôm nhiều việc | 🗑️ Loại: Xác định ưu tiên – Phân bổ thời gian – Thực hiện theo kế hoạch"
+      },
+      {
+        "key": "D",
+        "text": "🎒 Mang 5 thẻ: Thực hiện theo kế hoạch – Đợi cảm hứng – Phân bổ thời gian – Ôm nhiều việc – Đặt thời hạn | 🗑️ Loại: Xác định việc cần làm – Xác định ưu tiên – Vừa học vừa xem tin nhắn"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Mang theo: Xác định việc cần làm – Xác định ưu tiên – Đặt thời hạn – Phân bổ thời gian – Thực hiện theo kế hoạch. Loại: Vừa học vừa xem tin nhắn – Đợi cảm hứng – Ôm càng nhiều việc càng tốt.\nQuy trình chuẩn: lập danh sách việc cần hoàn thành, xác định thời hạn và mức độ ưu tiên, phân bổ thời gian, sau đó thực hiện kế hoạch có kỉ luật.",
+    "points": 0.8
+  },
+  {
+    "id": "q-6-3",
+    "assignmentId": "assign-7",
+    "order": 3,
+    "content": "🔥 LEVEL 3 — “VIỆC NÀO TRƯỚC?” (1,5 phút | Sắp xếp ưu tiên)\n\nBây giờ là 19:00. Em có:\nA. Bài Toán nộp 7:00 sáng mai – cần 40 phút.\nB. Xem video giải trí – không có thời hạn.\nC. Chuẩn bị bài thuyết trình nộp sau 3 ngày – cần 30 phút tối nay.\nD. Trả lời tin nhắn không gấp.\n\n🧠 CHÌA KHÓA: GẦN DEADLINE + QUAN TRỌNG → ____________\n👉 Sắp xếp thứ tự ưu tiên hợp lí nhất:",
+    "options": [
+      {
+        "key": "A",
+        "text": "A → C → D → B (hoặc A → C → B → D: Bài Toán sáng mai ưu tiên cao nhất → Chuẩn bị thuyết trình → Tin nhắn / Giải trí)"
+      },
+      {
+        "key": "B",
+        "text": "B → D → C → A (Xem video giải trí trước để thư giãn đầu óc)"
+      },
+      {
+        "key": "C",
+        "text": "C → A → B → D (Làm bài thuyết trình trước, bài Toán sáng mai để gần sáng mới làm)"
+      },
+      {
+        "key": "D",
+        "text": "D → B → C → A (Trả lời hết tin nhắn bạn bè trước khi mở sách học)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. A → C → D/B; trong đó việc A (Bài Toán sáng mai) phải được ưu tiên cao nhất.\n🧠 Chìa khóa: GẦN DEADLINE + QUAN TRỌNG → LÀM TRƯỚC. Với việc B và D đều không có hạn gấp, ưu tiên xử lý dứt điểm bài kiểm tra sáng mai và chuẩn bị bài thuyết trình trước.",
+    "points": 0.8
+  },
+  {
+    "id": "q-6-4",
+    "assignmentId": "assign-7",
+    "order": 4,
+    "content": "🚦 LEVEL 4 — “QUÉT THÓI QUEN” (1 phút | Đúng/Sai)\n\nĐánh giá tính Đúng (✓) hoặc Sai (✗) của 5 thói quen sau:\n1. Viết ra những việc cần hoàn thành.\n2. Việc nào dễ thì luôn làm trước, dù việc quan trọng sắp hết hạn.\n3. Đặt thời hạn giúp kiểm soát tiến độ.\n4. Lịch càng kín từng phút càng chứng tỏ quản lí thời gian tốt.\n5. Loại bỏ yếu tố gây mất tập trung giúp thực hiện kế hoạch hiệu quả hơn.\n\n👉 Kết quả quét thói quen từ 1 đến 5 là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1-Đúng (✓) — 2-Sai (✗) — 3-Đúng (✓) — 4-Sai (✗) — 5-Đúng (✓)"
+      },
+      {
+        "key": "B",
+        "text": "1-Đúng (✓) — 2-Đúng (✓) — 3-Đúng (✓) — 4-Sai (✗) — 5-Đúng (✓)"
+      },
+      {
+        "key": "C",
+        "text": "1-Sai (✗) — 2-Sai (✗) — 3-Đúng (✓) — 4-Đúng (✓) — 5-Sai (✗)"
+      },
+      {
+        "key": "D",
+        "text": "1-Đúng (✓) — 2-Sai (✗) — 3-Sai (✗) — 4-Đúng (✓) — 5-Đúng (✓)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1 ✓ – 2 ✗ – 3 ✓ – 4 ✗ – 5 ✓.\n- Thói quen 2 Sai (✗): Phải ưu tiên việc quan trọng và gần deadline, tránh sa vào bẫy chọn việc dễ để trì hoãn việc trọng tâm.\n- Thói quen 4 Sai (✗): Lịch kín mít không có thời gian nghỉ ngơi, phục hồi là lịch phản khoa học, dễ dẫn đến kiệt sức và quá tải.",
+    "points": 0.8
+  },
+  {
+    "id": "q-6-5",
+    "assignmentId": "assign-7",
+    "order": 5,
+    "content": "🤖 LEVEL 5 — “AI LẬP LỊCH SIÊU NHÂN” (1 phút | Tìm điểm chưa hợp lí)\n\nAI tạo cho một học sinh lớp 9 lịch tối nay:\n• 18:00–19:00: học Toán\n• 19:00–20:00: học Văn\n• 20:00–21:00: học Anh\n• 21:00–22:00: làm dự án\n• 22:00–23:00: ôn bài\n• 23:00–24:00: đọc tài liệu\n(Ghi chú của AI: Không cần nghỉ vì nghỉ là lãng phí thời gian).\n\n🚨 Lỗi lớn nhất trong kế hoạch này là gì?\n💥 MẬT MÃ: QUẢN LÍ THỜI GIAN ≠ NHỒI KÍN THỜI GIAN",
+    "options": [
+      {
+        "key": "A",
+        "text": "Học quá nhiều môn trong cùng một học kỳ."
+      },
+      {
+        "key": "B",
+        "text": "Kế hoạch chưa hợp lí với khả năng và nhu cầu nghỉ ngơi của người thực hiện."
+      },
+      {
+        "key": "C",
+        "text": "Không nên lập kế hoạch học tập."
+      },
+      {
+        "key": "D",
+        "text": "Muốn hiệu quả phải tiếp tục học đến sau 24 giờ."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Kế hoạch chưa hợp lí với khả năng và nhu cầu nghỉ ngơi của người thực hiện.\n💥 Mật mã: QUẢN LÍ THỜI GIAN ≠ NHỒI KÍN THỜI GIAN. SGK lưu ý số lượng công việc cần phù hợp với khả năng, tránh ôm đồm quá nhiều việc cùng lúc; kế hoạch cần phù hợp với đặc điểm bản thân và hoàn cảnh sống.",
+    "points": 0.8
+  },
+  {
+    "id": "q-6-6",
+    "assignmentId": "assign-7",
+    "order": 6,
+    "content": "📱 LEVEL 6 — “KẺ TRỘM 5 PHÚT” (1 phút | Tính nhanh & Nhận diện bẫy)\n\nTrong lúc học, cứ 15 phút Nam lại xem điện thoại khoảng 5 phút.\nTrong một buổi học 60 phút, Nam có thể mất khoảng bao nhiêu thời gian?\n\n👀 Câu hỏi bẫy: “Chỉ 5 phút” có thể trở thành vấn đề lớn khi nó ____________.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mất khoảng 20 phút (chiếm 1/3 buổi học); Bẫy: Nó được lặp lại nhiều lần."
+      },
+      {
+        "key": "B",
+        "text": "Chỉ mất 5 phút duy nhất; Bẫy: Xảy ra một lần."
+      },
+      {
+        "key": "C",
+        "text": "Mất 10 phút; Bẫy: Không ảnh hưởng gì đến sự tập trung."
+      },
+      {
+        "key": "D",
+        "text": "Không mất thời gian vì “chỉ xem một chút”."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 20 phút | Bẫy: ĐƯỢC LẶP LẠI NHIỀU LẦN.\nChu kỳ 15 phút học + 5 phút điện thoại lặp lại 3-4 lần khiến Nam mất đến 20 phút trong 60 phút học. Thêm vào đó, sự xao nhãng liên tục phá vỡ luồng tập trung sâu (deep work).",
+    "points": 0.8
+  },
+  {
+    "id": "q-6-7",
+    "assignmentId": "assign-7",
+    "order": 7,
+    "content": "🧩 LEVEL 7 — “GHÉP ĐÚNG THUỐC” (1 phút | Nối cặp)\n\nNối mỗi “BỆNH” THỜI GIAN với “THUỐC” tương ứng:\n\n• “BỆNH” THỜI GIAN:\n1. Quên việc\n2. Việc gấp luôn làm muộn\n3. Điện thoại làm mất tập trung\n4. Có quá nhiều việc\n\n• “THUỐC”:\nA. Loại bỏ yếu tố gây xao nhãng\nB. Lập danh sách\nC. Đặt deadline\nD. Xác định ưu tiên\n\n👉 Thứ tự nối cặp chính xác là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1–B ; 2–C ; 3–A ; 4–D (1-Lập danh sách ; 2-Đặt deadline ; 3-Loại bỏ xao nhãng ; 4-Xác định ưu tiên)"
+      },
+      {
+        "key": "B",
+        "text": "1–A ; 2–B ; 3–C ; 4–D"
+      },
+      {
+        "key": "C",
+        "text": "1–B ; 2–A ; 3–C ; 4–D"
+      },
+      {
+        "key": "D",
+        "text": "1–C ; 2–D ; 3–A ; 4–B"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1–B ; 2–C ; 3–A ; 4–D.\n- 1. Quên việc → B. Lập danh sách\n- 2. Việc gấp luôn làm muộn → C. Đặt deadline\n- 3. Điện thoại làm mất tập trung → A. Loại bỏ yếu tố gây xao nhãng\n- 4. Có quá nhiều việc → D. Xác định ưu tiên",
+    "points": 0.8
+  },
+  {
+    "id": "q-6-8",
+    "assignmentId": "assign-7",
+    "order": 8,
+    "content": "🧠 LEVEL 8 — “4 BƯỚC CỨU DEADLINE” (1 phút | Sắp xếp)\n\nCác bước đang bị đảo thứ tự:\nA. Thực hiện có kỉ luật.\nB. Xác định việc cần hoàn thành.\nC. Xây dựng kế hoạch, phân bổ thời gian.\nD. Xác định thời hạn và mức độ ưu tiên.\n\n👉 Sắp xếp trình tự chuẩn:\n_____ → _____ → _____ → _____\n🔐 CÔNG THỨC: BIẾT VIỆC → BIẾT ƯU TIÊN → CÓ KẾ HOẠCH → ____________",
+    "options": [
+      {
+        "key": "A",
+        "text": "B → D → C → A (Xác định việc cần làm → Xác định thời hạn & ưu tiên → Xây dựng kế hoạch, phân bổ giờ → Thực hiện có kỉ luật)"
+      },
+      {
+        "key": "B",
+        "text": "B → C → D → A"
+      },
+      {
+        "key": "C",
+        "text": "A → B → C → D"
+      },
+      {
+        "key": "D",
+        "text": "D → B → C → A"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. B → D → C → A.\n🔐 Từ khóa: THỰC HIỆN CÓ KỈ LUẬT. Công thức: BIẾT VIỆC (B) → BIẾT ƯU TIÊN (D) → CÓ KẾ HOẠCH (C) → THỰC HIỆN CÓ KỈ LUẬT (A).",
+    "points": 0.8
+  },
+  {
+    "id": "q-6-9",
+    "assignmentId": "assign-7",
+    "order": 9,
+    "content": "⚠️ LEVEL 9 — “KẾ HOẠCH BỊ PHÁ!” (1,5 phút | Giải quyết tình huống)\n\nMai đã lên kế hoạch học từ 19:00–20:30. Nhưng lúc 19:15, gia đình có việc đột xuất và Mai cần hỗ trợ khoảng 30 phút.\n\nMai nên xử lý thế nào?\n💡 MẬT MÃ: KẾ HOẠCH TỐT ≠ KẾ HOẠCH KHÔNG BAO GIỜ ĐƯỢC ____________.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Bỏ luôn kế hoạch hôm nay vì không còn đúng giờ dự kiến."
+      },
+      {
+        "key": "B",
+        "text": "Từ chối mọi việc vì “đã có lịch học cố định”."
+      },
+      {
+        "key": "C",
+        "text": "Điều chỉnh lịch: hỗ trợ gia đình, giữ lại việc quan trọng nhất và chuyển việc ít gấp sang thời điểm phù hợp."
+      },
+      {
+        "key": "D",
+        "text": "Thức thật khuya để làm đủ y nguyên kế hoạch cũ dù ngày mai có bài thi."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Điều chỉnh lịch, giữ lại việc quan trọng và chuyển việc ít gấp sang thời điểm phù hợp.\n💡 Mật mã: ĐIỀU CHỈNH. Kế hoạch tốt cần có độ linh hoạt. Khi có việc đột xuất phát sinh, người quản lý thời gian bản lĩnh biết điều chỉnh hợp lí thay vì buông xuôi.",
+    "points": 0.8
+  },
+  {
+    "id": "q-6-10",
+    "assignmentId": "assign-7",
+    "order": 10,
+    "content": "🎮 LEVEL 10 — “BOSS TRÌ HOÃN” (1 phút | Chọn vũ khí)\n\nEm có một bài tập cần khoảng 30 phút nhưng cứ nghĩ trong đầu:\n“Còn nhiều thời gian mà. Tí nữa làm!”\n\nCho 5 phương án:\n1. 📱 Xem thêm một video rồi bắt đầu.\n2. ⏱️ Chốt giờ bắt đầu cụ thể.\n3. 🎯 Bắt đầu ngay bằng một bước nhỏ.\n4. 😴 Đợi đến khi thật có hứng.\n5. 🔄 Chuyển sang một việc dễ hơn dù không quan trọng.\n\n👉 Hãy chọn đúng 2 vũ khí tốt nhất để đánh bại Boss Trì hoãn:",
+    "options": [
+      {
+        "key": "A",
+        "text": "⏱️ Chốt giờ bắt đầu cụ thể + 🎯 Bắt đầu ngay bằng một bước nhỏ (Quy tắc 5 phút mở sách đọc đề)"
+      },
+      {
+        "key": "B",
+        "text": "📱 Xem thêm một video rồi bắt đầu + 😴 Đợi đến khi thật có hứng"
+      },
+      {
+        "key": "C",
+        "text": "🔄 Chuyển sang một việc dễ hơn dù không quan trọng + 😴 Đợi cảm hứng"
+      },
+      {
+        "key": "D",
+        "text": "📱 Xem video + 🔄 Làm việc không quan trọng để trốn tránh việc khó"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Chốt giờ bắt đầu cụ thể + Bắt đầu ngay bằng một bước nhỏ.\nĐây là 2 chiến thuật kinh điển: ấn định thời điểm rõ ràng và vượt qua lực cản ban đầu bằng một hành động nhỏ, dễ thực hiện.",
+    "points": 0.8
+  },
+  {
+    "id": "q-6-11",
+    "assignmentId": "assign-7",
+    "order": 11,
+    "content": "🧠 LEVEL 11 — “BẪY NĂNG SUẤT” (1 phút | Tìm điểm chưa hợp lí)\n\nHùng nói:\n“Hôm nay tớ làm 10 việc còn cậu chỉ làm 4 việc, vậy chắc chắn tớ quản lí thời gian tốt hơn cậu.”\n\n🔑 NHỚ: BẬN RỘN ≠ HIỆU QUẢ\nĐiều gì trong lời khẳng định của Hùng chưa hợp lí?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Không thể chỉ nhìn số lượng; còn phải xét mức độ quan trọng, kết quả thực tế và việc hoàn thành theo kế hoạch."
+      },
+      {
+        "key": "B",
+        "text": "Số việc càng nhiều thì chắc chắn quản lí thời gian càng tốt."
+      },
+      {
+        "key": "C",
+        "text": "Việc khó không nên đưa vào kế hoạch hàng ngày."
+      },
+      {
+        "key": "D",
+        "text": "Chỉ cần hoàn thành một việc duy nhất mỗi ngày là đủ."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A (Phương án 2). Không thể chỉ nhìn số lượng; còn phải xét mức độ quan trọng, kết quả và việc hoàn thành theo kế hoạch.\n🔑 BẬN RỘN ≠ HIỆU QUẢ. Người làm 10 việc lặt vặt không tạo ra bước tiến bằng người giải quyết dứt điểm 4 việc quan trọng then chốt.",
+    "points": 0.7
+  },
+  {
+    "id": "q-6-12",
+    "assignmentId": "assign-7",
+    "order": 12,
+    "content": "🏆 FINAL BOSS — “90 PHÚT CỦA EM” (2 phút | Lập kế hoạch siêu ngắn chuẩn 3 tiêu chí)\n\nTối nay em có đúng 90 phút (19:30–21:00) với 4 nhiệm vụ:\n• 📐 Bài Toán: Hạn nộp Sáng mai – cần 35 phút\n• 📖 Ôn Anh: Hạn nộp 2 ngày nữa – cần 20 phút\n• 🎨 Poster nhóm: Hạn nộp 3 ngày nữa – cần 20 phút\n• 📱 Giải trí: Không có deadline – tùy chọn\n\n👉 Phương án phân bổ 90 phút tối ưu chuẩn 3 tiêu chí (Ưu tiên việc gần hạn → Phân bổ đủ thời gian → Lịch khả thi và loại bỏ xao nhãng) là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "① 19:30–20:05 (35p): Bài Toán (Hạn sáng mai) → ② 20:05–20:10 (5p nghỉ giải lao) → ③ 20:10–20:30 (20p): Ôn Anh (Hạn 2 ngày) → ④ 20:30–20:50 (20p): Poster nhóm → ⑤ 20:50–21:00 (10p): Giải trí tự do / Dự phòng | Loại bỏ: Thông báo điện thoại, video ngắn, tin nhắn không gấp"
+      },
+      {
+        "key": "B",
+        "text": "① 19:30–20:30 (60p): Xem video giải trí → ② 20:30–21:00 (30p): Vừa làm Toán vừa trả lời tin nhắn bạn bè"
+      },
+      {
+        "key": "C",
+        "text": "① 19:30–20:20 (50p): Làm poster nhóm → ② 20:20–21:00 (40p): Ôn Anh; Bỏ qua bài Toán sáng mai đến lớp mượn vở bạn chép"
+      },
+      {
+        "key": "D",
+        "text": "Làm cả 4 việc cùng một lúc trong 90 phút mà không phân chia thời gian cụ thể"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Tiêu chí kiểm tra của giáo viên: (1) Ưu tiên việc gần hạn nhất (Bài Toán 35p); (2) Phân bổ đủ thời gian cho từng việc có khoảng đệm nghỉ ngơi; (3) Lịch khả thi và chủ động loại bỏ yếu tố gây mất tập trung.",
+    "points": 0.7
+  },
+  {
+    "id": "q-6-13",
+    "assignmentId": "assign-7",
+    "order": 13,
+    "content": "❤️ EXIT TICKET — “ĐỪNG HỨA 1 THÁNG” (Cam kết hành động trong 24 giờ tới)\n\nKhông cần lập kế hoạch cả học kì xa vời. Hãy chọn 01 cam kết thay đổi em sẽ thực hiện ngay trong 24 giờ tới:\n⏰ ĐỪNG CỐ “CÓ THÊM THỜI GIAN”. Hãy sử dụng tốt thời gian mình đang có!",
+    "options": [
+      {
+        "key": "A",
+        "text": "🚀 TÔI CHỌN: Viết ra 3 việc quan trọng nhất ngày mai + Cất điện thoại khỏi bàn học trong phiên học + Bắt đầu ngay việc đang trì hoãn trong 5 phút!"
+      },
+      {
+        "key": "B",
+        "text": "😴 Tiếp tục đợi khi nào có cảm hứng mới bắt đầu ngồi vào bàn học."
+      },
+      {
+        "key": "C",
+        "text": "📱 Vừa học bài vừa mở nhiều tab video ngắn và tin nhắn mạng xã hội."
+      },
+      {
+        "key": "D",
+        "text": "🗓️ Lập một thời khóa biểu kín mít từng phút cho cả tháng rồi bỏ dở."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Mật khẩu hành động: Chọn một hành động thực tế và cam kết thực hiện ngay trong 24 giờ tới.\nQuản lý thời gian hiệu quả bắt đầu từ việc làm chủ 24 giờ của ngày hôm nay!",
+    "points": 0.6
+  },
+  {
+    "id": "q-7-1",
+    "assignmentId": "assign-8",
+    "order": 1,
+    "content": "🔍 LEVEL 1 — “CHANGE DETECTOR” (1 phút | Chọn đáp án)\n\nLan chuyển sang một lớp mới vì gia đình thay đổi nơi ở. Những ngày đầu, Lan chưa quen bạn bè và cách học của lớp.\n👉 Cách ứng xử nào thể hiện khả năng thích ứng tốt nhất?\n\n🔐 MẬT MÃ: Thích ứng không phải chờ hoàn cảnh thay đổi theo mình, mà biết ____________ bản thân phù hợp.",
+    "options": [
+      {
+        "key": "A",
+        "text": "“Mình ghét mọi thứ ở đây, mình sẽ không tham gia bất cứ hoạt động gì cả.”"
+      },
+      {
+        "key": "B",
+        "text": "“Mình phải lập tức thấy vui như chưa từng có chuyện gì xảy ra.”"
+      },
+      {
+        "key": "C",
+        "text": "“Mình chưa quen, nhưng sẽ tìm hiểu môi trường mới, kết bạn và điều chỉnh cách học.”"
+      },
+      {
+        "key": "D",
+        "text": "“Mọi người trong lớp mới phải thay đổi để giống như lớp cũ của mình.”"
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. “Mình chưa quen, nhưng sẽ tìm hiểu môi trường mới, kết bạn và điều chỉnh cách học.”\n🔐 Mật mã: ĐIỀU CHỈNH. Người có khả năng thích ứng tốt luôn biết chủ động quan sát, làm quen với môi trường mới và linh hoạt điều chỉnh hành vi của bản thân thay vì thụ động hay đòi hỏi hoàn cảnh phải chiều theo ý mình.",
+    "points": 0.7
+  },
+  {
+    "id": "q-7-2",
+    "assignmentId": "assign-8",
+    "order": 2,
+    "content": "🎒 LEVEL 2 — “BA LÔ THÍCH ỨNG” (1 phút | Kéo – thả / Chọn hành trang)\n\nCho các thẻ sau:\n1. 💗 Chấp nhận thực tế\n2. 🧘 Giữ bình tĩnh\n3. 🔍 Tìm hiểu tình hình\n4. 🔄 Điều chỉnh cách làm\n5. 🤝 Tìm kiếm hỗ trợ khi cần\n6. 🙈 Giả vờ không có thay đổi\n7. 😡 Đổ lỗi cho mọi người\n8. 🚪 Bỏ cuộc ngay\n\n👉 Chọn 5 thẻ HỮU ÍCH mang vào ba lô và 3 thẻ CẦN ĐỂ LẠI:",
+    "options": [
+      {
+        "key": "A",
+        "text": "🎒 MANG THEO: Chấp nhận thực tế, Giữ bình tĩnh, Tìm hiểu tình hình, Điều chỉnh cách làm, Tìm kiếm hỗ trợ | 🗑️ ĐỂ LẠI: Giả vờ không thay đổi, Đổ lỗi, Bỏ cuộc"
+      },
+      {
+        "key": "B",
+        "text": "🎒 MANG THEO: Giả vờ không thay đổi, Giữ bình tĩnh, Đổ lỗi, Bỏ cuộc, Điều chỉnh cách làm | 🗑️ ĐỂ LẠI: Chấp nhận thực tế, Tìm hiểu tình hình, Tìm hỗ trợ"
+      },
+      {
+        "key": "C",
+        "text": "🎒 MANG THEO: Chấp nhận thực tế, Đổ lỗi, Tìm hiểu tình hình, Bỏ cuộc, Tìm hỗ trợ | 🗑️ ĐỂ LẠI: Giữ bình tĩnh, Điều chỉnh cách làm, Giả vờ"
+      },
+      {
+        "key": "D",
+        "text": "🎒 MANG THEO: Bỏ cuộc, Giả vờ không thay đổi, Đổ lỗi, Điều chỉnh cách làm, Giữ bình tĩnh | 🗑️ ĐỂ LẠI: Chấp nhận thực tế, Tìm hiểu, Tìm hỗ trợ"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Mang theo: 1, 2, 3, 4, 5. Để lại: 6, 7, 8.\nBiện pháp thích ứng hiệu quả: Chấp nhận sự thay đổi là tất yếu, làm chủ cảm xúc trước biến cố và chủ động tìm cách giải quyết vấn đề tích cực; khi vượt quá khả năng cần tìm kiếm sự hỗ trợ đáng tin cậy.",
+    "points": 0.7
+  },
+  {
+    "id": "q-7-3",
+    "assignmentId": "assign-8",
+    "order": 3,
+    "content": "🌦️ LEVEL 3 — “ĐỔI ĐƯỢC / KHÔNG ĐỔI ĐƯỢC” (1 phút | Phân loại quyền kiểm soát)\n\nHôm nay kế hoạch của Minh bị ảnh hưởng bởi 6 yếu tố:\nA. Trời bất ngờ mưa lớn.\nB. Cách Minh sắp xếp lại lịch học.\nC. Một hoạt động của trường đột xuất đổi giờ.\nD. Thái độ của Minh trước thay đổi.\nE. Cách Minh tìm phương án khác.\nF. Việc người khác đột ngột thay đổi quyết định.\n\n👉 Phân loại chuẩn vào 2 nhóm:\n💡 MẬT MÃ: Đừng tiêu hết năng lượng vào điều mình không thể kiểm soát.",
+    "options": [
+      {
+        "key": "A",
+        "text": "🔒 KHÔNG HOÀN TOÀN KIỂM SOÁT: A – C – F | 🎮 CÓ THỂ CHỦ ĐỘNG ĐIỀU CHỈNH: B – D – E"
+      },
+      {
+        "key": "B",
+        "text": "🔒 KHÔNG HOÀN TOÀN KIỂM SOÁT: B – D – E | 🎮 CÓ THỂ CHỦ ĐỘNG ĐIỀU CHỈNH: A – C – F"
+      },
+      {
+        "key": "C",
+        "text": "🔒 KHÔNG HOÀN TOÀN KIỂM SOÁT: A – B – C | 🎮 CÓ THỂ CHỦ ĐỘNG ĐIỀU CHỈNH: D – E – F"
+      },
+      {
+        "key": "D",
+        "text": "🔒 KHÔNG HOÀN TOÀN KIỂM SOÁT: D – E – F | 🎮 CÓ THỂ CHỦ ĐỘNG ĐIỀU CHỈNH: A – B – C"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Không hoàn toàn kiểm soát: A, C, F (thời tiết, quyết định nhà trường, hành vi của người khác). Có thể chủ động điều chỉnh: B, D, E (cách sắp xếp lịch, thái độ của bản thân, phương án thay thế).",
+    "points": 0.7
+  },
+  {
+    "id": "q-7-4",
+    "assignmentId": "assign-8",
+    "order": 4,
+    "content": "🚦 LEVEL 4 — “ĐÚNG HAY BẪY?” (1 phút | Đúng/Sai)\n\nĐánh giá tính Đúng (✓) hoặc Sai (✗) của 5 nhận định sau:\n1. Thay đổi là điều tất yếu có thể xảy ra trong cuộc sống.\n2. Thích ứng nghĩa là không bao giờ được buồn hay lo lắng.\n3. Khi hoàn cảnh thay đổi, có thể cần điều chỉnh cách làm.\n4. Chấp nhận thay đổi đồng nghĩa với buông xuôi, phó mặc.\n5. Có thể tìm kiếm sự hỗ trợ nếu vấn đề vượt quá khả năng của mình.\n\n👉 Kết quả đánh giá từ 1 đến 5 là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1-Đúng (✓) — 2-Sai (✗) — 3-Đúng (✓) — 4-Sai (✗) — 5-Đúng (✓)"
+      },
+      {
+        "key": "B",
+        "text": "1-Đúng (✓) — 2-Đúng (✓) — 3-Đúng (✓) — 4-Sai (✗) — 5-Đúng (✓)"
+      },
+      {
+        "key": "C",
+        "text": "1-Sai (✗) — 2-Sai (✗) — 3-Đúng (✓) — 4-Đúng (✓) — 5-Sai (✗)"
+      },
+      {
+        "key": "D",
+        "text": "1-Đúng (✓) — 2-Sai (✗) — 3-Sai (✗) — 4-Sai (✗) — 5-Đúng (✓)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1 ✓ – 2 ✗ – 3 ✓ – 4 ✗ – 5 ✓.\n- Nhận định 2 Sai vì có cảm xúc buồn/lo lắng là tự nhiên của con người, thích ứng là làm chủ cảm xúc chứ không phải triệt tiêu cảm xúc.\n- Nhận định 4 Sai vì chấp nhận là nhìn thẳng thực tế để hành động, không phải buông xuôi.",
+    "points": 0.7
+  },
+  {
+    "id": "q-7-5",
+    "assignmentId": "assign-8",
+    "order": 5,
+    "content": "🤖 LEVEL 5 — “AI ĐANG HIỂU SAI!” (1 phút | Tìm điểm chưa hợp lí)\n\nAI tư vấn tâm lí phát biểu:\n🤖 “Người thích ứng tốt là người không bao giờ buồn, lo lắng hay thất vọng trước bất cứ thay đổi nào.”\n\n🚨 Hãy chọn bản vá tư duy chuẩn xác nhất:\n🧠 NHỚ: THÍCH ỨNG ≠ KHÔNG CÓ CẢM XÚC",
+    "options": [
+      {
+        "key": "A",
+        "text": "Muốn thích ứng phải loại bỏ hoàn toàn mọi cảm xúc tiêu cực và giả vờ không quan tâm."
+      },
+      {
+        "key": "B",
+        "text": "Có cảm xúc trước thay đổi là bình thường; điều quan trọng là biết làm chủ cảm xúc và tìm cách ứng phó phù hợp."
+      },
+      {
+        "key": "C",
+        "text": "Khi gặp chuyện buồn thì nên giấu kín, giả vờ như không có chuyện gì xảy ra."
+      },
+      {
+        "key": "D",
+        "text": "Người thích ứng tốt là người có thể tự làm mọi việc mà không bao giờ cần sự giúp đỡ."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Có cảm xúc trước thay đổi là bình thường; điều quan trọng là biết làm chủ cảm xúc và tìm cách ứng phó phù hợp.\nNão bộ luôn có phản ứng cảm xúc trước sự xáo trộn, bản lĩnh thích ứng thể hiện ở việc bình tâm nhận diện và điều hướng hành vi tích cực.",
+    "points": 0.7
+  },
+  {
+    "id": "q-7-6",
+    "assignmentId": "assign-8",
+    "order": 6,
+    "content": "💥 LEVEL 6 — “KẾ HOẠCH A BỊ HỦY!” (1 phút | Chọn đáp án xử lí tình huống)\n\nNhóm của Vy chuẩn bị thuyết trình bằng máy chiếu. Đến giờ học, máy chiếu của lớp bất ngờ gặp sự cố hỏng hóc.\n👉 Nhóm của Vy nên xử lí thế nào?\n\n🔐 MẬT MÃ: KẾ HOẠCH A HỎNG ≠ MỤC TIÊU HỎNG",
+    "options": [
+      {
+        "key": "A",
+        "text": "Hủy bỏ bài thuyết trình và từ chối báo cáo vì không có máy chiếu."
+      },
+      {
+        "key": "B",
+        "text": "Trách móc nhà trường và ngồi im chờ đến hết tiết học."
+      },
+      {
+        "key": "C",
+        "text": "Bình tĩnh, chuyển sang phương án trình bày bằng bảng/tài liệu đã có và điều chỉnh cách thuyết trình sinh động."
+      },
+      {
+        "key": "D",
+        "text": "Đòi cô giáo cho điểm tối đa luôn vì sự cố không phải do lỗi của nhóm."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Bình tĩnh, chuyển sang phương án trình bày bằng bảng/tài liệu đã có và điều chỉnh cách thuyết trình.\nKhi công cụ hỗ trợ gặp trục trặc, người linh hoạt sẽ kích hoạt kế hoạch B (dùng sơ đồ trên bảng, tài liệu giấy, hỏi đáp trực tiếp) để hoàn thành mục tiêu bài báo cáo.",
+    "points": 0.7
+  },
+  {
+    "id": "q-7-7",
+    "assignmentId": "assign-8",
+    "order": 7,
+    "content": "🧩 LEVEL 7 — “GHÉP ĐÚNG PHẢN XẠ” (1 phút | Nối cặp tình huống và phản xạ)\n\nNối mỗi tình huống thay đổi với phản xạ hành động phù hợp:\n\n• TÌNH HUỐNG:\n1. Chuyển sang môi trường học mới\n2. Kết quả học tập môn Toán bị giảm sút\n3. Kế hoạch dã ngoại đột ngột không thực hiện được do thời tiết\n4. Gặp biến cố lớn vượt quá khả năng giải quyết của bản thân\n\n• PHẢN XẠ PHÙ HỢP:\nA. Tìm phương án thay thế khác hữu ích\nB. Chủ động làm quen, tìm hiểu nội quy và môi trường mới\nC. Tìm rõ nguyên nhân và điều chỉnh phương pháp học tập\nD. Tìm người lớn đáng tin cậy để nhận sự hỗ trợ\n\n👉 Mật mã nối đúng là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1–B ; 2–C ; 3–A ; 4–D"
+      },
+      {
+        "key": "B",
+        "text": "1–A ; 2–B ; 3–C ; 4–D"
+      },
+      {
+        "key": "C",
+        "text": "1–C ; 2–D ; 3–A ; 4–B"
+      },
+      {
+        "key": "D",
+        "text": "1–B ; 2–A ; 3–D ; 4–C"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1–B ; 2–C ; 3–A ; 4–D.\n- Môi trường mới → Làm quen, tìm hiểu (B)\n- Điểm số giảm → Tìm nguyên nhân & đổi cách học (C)\n- Kế hoạch hỏng → Phương án thay thế (A)\n- Vượt khả năng → Nhờ hỗ trợ kịp thời (D)",
+    "points": 0.7
+  },
+  {
+    "id": "q-7-8",
+    "assignmentId": "assign-8",
+    "order": 8,
+    "content": "🧠 LEVEL 8 — “4 BƯỚC UPDATE” (1 phút | Sắp xếp quy trình thích ứng)\n\nKhi một thay đổi bất ngờ xảy ra, 4 bước tư duy bị xáo trộn:\nA. Chọn cách giải quyết tích cực, phù hợp với hoàn cảnh mới.\nB. Giữ bình tĩnh và làm chủ cảm xúc của bản thân.\nC. Nhận diện và chấp nhận điều thực tế đã thay đổi.\nD. Đánh giá xem mình có thể làm gì và cần hỗ trợ gì từ ai.\n\n🔑 CÔNG THỨC: CHẤP NHẬN → BÌNH TĨNH → ĐÁNH GIÁ → HÀNH ĐỘNG\n👉 Trình tự sắp xếp chuẩn xác là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "C → B → D → A (Nhận diện chấp nhận → Bình tĩnh làm chủ → Đánh giá phương án → Hành động giải quyết)"
+      },
+      {
+        "key": "B",
+        "text": "A → B → C → D"
+      },
+      {
+        "key": "C",
+        "text": "B → C → A → D"
+      },
+      {
+        "key": "D",
+        "text": "D → A → B → C"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. C → B → D → A.\nQuy trình thích ứng khoa học: 1. Nhận diện chấp nhận sự thật đã thay đổi (C) → 2. Bình tĩnh làm chủ cảm xúc (B) → 3. Đánh giá nguồn lực và sự hỗ trợ (D) → 4. Hành động tích cực (A).",
+    "points": 0.7
+  },
+  {
+    "id": "q-7-9",
+    "assignmentId": "assign-8",
+    "order": 9,
+    "content": "⚡ LEVEL 9 — “CHẤP NHẬN ≠ BUÔNG XUÔI” (1 phút | Phân loại thái độ sống)\n\nPhân loại 4 câu nói sau vào đúng vùng:\nA. “Chuyện đã xảy ra rồi, mình sẽ tìm cách phù hợp để tiếp tục bước tiếp.”\nB. “Thôi, thế nào cũng được, chẳng cần cố gắng làm gì nữa.”\nC. “Mình chưa thay đổi được việc này ngay, nhưng mình có thể thay đổi cách ứng phó của mình.”\nD. “Không diễn ra đúng như ý muốn ban đầu của mình thì mình bỏ luôn!”\n\n💥 CÂU CHỐT: CHẤP NHẬN THỰC TẾ ≠ ____________ NỖ LỰC",
+    "options": [
+      {
+        "key": "A",
+        "text": "🌱 CHẤP NHẬN TÍCH CỰC: A – C | 💤 BUÔNG XUÔI: B – D (Mật mã: TỪ BỎ / NGỪNG)"
+      },
+      {
+        "key": "B",
+        "text": "🌱 CHẤP NHẬN TÍCH CỰC: B – D | 💤 BUÔNG XUÔI: A – C"
+      },
+      {
+        "key": "C",
+        "text": "🌱 CHẤP NHẬN TÍCH CỰC: A – B | 💤 BUÔNG XUÔI: C – D"
+      },
+      {
+        "key": "D",
+        "text": "🌱 CHẤP NHẬN TÍCH CỰC: C – D | 💤 BUÔNG XUÔI: A – B"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Chấp nhận tích cực: A, C. Buông xuôi: B, D.\n💥 Mật mã: TỪ BỎ / NGỪNG nỗ lực. Chấp nhận thực tế là điểm khởi đầu cho hành động mới, khác hoàn toàn với thái độ buông xuôi, phó mặc hay bỏ cuộc.",
+    "points": 0.7
+  },
+  {
+    "id": "q-7-10",
+    "assignmentId": "assign-8",
+    "order": 10,
+    "content": "📱 LEVEL 10 — “GROUP CHAT BẤT NGỜ” (1,5 phút | Giải quyết tình huống nhóm)\n\nNhóm của Nam đã phân công dự án học tập. Tối trước ngày hoàn thiện nộp cô giáo, một thành viên nhắn tin báo bị ốm sốt cao và không thể hoàn thành phần việc của mình.\nNam lập tức nhắn vào nhóm: “Thế là xong! Kế hoạch hỏng hết rồi. Không làm nữa!”\n\n👉 Nếu em là một thành viên trong nhóm, em sẽ lựa chọn cách ứng xử nào?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Đồng ý với Nam hủy bỏ dự án và chịu điểm kém cả nhóm."
+      },
+      {
+        "key": "B",
+        "text": "Trách móc và đổ lỗi cho bạn bị ốm vì làm ảnh hưởng đến thành tích chung."
+      },
+      {
+        "key": "C",
+        "text": "Bình tĩnh kiểm tra phần việc còn lại, động viên bạn dưỡng bệnh, điều chỉnh phân công giữa các bạn còn lại và đề nghị giáo viên hỗ trợ nếu cần thiết."
+      },
+      {
+        "key": "D",
+        "text": "Âm thầm làm thay tất cả một mình thâu đêm dù không đủ sức khỏe và thời gian."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Bình tĩnh xem phần việc còn lại, điều chỉnh phân công và đề nghị hỗ trợ nếu cần.\nĐây là kỹ năng thích ứng và làm việc nhóm chuẩn mực: cảm thông với biến cố bất khả kháng của bạn, tái cơ cấu nhiệm vụ và tìm sự trợ giúp khi cần thiết.",
+    "points": 0.7
+  },
+  {
+    "id": "q-7-11",
+    "assignmentId": "assign-8",
+    "order": 11,
+    "content": "🕵️ LEVEL 11 — “TÍCH CỰC GIẢ” (1 phút | Tìm điểm chưa hợp lí)\n\nMai vừa gặp một sự cố thay đổi khiến em ấy rất buồn và rơi nước mắt.\nMột bạn trong lớp chạy lại bảo Mai: “Đừng buồn nữa! Phải tích cực lên chứ! Cứ cười lên là mọi chuyện xong hết!”\n\n👉 Điểm chưa hợp lí trong lời khuyên của bạn là gì?\n💡 NHỚ: TÍCH CỰC ≠ GIẢ VỜ MỌI THỨ ĐỀU ỔN",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mai hoàn toàn không được phép buồn khi gặp sự cố."
+      },
+      {
+        "key": "B",
+        "text": "Thích ứng không phải là phủ nhận hay kìm nén cảm xúc; cần tôn trọng cảm xúc, bình tĩnh chấp nhận và từng bước tìm cách ứng phó lành mạnh."
+      },
+      {
+        "key": "C",
+        "text": "Chỉ cần gượng cười thì mọi rắc rối sẽ tự động biến mất kì diệu."
+      },
+      {
+        "key": "D",
+        "text": "Gặp sự cố thì tuyệt đối không nên chia sẻ hay tâm sự với bất kì ai."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Thích ứng không phải phủ nhận cảm xúc; cần bình tĩnh, chấp nhận cảm xúc và từng bước tìm cách ứng phó.\n\"Tích cực độc hại\" (toxic positivity) là ép buộc bản thân phải vui vẻ và kìm nén nỗi buồn. Tích cực thật sự là cho phép mình buồn trong chốc lát, sau đó bình tâm đứng dậy tìm giải pháp.",
+    "points": 0.7
+  },
+  {
+    "id": "q-7-12",
+    "assignmentId": "assign-8",
+    "order": 12,
+    "content": "🎯 LEVEL 12 — “MỤC TIÊU HAY CON ĐƯỜNG?” (1 phút | Chọn đáp án tư duy)\n\nHà đặt mục tiêu thi đỗ điểm cao môn Tiếng Anh vào lớp 10. Tuy nhiên, cách học thuộc lòng ngữ pháp cũ của Hà không còn đem lại hiệu quả trong các đề thi mới.\n\n👉 Hà nên làm gì?\n🚀 MẬT MÃ LỚN: CÓ THỂ THAY ĐỔI ____________ MÀ KHÔNG CẦN TỪ BỎ ____________.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Giữ nguyên cách học cũ vì thay đổi nghĩa là thừa nhận mình thất bại."
+      },
+      {
+        "key": "B",
+        "text": "Bỏ luôn mục tiêu thi vào trường chuyên/lớp chọn tiếng Anh."
+      },
+      {
+        "key": "C",
+        "text": "Kiên định giữ mục tiêu nhưng linh hoạt thử các cách học, phương pháp tiếp cận mới phù hợp hơn."
+      },
+      {
+        "key": "D",
+        "text": "Không làm gì cả, chờ đợi đến khi đề thi tự trở nên dễ hơn."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Giữ mục tiêu nhưng thử cách học khác phù hợp hơn.\n🚀 Mật mã: CON ĐƯỜNG / CÁCH LÀM – MỤC TIÊU. Người thành công kiên định với mục tiêu lý tưởng, nhưng luôn mềm dẻo, linh hoạt thay đổi phương pháp và con đường tiếp cận khi hoàn cảnh đòi hỏi.",
+    "points": 0.7
+  },
+  {
+    "id": "q-7-13",
+    "assignmentId": "assign-8",
+    "order": 13,
+    "content": "🆘 LEVEL 13 — “TỰ GIẢI QUYẾT HAY GỌI HỖ TRỢ?” (1 phút | Phân loại tình huống)\n\nĐánh giá 4 tình huống sau đây theo hướng xử lí phù hợp:\n1. Lịch học thêm bất ngờ đổi giờ sang ngày khác\n2. Những ngày đầu chưa quen bạn mới ở lớp\n3. Một biến cố gia đình lớn khiến bản thân hoang mang, mất phương hướng\n4. Gặp vấn đề bạo lực hoặc áp lực tâm lí vượt quá khả năng chịu đựng của bản thân\n\n🔑 MẬT MÃ: BIẾT NHỜ GIÚP ĐỠ CŨNG LÀ MỘT KĨ NĂNG THÍCH ỨNG.\n👉 Nhận định phân loại đúng là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "Tình huống 1 & 2: Có thể chủ động tự xử lí | Tình huống 3 & 4: Nên chủ động tìm kiếm sự hỗ trợ từ người lớn đáng tin cậy"
+      },
+      {
+        "key": "B",
+        "text": "Tất cả 4 tình huống đều phải tự mình chịu đựng một mình"
+      },
+      {
+        "key": "C",
+        "text": "Tất cả 4 tình huống đều phải nhờ người khác làm hộ"
+      },
+      {
+        "key": "D",
+        "text": "Tình huống 1 & 3: Tự xử lí | Tình huống 2 & 4: Nhờ người khác"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Với những thay đổi thông thường trong tầm tay (1, 2), em có thể tự sắp xếp, kết bạn. Nhưng khi gặp biến cố lớn hoặc vấn đề vượt quá khả năng (3, 4), biết tìm kiếm sự hỗ trợ từ cha mẹ, thầy cô, chuyên gia tâm lí chính là biểu hiện của kĩ năng thích ứng khôn ngoan.",
+    "points": 0.6
+  },
+  {
+    "id": "q-7-14",
+    "assignmentId": "assign-8",
+    "order": 14,
+    "content": "🏆 FINAL BOSS — “30 GIÂY CỨU KẾ HOẠCH” (1,5 phút | Vận dụng tình huống thực tế)\n\nSáng mai lớp có buổi hoạt động trải nghiệm ngoài trời mà em rất mong chờ suốt tháng qua. Bất ngờ tối nay nhận được thông báo từ nhà trường:\n🌧️ “Do thời tiết bão mưa lớn ngập lụt, hoạt động ngoài trời bị hủy và chuyển sang sinh hoạt chủ đề trong hội trường.”\n\n👉 Chuỗi phản xạ thích ứng chuẩn xác nhất là:\n🌟 CÔNG THỨC: CẢM XÚC → CHẤP NHẬN → ĐIỀU CHỈNH → TIẾP TỤC",
+    "options": [
+      {
+        "key": "A",
+        "text": "① Cho phép mình tiếc nuối trong giây lát → ② Chấp nhận thông tin thời tiết thực tế → ③ Chủ động tìm hiểu và chuẩn bị trang phục, ý tưởng cho hoạt động trong hội trường."
+      },
+      {
+        "key": "B",
+        "text": "① Tức giận than thở cả đêm → ② Tẩy chay không tham gia hoạt động hội trường → ③ Đăng bài bức xúc lên mạng xã hội."
+      },
+      {
+        "key": "C",
+        "text": "① Giả vờ vui mừng hớn hở → ② Không chuẩn bị gì cả → ③ Chờ đến sáng mai rồi tính."
+      },
+      {
+        "key": "D",
+        "text": "① Bỏ học ngày mai → ② Ở nhà ngủ → ③ Trách nhà trường hủy lịch."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Cảm xúc thật (tiếc nuối) → Chấp nhận thực tế thời tiết an toàn → Điều chỉnh hành động và chuẩn bị chu đáo cho phương án mới trong hội trường.",
+    "points": 0.6
+  },
+  {
+    "id": "q-7-15",
+    "assignmentId": "assign-8",
+    "order": 15,
+    "content": "❤️ EXIT TICKET — “UPDATE 1% BẢN THÂN” (Cam kết hành vi)\n\n🌬️ KHÔNG PHẢI MỌI “HƯỚNG GIÓ” ĐỀU DO TA CHỌN. NHƯNG TA CÓ THỂ HỌC CÁCH ĐIỀU CHỈNH CÁNH BUỒM.\n\n👉 Chọn 01 phản xạ vàng em quyết tâm rèn luyện mỗi khi gặp việc không như ý:",
+    "options": [
+      {
+        "key": "A",
+        "text": "🌱 DỪNG LẠI & BÌNH TÂM: Không phản ứng vội khi tức giận; tự hỏi: “Điều gì mình còn kiểm soát được?” và tìm phương án thay thế tích cực!"
+      },
+      {
+        "key": "B",
+        "text": "Cố chấp đòi mọi việc phải theo ý mình, nếu không thì bỏ cuộc."
+      },
+      {
+        "key": "C",
+        "text": "Đổ lỗi cho hoàn cảnh và những người xung quanh."
+      },
+      {
+        "key": "D",
+        "text": "Kìm nén mọi cảm xúc tiêu cực và giả vờ không có chuyện gì xảy ra."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Mật khẩu xuất cảnh: Luôn làm chủ cảm xúc, tập trung vào vòng tròn ảnh hưởng (điều mình kiểm soát được) và sẵn sàng tìm kiếm giải pháp linh hoạt.",
+    "points": 0.6
+  },
+  {
+    "id": "q-8-1",
+    "assignmentId": "assign-9",
+    "order": 1,
+    "content": "⚡ LEVEL 1 — “CẦN HAY MUỐN?” (45 giây | Phân loại nhu cầu)\n\nMai có 300.000 đồng và đang cần mua đồ dùng học tập cho năm học mới:\nA. Bút đã hết mực.\nB. Cuốn sổ thứ 6 vì bìa đang “hot”.\nC. Thước cũ đã hỏng.\nD. Móc khóa giống thần tượng.\nE. Tài liệu cần cho môn học.\n\n👉 Hãy phân loại các thẻ vào 2 vùng CẦN ƯU TIÊN và MUỐN – CÂN NHẮC:\n🔐 MẬT MÃ: “THÍCH” chưa chắc = “__________”.",
+    "options": [
+      {
+        "key": "A",
+        "text": "🎯 CẦN ƯU TIÊN: A – C – E | 💗 MUỐN – CÂN NHẮC: B – D (Mật mã: CẦN)"
+      },
+      {
+        "key": "B",
+        "text": "🎯 CẦN ƯU TIÊN: B – D | 💗 MUỐN – CÂN NHẮC: A – C – E"
+      },
+      {
+        "key": "C",
+        "text": "🎯 CẦN ƯU TIÊN: A – B – C | 💗 MUỐN – CÂN NHẮC: D – E"
+      },
+      {
+        "key": "D",
+        "text": "🎯 CẦN ƯU TIÊN: C – D – E | 💗 MUỐN – CÂN NHẮC: A – B"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Cần ưu tiên: A – C – E (bút hết mực, thước hỏng, tài liệu học). Muốn cân nhắc: B – D (sổ thứ 6, móc khóa theo trend).\n🔐 Mật mã: CẦN. Người tiêu dùng thông minh luôn phân định rõ giữa \"Nhu cầu thiết yếu\" (Need) và \"Sở thích nhất thời\" (Want).",
+    "points": 0.7
+  },
+  {
+    "id": "q-8-2",
+    "assignmentId": "assign-9",
+    "order": 2,
+    "content": "🔥 LEVEL 2 — “SALE 70%!” (1 phút | Chọn đáp án & Bẫy IQ)\n\nMột chiếc áo giá gốc 500.000đ, đang giảm sốc 70% (còn 150.000đ).\nEm thấy rất rẻ nhưng trong tủ đồ đã có nhiều áo tương tự và bản thân không hề có nhu cầu mua thêm.\n\n👉 Cách xử lí thông minh nhất và bản chất của việc chi tiền này là:\n💥 GIẢM GIÁ ≠ TIẾT KIỆM nếu món đồ không cần thiết.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Cách xử lí: Mua ngay để tiết kiệm 350.000đ | Bản chất: Tiết kiệm được tiền"
+      },
+      {
+        "key": "B",
+        "text": "Cách xử lí: Mua hai chiếc vì hiếm khi có đợt giảm sâu | Bản chất: Tiết kiệm 700.000đ"
+      },
+      {
+        "key": "C",
+        "text": "Cách xử lí: Không mua nếu không có nhu cầu thực sự | Bản chất: Bỏ ra 150.000đ mua thứ không cần là đã CHI 150.000đ, chứ không phải tiết kiệm 350.000đ"
+      },
+      {
+        "key": "D",
+        "text": "Cách xử lí: Rủ bạn mua cùng để đỡ phí mã giảm giá | Bản chất: Tiết kiệm thông minh"
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Không mua nếu không có nhu cầu thực sự; Nếu bỏ 150.000đ mua thứ không cần, em đã CHI 150.000đ chứ không hề tiết kiệm 350.000đ nào cả!",
+    "points": 0.7
+  },
+  {
+    "id": "q-8-3",
+    "assignmentId": "assign-9",
+    "order": 3,
+    "content": "🎒 LEVEL 3 — “BA LÔ SMART SHOPPER” (1 phút | Chọn hành trang mua sắm)\n\nCho 9 thao tác trước khi mua sắm:\n1. 🎯 Xác định nhu cầu\n2. 💰 Xem khả năng chi trả\n3. 🔍 Tìm hiểu sản phẩm\n4. ⚖️ So sánh lựa chọn\n5. 🛡️ Kiểm tra an toàn\n6. 💳 Chọn cách thanh toán phù hợp\n7. 🔥 Mua vì đang trend\n8. 📢 Tin ngay quảng cáo\n9. 😎 Mua để bằng bạn bè\n\n👉 Chọn 6 thẻ mang vào BA LÔ SMART SHOPPER và 3 thẻ LOẠI VÀO THÙNG RÁC:",
+    "options": [
+      {
+        "key": "A",
+        "text": "🎒 MANG THEO: Xác định nhu cầu – Xem khả năng chi trả – Tìm hiểu sản phẩm – So sánh – Kiểm tra an toàn – Chọn thanh toán phù hợp | 🗑️ LOẠI: Đang trend – Tin ngay quảng cáo – Bằng bạn bè"
+      },
+      {
+        "key": "B",
+        "text": "🎒 MANG THEO: Đang trend – Tin ngay quảng cáo – Bằng bạn bè – So sánh – Kiểm tra an toàn – Thanh toán | 🗑️ LOẠI: Nhu cầu – Chi trả – Tìm hiểu sản phẩm"
+      },
+      {
+        "key": "C",
+        "text": "🎒 MANG THEO: Nhu cầu – Đang trend – Bằng bạn bè – Tin quảng cáo – Chi trả – Thanh toán | 🗑️ LOẠI: So sánh – Kiểm tra an toàn – Tìm hiểu"
+      },
+      {
+        "key": "D",
+        "text": "🎒 MANG THEO: So sánh – Nhu cầu – Chi trả – Tin ngay quảng cáo – Đang trend – Thanh toán | 🗑️ LOẠI: Bằng bạn bè – Kiểm tra an toàn – Tìm hiểu"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Mang theo 6 thẻ chuẩn: Xác định nhu cầu, Xem khả năng chi trả, Tìm hiểu thông tin, So sánh, Kiểm tra an toàn, Chọn thanh toán phù hợp. Loại 3 thẻ: Trend, Tin ngay quảng cáo, Mua để bằng bạn bè.",
+    "points": 0.7
+  },
+  {
+    "id": "q-8-4",
+    "assignmentId": "assign-9",
+    "order": 4,
+    "content": "🕵️ LEVEL 4 — “QUẢNG CÁO NÓI THẬT?” (1 phút | Tìm điểm chưa hợp lí)\n\nMột video quảng cáo nói:\n📱 “Sản phẩm này đang viral! 99% người dùng yêu thích. KOL X dùng mỗi ngày. CHỐT ĐƠN NGAY!”\nNam liền kết luận: “Người nổi tiếng dùng thì chắc chắn sản phẩm tốt và phù hợp với mình.”\n\n👉 Nhận định của Nam sai ở đâu?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Người nổi tiếng theo quy định của pháp luật không bao giờ được phép nhận quảng cáo."
+      },
+      {
+        "key": "B",
+        "text": "Tất cả các sản phẩm được người nổi tiếng quảng cáo đều có chất lượng xấu."
+      },
+      {
+        "key": "C",
+        "text": "Quảng cáo chỉ là một nguồn thông tin mang tính thương mại; người tiêu dùng cần kiểm tra thêm chất lượng, công dụng, giá cả thực tế và mức độ phù hợp với bản thân."
+      },
+      {
+        "key": "D",
+        "text": "Người tiêu dùng chỉ nên mua những mặt hàng hoàn toàn không xuất hiện trên quảng cáo."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Quảng cáo chỉ là một nguồn thông tin; cần kiểm tra thêm chất lượng, công dụng, giá cả và mức độ phù hợp.\nKOL được trả tiền để quảng bá sản phẩm, người tiêu dùng thông thái phải có tư duy phản biện và kiểm chứng độc lập.",
+    "points": 0.7
+  },
+  {
+    "id": "q-8-5",
+    "assignmentId": "assign-9",
+    "order": 5,
+    "content": "⭐ LEVEL 5 — “5 SAO = MUA NGAY?” (1 phút | Đúng/Sai)\n\nĐánh giá tính Đúng (✓) hoặc Sai (✗) của 5 nhận định sau:\n1. Giá rẻ nhất luôn là lựa chọn tốt nhất.\n2. Nên tìm hiểu thông tin sản phẩm trước khi mua.\n3. Một sản phẩm được nhiều người mua chưa chắc đã phù hợp với nhu cầu của mình.\n4. Cần cân nhắc đồng thời giữa nhu cầu và khả năng chi trả của bản thân.\n5. Thấy đánh giá “5 sao” trên mạng là đủ căn cứ tin cậy để mua ngay.\n\n👉 Kết quả từ 1 đến 5 là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1-Sai (✗) — 2-Đúng (✓) — 3-Đúng (✓) — 4-Đúng (✓) — 5-Sai (✗)"
+      },
+      {
+        "key": "B",
+        "text": "1-Đúng (✓) — 2-Đúng (✓) — 3-Đúng (✓) — 4-Đúng (✓) — 5-Đúng (✓)"
+      },
+      {
+        "key": "C",
+        "text": "1-Sai (✗) — 2-Sai (✗) — 3-Đúng (✓) — 4-Đúng (✓) — 5-Sai (✗)"
+      },
+      {
+        "key": "D",
+        "text": "1-Đúng (✓) — 2-Đúng (✓) — 3-Sai (✗) — 4-Đúng (✓) — 5-Sai (✗)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1 ✗ – 2 ✓ – 3 ✓ – 4 ✓ – 5 ✗.\n- Nhận định 1 Sai vì giá quá rẻ có thể đi kèm hàng giả, kém chất lượng hoặc độc hại.\n- Nhận định 5 Sai vì lượt vote 5 sao trên mạng có thể bị làm giả (review seeding ảo).",
+    "points": 0.7
+  },
+  {
+    "id": "q-8-6",
+    "assignmentId": "assign-9",
+    "order": 6,
+    "content": "🤖 LEVEL 6 — “AI SHOPPING ĐANG LỖI!” (1 phút | Tìm điểm chưa hợp lí)\n\nAI trợ lí mua sắm tư vấn:\n🤖 “Muốn tiêu dùng thông minh, hãy luôn mua sản phẩm rẻ nhất. Giá càng thấp càng tiết kiệm.”\n\n🚨 Hãy chọn bản vá tư duy đúng đắn:\n🔑 MẬT MÃ: RẺ ≠ ____________",
+    "options": [
+      {
+        "key": "A",
+        "text": "Luôn mua sản phẩm đắt nhất mới thể hiện đẳng cấp thông minh."
+      },
+      {
+        "key": "B",
+        "text": "Cần xem xét đồng thời nhu cầu, chất lượng, công dụng, độ an toàn, giá cả và khả năng chi trả của bản thân."
+      },
+      {
+        "key": "C",
+        "text": "Không cần quan tâm đến giá cả khi đi mua sắm."
+      },
+      {
+        "key": "D",
+        "text": "Chỉ mua những món đồ mang thương hiệu quốc tế nổi tiếng nhất."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Cần xem xét đồng thời nhu cầu, chất lượng, công dụng, độ an toàn, giá cả và khả năng chi trả.\n🔑 Mật mã: TỐT / PHÙ HỢP / THÔNG MINH. Giá rẻ nhưng kém bền, độc hại hoặc không dùng được thì còn lãng phí hơn.",
+    "points": 0.7
+  },
+  {
+    "id": "q-8-7",
+    "assignmentId": "assign-9",
+    "order": 7,
+    "content": "🧩 LEVEL 7 — “GHÉP ĐÚNG PHẢN XẠ” (1 phút | Nối cặp tình huống và phản xạ)\n\nNối mỗi tình huống mua sắm với phản xạ tương ứng:\n\n• TÌNH HUỐNG:\n1. Giá rẻ bất thường so với thị trường\n2. Đang phân vân giữa hai sản phẩm tương tự\n3. Chuẩn bị bấm nút thanh toán đơn hàng\n4. Quảng cáo trên mạng vô cùng hấp dẫn và giục giã\n\n• PHẢN XẠ:\nA. Kiểm tra lại số dư tài khoản và tổng số tiền thanh toán\nB. Kiểm tra kỹ nguồn gốc, hạn sử dụng và thông tin sản phẩm\nC. So sánh công dụng, giá trị sử dụng và độ bền\nD. Không vội quyết định chỉ vì lời kêu gọi quảng cáo\n\n👉 Mật mã nối đúng là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1–B ; 2–C ; 3–A ; 4–D"
+      },
+      {
+        "key": "B",
+        "text": "1–A ; 2–B ; 3–C ; 4–D"
+      },
+      {
+        "key": "C",
+        "text": "1–C ; 2–D ; 3–A ; 4–B"
+      },
+      {
+        "key": "D",
+        "text": "1–D ; 2–C ; 3–B ; 4–A"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1–B (Giá rẻ bất thường → Kiểm tra nguồn gốc); 2–C (Hai sản phẩm → So sánh); 3–A (Thanh toán → Kiểm tra số tiền); 4–D (Quảng cáo giục giã → Không quyết định vì quảng cáo).",
+    "points": 0.7
+  },
+  {
+    "id": "q-8-8",
+    "assignmentId": "assign-9",
+    "order": 8,
+    "content": "🧠 LEVEL 8 — “4 BƯỚC TRƯỚC NÚT MUA” (1 phút | Sắp xếp trình tự thông minh)\n\nBốn bước chuẩn bị mua sắm bị xáo trộn:\nA. So sánh các lựa chọn tương đương trên thị trường.\nB. Xác định rõ mình có thực sự cần món đồ này không.\nC. Kiểm tra thông tin, nguồn gốc xuất xứ và độ an toàn sản phẩm.\nD. Kiểm tra giá cả và đối chiếu với khả năng chi trả của túi tiền.\n\n🚦 QUY TẮC: CẦN? → BIẾT RÕ? → PHÙ HỢP? → MỚI ____________.\n👉 Trình tự sắp xếp chuẩn xác là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "B → C → A → D (hoặc B → C → D → A: Xác định nhu cầu → Kiểm tra thông tin → So sánh/Khả năng chi trả)"
+      },
+      {
+        "key": "B",
+        "text": "A → B → C → D"
+      },
+      {
+        "key": "C",
+        "text": "D → A → B → C"
+      },
+      {
+        "key": "D",
+        "text": "C → D → A → B"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. B → C → A → D (hoặc B → C → D → A).\n🚦 Quy tắc: CẦN? (B) → BIẾT RÕ? (C) → PHÙ HỢP? (A/D) → MỚI MUA.\nTừ khóa kết thúc: MUA.",
+    "points": 0.7
+  },
+  {
+    "id": "q-8-9",
+    "assignmentId": "assign-9",
+    "order": 9,
+    "content": "📱 LEVEL 9 — “FLASH SALE 60 GIÂY” (1 phút | Giải quyết áp lực thời gian)\n\nMàn hình điện thoại hiện đồng hồ đếm ngược gấp gáp:\n🔥 FLASH SALE! CÒN 01:00 PHÚT — Tai nghe chỉ 99.000đ — “Chỉ còn 2 sản phẩm cuối cùng!”\nEm chưa biết rõ cửa hàng này là ai, chất lượng tai nghe thế nào hay chính sách đổi trả ra sao.\n\n👉 Em nên xử lí thế nào?\n🧠 NHỚ: GẤP TRONG QUẢNG CÁO ≠ GẤP VỚI NHU CẦU CỦA EM",
+    "options": [
+      {
+        "key": "A",
+        "text": "Bấm mua ngay lập tức vì sắp hết 1 phút, kẻo người khác mua mất."
+      },
+      {
+        "key": "B",
+        "text": "Mua ngay vì giá chỉ có 99.000đ, hỏng thì vứt đi không tiếc."
+      },
+      {
+        "key": "C",
+        "text": "Bình tĩnh, không để đồng hồ đếm ngược ép buộc quyết định; kiểm tra thông tin cửa hàng, chất lượng và chính sách trước khi xuống tiền."
+      },
+      {
+        "key": "D",
+        "text": "Cứ đặt mua giao về nhà rồi lúc đó mới kiểm tra sau."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Không để đồng hồ đếm ngược ép quyết định; kiểm tra thông tin trước.\nĐồng hồ đếm ngược và \"còn 2 cái\" là chiêu tâm lý FOMO phổ biến tạo cảm giác khan hiếm giả tạo để khách hàng vội vã chốt đơn.",
+    "points": 0.7
+  },
+  {
+    "id": "q-8-10",
+    "assignmentId": "assign-9",
+    "order": 10,
+    "content": "💳 LEVEL 10 — “5 GIÂY TRƯỚC KHI THANH TOÁN” (1 phút | Chọn 4 thao tác an toàn)\n\nTrước khi bấm nút xác nhận THANH TOÁN, em nên thực hiện những việc nào?\n1. Kiểm tra sản phẩm (tên, số lượng, mẫu mã).\n2. Kiểm tra giá và tổng số tiền phải trả (bao gồm cả phí ship).\n3. Kiểm tra phương thức thanh toán an toàn.\n4. Bảo mật thông tin tài khoản, mã OTP cá nhân.\n5. Gửi mã xác thực cho người lạ nếu họ tự xưng là nhân viên kỹ thuật sàn.\n6. Bấm thật nhanh tay để khỏi mất ưu đãi mà không cần đọc lại.\n\n👉 4 việc làm đúng đắn là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1 + 2 + 3 + 4 (Kiểm tra sản phẩm + Kiểm tra giá/tiền + Kiểm tra phương thức + Bảo mật tài khoản)"
+      },
+      {
+        "key": "B",
+        "text": "2 + 3 + 4 + 5 (Chia sẻ mã OTP cho nhân viên)"
+      },
+      {
+        "key": "C",
+        "text": "1 + 2 + 5 + 6 (Bấm nhanh và gửi OTP)"
+      },
+      {
+        "key": "D",
+        "text": "3 + 4 + 5 + 6"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 4 việc đúng: 1, 2, 3, 4.\nTuyệt đối không gửi mã OTP cho bất kỳ ai (kể cả người xưng là nhân viên), và không bấm vội vàng bỏ qua kiểm tra số tiền.",
+    "points": 0.7
+  },
+  {
+    "id": "q-8-11",
+    "assignmentId": "assign-9",
+    "order": 11,
+    "content": "🧾 LEVEL 11 — “HÓA ĐƠN ĐỪNG VỨT!” (45 giây | Điền từ khóa)\n\nChọn 2 từ trong 4 từ: ĐỔI TRẢ – CHỨNG TỪ – TRANG TRÍ – BẢO VỆ để hoàn thành câu:\n\n“Hóa đơn mua hàng có thể là một (1) __________ giao dịch, hữu ích khi cần xử lí vấn đề hoặc (2) __________ sản phẩm.”\n\n👉 Hai từ khóa theo thứ tự là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "CHỨNG TỪ – ĐỔI TRẢ"
+      },
+      {
+        "key": "B",
+        "text": "TRANG TRÍ – BẢO VỆ"
+      },
+      {
+        "key": "C",
+        "text": "ĐỔI TRẢ – CHỨNG TỪ"
+      },
+      {
+        "key": "D",
+        "text": "BẢO VỆ – TRANG TRÍ"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. CHỨNG TỪ – ĐỔI TRẢ.\nHóa đơn và biên lai là chứng từ pháp lý chứng minh giao dịch đã diễn ra, bảo vệ quyền lợi người tiêu dùng khi hàng lỗi cần bảo hành hay đổi trả.",
+    "points": 0.6
+  },
+  {
+    "id": "q-8-12",
+    "assignmentId": "assign-9",
+    "order": 12,
+    "content": "🛍️ LEVEL 12 — “GIỎ HÀNG 500K” (1,5 phút | Quyết định ngân sách thông minh)\n\nEm có ngân sách tiết kiệm đúng 500.000đ. Danh sách hàng hóa:\n• 🎒 Cặp học: Giá 350K (Tình trạng: Cặp hiện tại đã bị rách hỏng nặng)\n• 👟 Phụ kiện giày: Giá 180K (Tình trạng: Món đồ đang hot trên mạng)\n• 📚 Sách bài tập cần học: Giá 120K (Tình trạng: Cần dùng ngay trong tuần)\n• 🧸 Móc khóa: Giá 90K (Tình trạng: Ở nhà đã có 4 cái tương tự)\n\n👉 Phương án chi tiêu thông minh nhất là:\n🔐 CÔNG THỨC: NHU CẦU + NGÂN SÁCH → QUYẾT ĐỊNH",
+    "options": [
+      {
+        "key": "A",
+        "text": "Cặp học (350K) + Sách cần học (120K) = 470K (Vừa đủ nhu cầu thiết yếu và nằm gọn trong ngân sách 500K)"
+      },
+      {
+        "key": "B",
+        "text": "Phụ kiện giày (180K) + Móc khóa (90K) = 270K"
+      },
+      {
+        "key": "C",
+        "text": "Mua cả bốn món = 740K (Vay mượn thêm tiền bạn bè)"
+      },
+      {
+        "key": "D",
+        "text": "Phụ kiện giày (180K) + Sách (120K) + Móc khóa (90K) = 390K (Để cặp rách không mua)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Cặp + Sách = 470K.\nCặp bị rách hỏng và sách học là hai nhu cầu bắt buộc phải có cho việc học. Tổng chi phí 470K vừa vặn dưới mức ngân sách 500K.",
+    "points": 0.6
+  },
+  {
+    "id": "q-8-13",
+    "assignmentId": "assign-9",
+    "order": 13,
+    "content": "🧃 LEVEL 13 — “RẺ BẤT THƯỜNG” (1 phút | Chọn đáp án)\n\nMột loại đồ uống nhập khẩu bình thường có giá khoảng 30.000đ/chai. Em thấy một tài khoản mạng xã hội lạ rao bán:\n“Hàng chính hãng 100% – hôm nay sale sốc chỉ 5.000đ – bắt buộc chuyển khoản cọc trước 100%!”\n\n👉 Phản xạ phù hợp nhất của em là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "Chuyển khoản mua ngay 10 chai vì giá rẻ không tưởng."
+      },
+      {
+        "key": "B",
+        "text": "Chuyển tiền cọc thật nhanh trước khi hết suất ưu đãi."
+      },
+      {
+        "key": "C",
+        "text": "Cảnh giác cao độ; kiểm tra nguồn bán, thông tin sản phẩm và độ tin cậy; không chuyển tiền cho tài khoản lạ khi có dấu hiệu lừa đảo/hàng giả."
+      },
+      {
+        "key": "D",
+        "text": "Gửi ngay link cho cả lớp rủ cùng chuyển tiền mua chung."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Kiểm tra nguồn bán, thông tin sản phẩm và độ tin cậy trước khi quyết định.\nGiá rẻ gấp 6 lần thị trường kèm yêu cầu chuyển khoản trước 100% là dấu hiệu điển hình của thủ đoạn lừa đảo chiếm đoạt tài sản trên không gian mạng.",
+    "points": 0.6
+  },
+  {
+    "id": "q-8-14",
+    "assignmentId": "assign-9",
+    "order": 14,
+    "content": "⚖️ LEVEL 14 — “TIẾT KIỆM HAY KEO KIỆT?” (1 phút | Bẫy tư duy)\n\nHùng phát biểu:\n“Tiêu dùng thông minh nghĩa là tuyệt đối không mua bất cứ thứ gì cả để tiết kiệm tối đa số tiền mình có.”\n\n👉 Đánh giá ý kiến của Hùng:\n💥 MẬT MÃ: TIÊU DÙNG THÔNG MINH ≠ KHÔNG ____________",
+    "options": [
+      {
+        "key": "A",
+        "text": "Đúng hoàn toàn, không tiêu gì mới là người thông minh nhất."
+      },
+      {
+        "key": "B",
+        "text": "Chưa đúng. Tiêu dùng thông minh là chi tiêu có kế hoạch, hợp lí và phù hợp với nhu cầu cần thiết cũng như điều kiện tài chính của bản thân."
+      },
+      {
+        "key": "C",
+        "text": "Tiêu dùng thông minh là thích gì mua nấy không cần nghĩ."
+      },
+      {
+        "key": "D",
+        "text": "Tiết kiệm và keo kiệt hoàn toàn giống hệt nhau."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Chưa đúng. Tiêu dùng thông minh là chi tiêu có kế hoạch, hợp lí và phù hợp với nhu cầu, điều kiện của bản thân.\n💥 Mật mã: MUA / CHI TIÊU. Tiêu dùng để phục vụ cuộc sống và học tập là điều cần thiết; thông minh là mua đúng, mua hợp lý chứ không phải nhịn chi tiêu thiết yếu.",
+    "points": 0.6
+  },
+  {
+    "id": "q-8-15",
+    "assignmentId": "assign-9",
+    "order": 15,
+    "content": "🏆 FINAL BOSS — “NÚT MUA NGAY” (1,5 phút | Vận dụng tổng hợp Smart Shopper)\n\nEm muốn mua một đôi giày thể thao online:\n👟 Giá: 399.000đ | 🔥 “SALE DUY NHẤT HÔM NAY” | ⭐ 4,9 sao | 📢 Influencer giới thiệu | 💳 Bắt buộc thanh toán trước | ❓ Em chưa biết rõ người bán và chính sách bảo hành/đổi trả.\n\nCho 6 nút tư duy:\n① 🎯 Tôi có thực sự cần đôi giày này không?\n② 🔍 Người bán/sản phẩm có đáng tin cậy không?\n③ ⚖️ Có lựa chọn nào phù hợp và uy tín hơn không?\n④ 💰 Giá cả và cách thanh toán có an toàn không?\n⑤ 🔥 Influencer khen thích nên mua ngay!\n⑥ ⏳ Đồng hồ sale sắp hết giờ nên mua vội!\n\n👉 Hãy chọn 4 nút NÊN BẤM TRƯỚC KHI ẤN NÚT “MUA”:",
+    "options": [
+      {
+        "key": "A",
+        "text": "Bấm 4 nút đầu: ① Nhu cầu thực sự? → ② Người bán tin cậy? → ③ Lựa chọn phù hợp? → ④ Thanh toán an toàn? → 🛒"
+      },
+      {
+        "key": "B",
+        "text": "Bấm: ⑤ Influencer thích + ⑥ Sale sắp hết + ① Nhu cầu + ④ Thanh toán"
+      },
+      {
+        "key": "C",
+        "text": "Bấm: ② Người bán + ③ Lựa chọn + ⑤ Influencer + ⑥ Sale"
+      },
+      {
+        "key": "D",
+        "text": "Bấm duy nhất 1 nút: ⑥ Sale sắp hết"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Bốn nút đầu tiên: ① Thật sự cần? ② Tin cậy? ③ So sánh lựa chọn? ④ Thanh toán an toàn?\nĐây là bộ lọc 4 lớp bảo vệ túi tiền của Smart Shopper trước mọi cám dỗ thị trường.",
+    "points": 0.6
+  },
+  {
+    "id": "q-8-16",
+    "assignmentId": "assign-9",
+    "order": 16,
+    "content": "❤️ EXIT TICKET — “QUY TẮC 10 GIÂY” (Cam kết hành động)\n\nLần tới khi thấy một món đồ rất muốn mua, em sẽ tự hỏi 3 câu:\n① 🎯 MÌNH CÓ THỰC SỰ CẦN KHÔNG?\n② 🔍 MÌNH ĐÃ KIỂM TRA ĐỦ THÔNG TIN CHƯA?\n③ 💰 NÓ CÓ PHÙ HỢP VỚI KHẢ NĂNG CHI TRẢ KHÔNG?\n\n🧠 ĐỪNG ĐỂ “MUA NGAY” ĐI TRƯỚC “NGHĨ KĨ”.\n👉 Em cam kết áp dụng quy tắc này vào thời điểm nào?",
+    "options": [
+      {
+        "key": "A",
+        "text": "🌱 NGAY TỪ HÔM NAY VÀ TRONG MỌI LẦN MUA SẮM TIẾP THEO: Luôn dừng lại 10 giây suy xét trước khi quyết định chi tiêu!"
+      },
+      {
+        "key": "B",
+        "text": "Thích gì mua nấy cho sướng, không cần nghĩ ngợi."
+      },
+      {
+        "key": "C",
+        "text": "Chỉ áp dụng khi nào hết sạch tiền."
+      },
+      {
+        "key": "D",
+        "text": "Nghe theo bạn bè và quảng cáo trên mạng xã hội."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Cam kết rèn luyện thói quen tư duy tiêu dùng thông minh bền vững suốt cuộc đời.",
+    "points": 0.5
+  },
+  {
+    "id": "q-9-1",
+    "assignmentId": "assign-10",
+    "order": 1,
+    "content": "🔍 HỒ SƠ 1 — “QUÉT DẤU HIỆU” (1 phút | Kéo – thả / Chọn dấu hiệu pháp lí)\n\nCho 6 thẻ đặc điểm:\nA. Hành vi trái pháp luật\nB. Hành vi có lỗi (cố ý hoặc vô ý)\nC. Do chủ thể có năng lực trách nhiệm pháp lí thực hiện\nD. Chỉ cần người khác không thích hành vi đó\nE. Xâm hại các quan hệ xã hội được pháp luật bảo vệ\nF. Bất cứ suy nghĩ tiêu cực nào thoáng qua trong đầu\n\n👉 Hãy chọn 4 thẻ thuộc DẤU HIỆU CỦA VI PHẠM PHÁP LUẬT và 2 thẻ LOẠI:\n👉 Mật mã: Không thể chỉ thấy một hành vi “không hay” rồi lập tức kết luận đó là __________________.",
+    "options": [
+      {
+        "key": "A",
+        "text": "🔎 MÁY QUÉT (4 dấu hiệu): A – B – C – E | 🗑️ LOẠI: D – F (Mật mã: vi phạm pháp luật)"
+      },
+      {
+        "key": "B",
+        "text": "🔎 MÁY QUÉT: D – F – A – B | 🗑️ LOẠI: C – E"
+      },
+      {
+        "key": "C",
+        "text": "🔎 MÁY QUÉT: A – C – D – E | 🗑️ LOẠI: B – F"
+      },
+      {
+        "key": "D",
+        "text": "🔎 MÁY QUÉT: B – C – E – F | 🗑️ LOẠI: A – D"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Dấu hiệu: A – B – C – E. Loại: D – F.\nVi phạm pháp luật phải có đủ 4 dấu hiệu: 1. Là hành vi trái pháp luật; 2. Có lỗi; 3. Do chủ thể có năng lực trách nhiệm pháp lý thực hiện; 4. Xâm phạm các quan hệ xã hội được pháp luật bảo vệ. (Chỉ suy nghĩ tiêu cực hoặc điều người khác không thích thì không phải vi phạm pháp luật).",
+    "points": 0.7
+  },
+  {
+    "id": "q-9-2",
+    "assignmentId": "assign-10",
+    "order": 2,
+    "content": "🧠 HỒ SƠ 2 — “4 CÁNH CỬA PHÁP LÍ” (1 phút | Điền từ khóa 4 loại vi phạm)\n\nĐiền 4 từ: HÌNH SỰ – DÂN SỰ – HÀNH CHÍNH – KỈ LUẬT vào chỗ trống:\n\n1. 🚨 Xâm phạm quan hệ được pháp luật hình sự bảo vệ, có tính nguy hiểm cho xã hội theo quy định → Vi phạm (1) __________\n2. 📄 Xâm phạm quan hệ tài sản hoặc quan hệ nhân thân → Vi phạm (2) __________\n3. 🚦 Vi phạm quy định quản lí nhà nước mà không phải tội phạm → Vi phạm (3) __________\n4. 🏫 Vi phạm quy định nội quy trong cơ quan, tổ chức, trường học → Vi phạm (4) __________\n\n👉 Thứ tự 4 từ khóa điền vào là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "HÌNH SỰ – DÂN SỰ – HÀNH CHÍNH – KỈ LUẬT"
+      },
+      {
+        "key": "B",
+        "text": "DÂN SỰ – HÌNH SỰ – KỈ LUẬT – HÀNH CHÍNH"
+      },
+      {
+        "key": "C",
+        "text": "HÀNH CHÍNH – KỈ LUẬT – HÌNH SỰ – DÂN SỰ"
+      },
+      {
+        "key": "D",
+        "text": "KỈ LUẬT – HÀNH CHÍNH – DÂN SỰ – HÌNH SỰ"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. HÌNH SỰ – DÂN SỰ – HÀNH CHÍNH – KỈ LUẬT.\nĐây là 4 loại vi phạm pháp luật cơ bản được quy định rõ trong chương trình GDCD 9.",
+    "points": 0.7
+  },
+  {
+    "id": "q-9-3",
+    "assignmentId": "assign-10",
+    "order": 3,
+    "content": "⚡ HỒ SƠ 3 — “3 GIÂY PHÂN LOẠI” (1,5 phút | Phân loại hồ sơ vi phạm)\n\nĐưa từng hồ sơ vào đúng ô loại vi phạm:\nA. Một người điều khiển xe máy vượt đèn đỏ vi phạm quy định giao thông và bị cảnh sát xử phạt.\nB. Người vay tiền đến hạn thỏa thuận nhưng cố tình không thực hiện nghĩa vụ trả nợ.\nC. Nhân viên nhiều lần đi muộn, vi phạm nội quy làm việc của cơ quan.\nD. Một đối tượng thực hiện hành vi trộm cắp tài sản giá trị lớn, được Bộ luật Hình sự quy định là tội phạm.\n\n👉 Kết quả phân loại vào 4 ô [HÌNH SỰ] – [DÂN SỰ] – [HÀNH CHÍNH] – [KỈ LUẬT] là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "🚨 HÌNH SỰ: D | 📄 DÂN SỰ: B | 🚦 HÀNH CHÍNH: A | 🏫 KỈ LUẬT: C"
+      },
+      {
+        "key": "B",
+        "text": "🚨 HÌNH SỰ: A | 📄 DÂN SỰ: C | 🚦 HÀNH CHÍNH: D | 🏫 KỈ LUẬT: B"
+      },
+      {
+        "key": "C",
+        "text": "🚨 HÌNH SỰ: B | 📄 DÂN SỰ: D | 🚦 HÀNH CHÍNH: C | 🏫 KỈ LUẬT: A"
+      },
+      {
+        "key": "D",
+        "text": "🚨 HÌNH SỰ: C | 📄 DÂN SỰ: A | 🚦 HÀNH CHÍNH: B | 🏫 KỈ LUẬT: D"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. D → Hình sự; B → Dân sự; A → Hành chính; C → Kỉ luật.",
+    "points": 0.7
+  },
+  {
+    "id": "q-9-4",
+    "assignmentId": "assign-10",
+    "order": 4,
+    "content": "🔗 HỒ SƠ 4 — “VI PHẠM NÀO – TRÁCH NHIỆM ẤY” (1 phút | Nối cặp tương ứng)\n\nNối loại vi phạm pháp luật với trách nhiệm pháp lí tương ứng:\n\n• LOẠI VI PHẠM:\n1. Vi phạm hình sự\n2. Vi phạm dân sự\n3. Vi phạm hành chính\n4. Vi phạm kỉ luật\n\n• TRÁCH NHIỆM TƯƠNG ỨNG:\nA. Trách nhiệm hành chính\nB. Trách nhiệm kỉ luật\nC. Trách nhiệm hình sự\nD. Trách nhiệm dân sự\n\n👉 Mật mã nối đúng là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1–C ; 2–D ; 3–A ; 4–B"
+      },
+      {
+        "key": "B",
+        "text": "1–A ; 2–B ; 3–C ; 4–D"
+      },
+      {
+        "key": "C",
+        "text": "1–D ; 2–C ; 3–B ; 4–A"
+      },
+      {
+        "key": "D",
+        "text": "1–C ; 2–A ; 3–D ; 4–B"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1–C ; 2–D ; 3–A ; 4–B.\nNguyên tắc cơ bản: Vi phạm hình sự chịu trách nhiệm hình sự; vi phạm dân sự chịu trách nhiệm dân sự; vi phạm hành chính chịu trách nhiệm hành chính; vi phạm kỉ luật chịu trách nhiệm kỉ luật.",
+    "points": 0.7
+  },
+  {
+    "id": "q-9-5",
+    "assignmentId": "assign-10",
+    "order": 5,
+    "content": "🚦 HỒ SƠ 5 — “ĐÚNG HAY BẪY?” (1 phút | Đúng/Sai)\n\nĐánh giá tính Đúng (✓) hoặc Sai (✗) của 5 nhận định sau:\n1. Mọi vi phạm pháp luật đều giống nhau về tính chất và hậu quả pháp lí.\n2. Vi phạm pháp luật được chia thành nhiều loại khác nhau.\n3. Vi phạm hành chính và vi phạm hình sự thực chất là một.\n4. Chủ thể vi phạm pháp luật có thể phải chịu trách nhiệm pháp lí tương ứng.\n5. Trách nhiệm pháp lí chỉ có duy nhất mục đích làm người vi phạm cảm thấy “sợ”.\n\n👉 Kết quả từ 1 đến 5 là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1-Sai (✗) — 2-Đúng (✓) — 3-Sai (✗) — 4-Đúng (✓) — 5-Sai (✗)"
+      },
+      {
+        "key": "B",
+        "text": "1-Đúng (✓) — 2-Đúng (✓) — 3-Đúng (✓) — 4-Đúng (✓) — 5-Sai (✗)"
+      },
+      {
+        "key": "C",
+        "text": "1-Sai (✗) — 2-Sai (✗) — 3-Sai (✗) — 4-Đúng (✓) — 5-Đúng (✓)"
+      },
+      {
+        "key": "D",
+        "text": "1-Sai (✗) — 2-Đúng (✓) — 3-Đúng (✓) — 4-Sai (✗) — 5-Sai (✗)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1 ✗ – 2 ✓ – 3 ✗ – 4 ✓ – 5 ✗.\n- Nhận định 1 Sai vì các loại vi phạm có mức độ nguy hiểm và hậu quả khác nhau.\n- Nhận định 3 Sai vì vi phạm hành chính khác tội phạm hình sự về mức độ nguy hiểm cho xã hội.\n- Nhận định 5 Sai vì trách nhiệm pháp lý còn nhằm giáo dục ý thức tôn trọng luật và duy trì trật tự xã hội.",
+    "points": 0.7
+  },
+  {
+    "id": "q-9-6",
+    "assignmentId": "assign-10",
+    "order": 6,
+    "content": "🤖 HỒ SƠ 6 — “AI LUẬT SƯ ĐANG LỖI!” (1 phút | Tìm điểm chưa hợp lí)\n\nAI tư vấn pháp lí phát biểu:\n🤖 “Chỉ cần thấy một hành vi trái pháp luật thì trong mọi trường hợp đều có thể kết luận ngay người thực hiện đã vi phạm pháp luật.”\n\n🚨 Chọn bản sửa phù hợp nhất:\n🧠 NEO TƯ DUY: MỘT DẤU HIỆU ≠ ĐỦ MỘT KẾT LUẬN",
+    "options": [
+      {
+        "key": "A",
+        "text": "Đúng hoàn toàn, cứ trái luật là lập tức bị kết tội vi phạm pháp luật."
+      },
+      {
+        "key": "B",
+        "text": "Muốn xác định vi phạm pháp luật cần xem xét đầy đủ các dấu hiệu theo quy định (hành vi trái luật, có lỗi, có năng lực trách nhiệm pháp lí, xâm hại quan hệ xã hội được bảo vệ), không chỉ duy nhất yếu tố hành vi trái pháp luật."
+      },
+      {
+        "key": "C",
+        "text": "Chỉ cần xem hành vi đó có bị cộng đồng mạng phản đối hay không là đủ."
+      },
+      {
+        "key": "D",
+        "text": "Chỉ người đã đủ 18 tuổi trưởng thành mới có thể vi phạm pháp luật."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Muốn xác định vi phạm pháp luật cần xem xét đầy đủ các dấu hiệu theo quy định.\nVí dụ: Người mắc bệnh tâm thần mất năng lực hành vi hoặc trẻ em quá nhỏ không có năng lực trách nhiệm pháp lý thì hành vi không cấu thành vi phạm pháp luật.",
+    "points": 0.7
+  },
+  {
+    "id": "q-9-7",
+    "assignmentId": "assign-10",
+    "order": 7,
+    "content": "🕵️ HỒ SƠ 7 — “AI CHỊU TRÁCH NHIỆM GÌ?” (1,5 phút | Nối tình huống và trách nhiệm)\n\nNối tình huống với nhóm trách nhiệm pháp lí tương ứng:\n\n• TÌNH HUỐNG:\n1. Vi phạm quy định quản lí nhà nước và bị cơ quan có thẩm quyền xử phạt\n2. Vi phạm nghĩa vụ tài sản trong hợp đồng và phải bồi thường thiệt hại\n3. Thực hiện hành vi tội phạm và bị Tòa án áp dụng hình phạt tù\n4. Vi phạm nội quy, kỉ luật lao động của cơ quan và bị khiển trách\n\n• NHÓM TRÁCH NHIỆM:\nA. Trách nhiệm dân sự\nB. Trách nhiệm kỉ luật\nC. Trách nhiệm hành chính\nD. Trách nhiệm hình sự\n\n👉 Mật mã nối đúng là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1–C ; 2–A ; 3–D ; 4–B"
+      },
+      {
+        "key": "B",
+        "text": "1–A ; 2–B ; 3–C ; 4–D"
+      },
+      {
+        "key": "C",
+        "text": "1–D ; 2–C ; 3–B ; 4–A"
+      },
+      {
+        "key": "D",
+        "text": "1–C ; 2–D ; 3–A ; 4–B"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1–C ; 2–A ; 3–D ; 4–B.\n- Phạt quản lý nhà nước → Hành chính (C)\n- Bồi thường nghĩa vụ tài sản → Dân sự (A)\n- Tội phạm bị Tòa án kết án → Hình sự (D)\n- Xử lý nội quy cơ quan → Kỉ luật (B)",
+    "points": 0.7
+  },
+  {
+    "id": "q-9-8",
+    "assignmentId": "assign-10",
+    "order": 8,
+    "content": "⚖️ HỒ SƠ 8 — “PHẠT XONG LÀ HẾT?” (1 phút | Chọn đáp án về ý nghĩa trách nhiệm pháp lí)\n\nMinh nói: “Trách nhiệm pháp lí chỉ có một mục đích duy nhất: trừng phạt người vi phạm cho bõ tức.”\n\n👉 Phát biểu nào dưới đây đầy đủ và chuẩn xác nhất theo nội dung môn GDCD 9?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Minh hoàn toàn đúng, pháp luật sinh ra chỉ để trừng phạt."
+      },
+      {
+        "key": "B",
+        "text": "Trách nhiệm pháp lí không có bất kì ý nghĩa gì đối với xã hội."
+      },
+      {
+        "key": "C",
+        "text": "Ngoài xử lí người vi phạm, trách nhiệm pháp lí còn nhằm giáo dục ý thức tôn trọng pháp luật, răn đe phòng ngừa vi phạm, bảo vệ quyền lợi công dân và duy trì trật tự an toàn xã hội."
+      },
+      {
+        "key": "D",
+        "text": "Chỉ có những người vi phạm pháp luật mới cần quan tâm và tìm hiểu đến pháp luật."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Ngoài xử lí người vi phạm, trách nhiệm pháp lí còn góp phần giáo dục ý thức tôn trọng pháp luật, phòng ngừa vi phạm và duy trì trật tự xã hội.",
+    "points": 0.7
+  },
+  {
+    "id": "q-9-9",
+    "assignmentId": "assign-10",
+    "order": 9,
+    "content": "🧩 HỒ SƠ 9 — “GHÉP HẬU QUẢ” (1 phút | Nối loại trách nhiệm với chế tài cụ thể)\n\nNối loại trách nhiệm với ví dụ về hậu quả pháp lí phù hợp theo tài liệu:\n\n• TRÁCH NHIỆM:\n1. Trách nhiệm hình sự\n2. Trách nhiệm dân sự\n3. Trách nhiệm hành chính\n4. Trách nhiệm kỉ luật\n\n• VÍ DỤ CHẾ TÀI HẬU QUẢ:\nA. Buộc bồi thường thiệt hại về tài sản\nB. Áp dụng hình phạt tù\nC. Phạt tiền theo quyết định xử phạt vi phạm hành chính\nD. Khiển trách, cảnh cáo, buộc thôi việc theo nội quy cơ quan\n\n👉 Kết quả nối đúng là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1–B ; 2–A ; 3–C ; 4–D"
+      },
+      {
+        "key": "B",
+        "text": "1–A ; 2–B ; 3–C ; 4–D"
+      },
+      {
+        "key": "C",
+        "text": "1–C ; 2–D ; 3–A ; 4–B"
+      },
+      {
+        "key": "D",
+        "text": "1–B ; 2–C ; 3–A ; 4–D"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1–B ; 2–A ; 3–C ; 4–D.\n- Hình sự → Phạt tù (B)\n- Dân sự → Bồi thường thiệt hại (A)\n- Hành chính → Phạt tiền theo biên bản hành chính (C)\n- Kỉ luật → Khiển trách, cảnh cáo (D)",
+    "points": 0.7
+  },
+  {
+    "id": "q-9-10",
+    "assignmentId": "assign-10",
+    "order": 10,
+    "content": "📱 HỒ SƠ 10 — “CHỈ LÀ MỘT NÚT SHARE?” (1 phút | Giải quyết tình huống mạng xã hội)\n\nMột người bạn gửi vào nhóm chat một đường link có nội dung bịa đặt, bôi nhọ danh dự người khác và nhắn:\n“Share đi! Nhiều người trên mạng đang chia sẻ lắm, chắc chẳng sao đâu.”\nEm chưa biết rõ nội dung thực hư và hậu quả của việc tiếp tay lan truyền.\n\n👉 Cách xử lí chuẩn mực nhất của em là:\n🔐 MẬT MÃ: “NHIỀU NGƯỜI CÙNG LÀM” ≠ “HÀNH VI ĐÓ ____________”.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Chia sẻ ngay vì thấy nhiều người làm thì mình làm theo."
+      },
+      {
+        "key": "B",
+        "text": "Chia sẻ lên trang cá nhân, nếu bị nhắc nhở thì vội vàng xóa sau."
+      },
+      {
+        "key": "C",
+        "text": "Tuyệt đối không tiếp tay chia sẻ; kiểm tra thông tin và báo với người lớn/thầy cô có trách nhiệm nếu nhận thấy nguy cơ vi phạm pháp luật."
+      },
+      {
+        "key": "D",
+        "text": "Viết thêm các bình luận thêu dệt, kích động để bài viết nhiều like hơn."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Không tiếp tay; kiểm tra thông tin và báo người lớn/giáo viên phù hợp.\n🔐 Mật mã: HỢP PHÁP / ĐÚNG PHÁP LUẬT. Hành vi chia sẻ thông tin sai sự thật, xúc phạm danh dự người khác trên mạng là vi phạm pháp luật (Luật An ninh mạng).",
+    "points": 0.7
+  },
+  {
+    "id": "q-9-11",
+    "assignmentId": "assign-10",
+    "order": 11,
+    "content": "🔎 HỒ SƠ 11 — “ĐỪNG TỰ LÀM THẨM PHÁN” (1 phút | Tìm cách ứng xử đúng đắn)\n\nTrong nhóm lớp xuất hiện tin đồn chưa kiểm chứng:\n“Bạn X chắc chắn đã phạm tội ăn cắp! Mọi người đăng ảnh và tên bạn ấy lên mạng để cảnh cáo đi!”\n\n👉 Em nên hành động như thế nào?\n💡 NEO TƯ DUY: TÔN TRỌNG PHÁP LUẬT cũng bao gồm không tùy tiện “kết tội” người khác.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Đăng tải và chia sẻ ảnh của bạn X ngay để cảnh báo mọi người."
+      },
+      {
+        "key": "B",
+        "text": "A dua hùa theo số đông để kết luận bạn X có tội."
+      },
+      {
+        "key": "C",
+        "text": "Không tự ý kết luận hay phát tán thông tin hình ảnh; để sự việc được cơ quan/thầy cô xác minh theo đúng quy định và kịp thời báo người có trách nhiệm."
+      },
+      {
+        "key": "D",
+        "text": "Vào trang cá nhân của bạn X để lại các bình luận lăng mạ, xúc phạm."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Không tự kết luận hay phát tán thông tin; để sự việc được xác minh, xử lí theo đúng quy định.\nChỉ có cơ quan tiến hành tố tụng có thẩm quyền mới có quyền định tội một người theo quy định của pháp luật.",
+    "points": 0.7
+  },
+  {
+    "id": "q-9-12",
+    "assignmentId": "assign-10",
+    "order": 12,
+    "content": "🧠 HỒ SƠ 12 — “4 BƯỚC PHÁP LÍ” (1 phút | Sắp xếp tư duy công dân)\n\nKhi gặp một tình huống nghi ngờ có dấu hiệu vi phạm trong cuộc sống, học sinh nên suy nghĩ theo trình tự nào?\nA. Chọn cách ứng xử phù hợp, kiên quyết không tiếp tay cho hành vi sai trái.\nB. Xác định rõ hành vi thực tế đang xảy ra là gì.\nC. Đối chiếu với quy định và nguyên tắc pháp luật đã được học.\nD. Xem xét cẩn trọng các dấu hiệu liên quan, không vội vàng kết luận cảm tính.\n\n🔐 CÔNG THỨC: SỰ VIỆC → CĂN CỨ → DẤU HIỆU → HÀNH ĐỘNG\n👉 Thứ tự sắp xếp chuẩn là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "B → C → D → A (Xác định hành vi → Đối chiếu quy định → Xem xét dấu hiệu → Chọn ứng xử phù hợp)"
+      },
+      {
+        "key": "B",
+        "text": "A → B → C → D"
+      },
+      {
+        "key": "C",
+        "text": "C → B → A → D"
+      },
+      {
+        "key": "D",
+        "text": "D → A → B → C"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. B → C → D → A.\nTrình tự tư duy pháp lí chuẩn mực: Nhìn nhận sự việc thực tế (B) → Đối chiếu căn cứ luật định (C) → Phân tích các dấu hiệu cấu thành (D) → Quyết định hành động ứng xử đúng đắn (A).",
+    "points": 0.6
+  },
+  {
+    "id": "q-9-13",
+    "assignmentId": "assign-10",
+    "order": 13,
+    "content": "💥 FINAL BOSS — “30 GIÂY PHÁ ÁN” (1,5 phút | Ghép cặp vi phạm & trách nhiệm)\n\nĐọc 4 thẻ tình huống:\n① Một người thực hiện hành vi nguy hiểm cho xã hội được pháp luật hình sự quy định là tội phạm.\n② Một người vi phạm nghĩa vụ tài sản theo quan hệ hợp đồng dân sự.\n③ Một người vi phạm quy định quản lí nhà nước nhưng hành vi chưa đến mức cấu thành tội phạm.\n④ Một nhân viên trong cơ quan vi phạm quy định nội quy, kỉ luật lao động của đơn vị.\n\n👉 Kéo mỗi thẻ vào đúng “đường ray” loại vi phạm và trách nhiệm tương ứng:",
+    "options": [
+      {
+        "key": "A",
+        "text": "① Vi phạm hình sự → Trách nhiệm hình sự | ② Vi phạm dân sự → Trách nhiệm dân sự | ③ Vi phạm hành chính → Trách nhiệm hành chính | ④ Vi phạm kỉ luật → Trách nhiệm kỉ luật"
+      },
+      {
+        "key": "B",
+        "text": "① Vi phạm dân sự → Trách nhiệm hành chính | ② Vi phạm hình sự → Trách nhiệm kỉ luật | ③ Vi phạm kỉ luật → Trách nhiệm dân sự | ④ Vi phạm hành chính → Trách nhiệm hình sự"
+      },
+      {
+        "key": "C",
+        "text": "① Vi phạm hành chính → Trách nhiệm hành chính | ② Vi phạm kỉ luật → Trách nhiệm kỉ luật | ③ Vi phạm hình sự → Trách nhiệm hình sự | ④ Vi phạm dân sự → Trách nhiệm dân sự"
+      },
+      {
+        "key": "D",
+        "text": "① Vi phạm kỉ luật → Trách nhiệm kỉ luật | ② Vi phạm hành chính → Trách nhiệm hành chính | ③ Vi phạm dân sự → Trách nhiệm dân sự | ④ Vi phạm hình sự → Trách nhiệm hình sự"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. ① Vi phạm hình sự → trách nhiệm hình sự; ② Vi phạm dân sự → trách nhiệm dân sự; ③ Vi phạm hành chính → trách nhiệm hành chính; ④ Vi phạm kỉ luật → trách nhiệm kỉ luật.",
+    "points": 0.6
+  },
+  {
+    "id": "q-9-14",
+    "assignmentId": "assign-10",
+    "order": 14,
+    "content": "❤️ EXIT TICKET — “NÚT DỪNG 5 GIÂY” (Phản xạ công dân chuẩn mực)\n\nLần tới khi bạn bè rủ em làm một việc trái quy định và bảo:\n“Có ai biết đâu mà sợ! Cứ làm đi!”\n\n👉 Em muốn bật phản xạ nào?\n⚖️ TUÂN THỦ PHÁP LUẬT KHÔNG BẮT ĐẦU TỪ NỖI SỢ BỊ PHẠT. NÓ BẮT ĐẦU TỪ VIỆC BIẾT DỪNG LẠI – SUY XÉT – CHỊU TRÁCH NHIỆM.",
+    "options": [
+      {
+        "key": "A",
+        "text": "🛡️ BẬT PHẢN XẠ CÔNG DÂN: Dừng lại 5 giây tự hỏi: “Việc này có đúng pháp luật/nội quy không? Hậu quả có thể là gì?” và dứt khoát từ chối hành vi sai trái!"
+      },
+      {
+        "key": "B",
+        "text": "“Không bị ai phát hiện thì cứ làm thoải mái.”"
+      },
+      {
+        "key": "C",
+        "text": "“Bạn bè làm thì mình cũng làm theo cho vui.”"
+      },
+      {
+        "key": "D",
+        "text": "“Cứ làm trước đi, hậu quả tính sau.”"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Bản lĩnh công dân đích thực là sự tự giác tuân thủ pháp luật xuất phát từ lương tâm và hiểu biết, chứ không phụ thuộc vào việc có người giám sát hay không.",
+    "points": 0.6
+  },
+  {
+    "id": "q-10-1",
+    "assignmentId": "assign-11",
+    "order": 1,
+    "content": "🚀 LEVEL 1 — “MỞ SHOP ĐƯỢC KHÔNG?” (1 phút | Chọn đáp án)\n\nMột người muốn mở cửa hàng online. Bạn ấy nói:\n“Đã có quyền tự do kinh doanh thì mình thích kinh doanh ngành nghề nào cũng được.”\n\n👉 Phát biểu nào dưới đây phù hợp nhất với pháp luật?\n🔐 MẬT MÃ: TỰ DO KINH DOANH ≠ TỰ DO ____________.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Đúng, vì đã là “tự do” thì không có bất kỳ giới hạn nào."
+      },
+      {
+        "key": "B",
+        "text": "Chỉ cần có vốn thì được kinh doanh mọi thứ theo ý thích."
+      },
+      {
+        "key": "C",
+        "text": "Có quyền tự do kinh doanh những ngành, nghề mà pháp luật không cấm và phải tuân thủ quy định pháp luật về kinh doanh."
+      },
+      {
+        "key": "D",
+        "text": "Chỉ các doanh nghiệp lớn mới có quyền tự do kinh doanh."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Có quyền tự do kinh doanh những ngành, nghề mà pháp luật không cấm và phải tuân thủ quy định pháp luật về kinh doanh.\n🔐 Mật mã: TUỲ Ý. Quyền tự do kinh doanh luôn gắn liền với khuôn khổ pháp luật.",
+    "points": 0.7
+  },
+  {
+    "id": "q-10-2",
+    "assignmentId": "assign-11",
+    "order": 2,
+    "content": "🛣️ LEVEL 2 — “LÀN ĐƯỜNG TỰ DO” (1 phút | Kéo – thả / Phân loại)\n\nCho 6 hành vi trong hoạt động kinh doanh:\n1. 🎯 Lựa chọn ngành nghề pháp luật không cấm\n2. 🏪 Lựa chọn hình thức kinh doanh phù hợp\n3. ⚖️ Tuân thủ quy định pháp luật về kinh doanh\n4. 🛡️ Tôn trọng quyền, lợi ích hợp pháp của người tiêu dùng\n5. 💣 Mặt hàng lời cao thì bán, dù pháp luật cấm\n6. 🎭 Gắn nhãn sai để dễ bán\n\n👉 Hãy chọn đúng 4 thẻ trong “LÀN ĐƯỜNG HỢP PHÁP” và 2 thẻ “VƯỢT VẠCH”:",
+    "options": [
+      {
+        "key": "A",
+        "text": "🟢 LÀN ĐƯỜNG HỢP PHÁP: Ngành nghề không cấm – Hình thức phù hợp – Tuân thủ pháp luật – Tôn trọng người tiêu dùng | 🔴 VƯỢT VẠCH: Bán hàng cấm kiếm lời – Gắn nhãn sai"
+      },
+      {
+        "key": "B",
+        "text": "🟢 LÀN ĐƯỜNG HỢP PHÁP: Bán hàng cấm – Gắn nhãn sai – Ngành nghề không cấm – Tuân thủ pháp luật | 🔴 VƯỢT VẠCH: Tôn trọng người tiêu dùng – Hình thức phù hợp"
+      },
+      {
+        "key": "C",
+        "text": "🟢 LÀN ĐƯỜNG HỢP PHÁP: Bán hàng cấm – Hình thức phù hợp – Tuân thủ pháp luật – Gắn nhãn sai | 🔴 VƯỢT VẠCH: Ngành nghề không cấm – Tôn trọng người tiêu dùng"
+      },
+      {
+        "key": "D",
+        "text": "🟢 LÀN ĐƯỜNG HỢP PHÁP: Tôn trọng người tiêu dùng – Gắn nhãn sai – Bán hàng cấm – Ngành nghề không cấm | 🔴 VƯỢT VẠCH: Hình thức phù hợp – Tuân thủ pháp luật"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Làn hợp pháp: 1, 2, 3, 4. Vượt vạch: 5, 6.\nChủ thể kinh doanh được tự do lựa chọn ngành nghề pháp luật không cấm, đồng thời phải bảo đảm quyền lợi người tiêu dùng và tuân thủ luật.",
+    "points": 0.7
+  },
+  {
+    "id": "q-10-3",
+    "assignmentId": "assign-11",
+    "order": 3,
+    "content": "🎮 LEVEL 3 — “QUYỀN HAY NGHĨA VỤ?” (1 phút | Phân loại)\n\nPhân loại các thẻ sau vào vùng QUYỀN hoặc NGHĨA VỤ:\nA. Lựa chọn ngành nghề kinh doanh mà pháp luật không cấm.\nB. Khai thuế theo quy định.\nC. Lựa chọn hình thức kinh doanh.\nD. Nộp thuế đầy đủ, đúng thời hạn theo quy định.\nE. Tuân thủ pháp luật trong hoạt động kinh doanh.\nF. Lựa chọn cách thức tổ chức hoạt động kinh doanh phù hợp quy định.\n\n👉 Kết quả phân loại chuẩn là:\n🧠 NEO TƯ DUY: CÓ QUYỀN ↔ CÓ TRÁCH NHIỆM",
+    "options": [
+      {
+        "key": "A",
+        "text": "🟢 QUYỀN: A – C – F | 🔵 NGHĨA VỤ: B – D – E"
+      },
+      {
+        "key": "B",
+        "text": "🟢 QUYỀN: B – D – E | 🔵 NGHĨA VỤ: A – C – F"
+      },
+      {
+        "key": "C",
+        "text": "🟢 QUYỀN: A – B – C | 🔵 NGHĨA VỤ: D – E – F"
+      },
+      {
+        "key": "D",
+        "text": "🟢 QUYỀN: C – D – E | 🔵 NGHĨA VỤ: A – B – F"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Quyền: A, C, F. Nghĩa vụ: B, D, E.",
+    "points": 0.7
+  },
+  {
+    "id": "q-10-4",
+    "assignmentId": "assign-11",
+    "order": 4,
+    "content": "🚦 LEVEL 4 — “ĐÚNG HAY BẪY?” (1 phút | Đúng/Sai)\n\nĐánh giá tính Đúng (✓) hoặc Sai (✗) của 5 nhận định sau:\n1. Tự do kinh doanh nghĩa là được kinh doanh mọi ngành nghề.\n2. Mọi người có quyền tự do kinh doanh những ngành nghề mà pháp luật không cấm.\n3. Hoạt động kinh doanh phải tuân thủ pháp luật.\n4. Nghĩa vụ thuế chỉ cần thực hiện khi người nộp thuế “muốn”.\n5. Khai thuế phải bảo đảm chính xác, trung thực theo quy định.\n\n👉 Kết quả từ 1 đến 5 là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1-Sai (✗) — 2-Đúng (✓) — 3-Đúng (✓) — 4-Sai (✗) — 5-Đúng (✓)"
+      },
+      {
+        "key": "B",
+        "text": "1-Đúng (✓) — 2-Đúng (✓) — 3-Đúng (✓) — 4-Sai (✗) — 5-Đúng (✓)"
+      },
+      {
+        "key": "C",
+        "text": "1-Sai (✗) — 2-Sai (✗) — 3-Đúng (✓) — 4-Đúng (✓) — 5-Sai (✗)"
+      },
+      {
+        "key": "D",
+        "text": "1-Sai (✗) — 2-Đúng (✓) — 3-Sai (✗) — 4-Sai (✗) — 5-Đúng (✓)"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1 ✗ – 2 ✓ – 3 ✓ – 4 ✗ – 5 ✓.",
+    "points": 0.7
+  },
+  {
+    "id": "q-10-5",
+    "assignmentId": "assign-11",
+    "order": 5,
+    "content": "🤖 LEVEL 5 — “AI STARTUP ĐANG LỖI!” (1 phút | Tìm điểm chưa hợp lí)\n\nAI tư vấn khởi nghiệp:\n🤖 “Nếu một mặt hàng đem lại lợi nhuận rất cao thì nên kinh doanh. Lợi nhuận là tiêu chí quan trọng nhất, còn pháp luật có thể xem sau.”\n\n🚨 Hãy chọn bản vá chuẩn xác nhất:\n💥 MẬT MÃ: LỢI NHUẬN ≠ GIẤY PHÉP VƯỢT QUA ____________.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Đúng hoàn toàn, kinh doanh là phải kiếm thật nhiều tiền bất chấp tất cả."
+      },
+      {
+        "key": "B",
+        "text": "Trước hết phải xem ngành nghề, hàng hóa và hoạt động kinh doanh đó có phù hợp quy định pháp luật hay không."
+      },
+      {
+        "key": "C",
+        "text": "Chỉ cần khách hàng đồng ý mua là được phép bán."
+      },
+      {
+        "key": "D",
+        "text": "Chỉ cần che giấu khéo léo để không ai phát hiện là được."
+      }
+    ],
+    "correctOption": "B",
+    "explanation": "Đáp án: B. Trước hết phải xem ngành nghề, hàng hóa và hoạt động kinh doanh đó có phù hợp quy định pháp luật hay không.\n💥 Mật mã: PHÁP LUẬT.",
+    "points": 0.7
+  },
+  {
+    "id": "q-10-6",
+    "assignmentId": "assign-11",
+    "order": 6,
+    "content": "🛒 LEVEL 6 — “SHOP ONLINE 9A” (1 phút | Giải quyết tình huống)\n\nMột cửa hàng online phát hiện một sản phẩm không rõ nguồn gốc xuất xứ đang rất “hot”.\nMột người đề nghị: “Cứ đăng bán đi! Khách hỏi thì nói hàng xịn. Lãi gấp ba đấy!”\n\n👉 Người kinh doanh có trách nhiệm nên quyết định như thế nào?\n🔐 NEO: KINH DOANH ≠ KIẾM LỢI BẰNG MỌI GIÁ",
+    "options": [
+      {
+        "key": "A",
+        "text": "Bán ngay lập tức vì cơ hội hot kiếm tiền nhanh chóng."
+      },
+      {
+        "key": "B",
+        "text": "Đăng bán thử vài đơn, nếu khách khiếu nại thì lập tức xóa bài."
+      },
+      {
+        "key": "C",
+        "text": "Không vì lợi nhuận mà kinh doanh hàng hóa không bảo đảm yêu cầu pháp luật; phải bảo đảm thông tin trung thực và quyền lợi hợp pháp của người tiêu dùng."
+      },
+      {
+        "key": "D",
+        "text": "Đổi tên thương hiệu và tem mác khác để tránh bị kiểm tra."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Không vì lợi nhuận mà kinh doanh hàng hóa không bảo đảm yêu cầu pháp luật; phải bảo đảm thông tin và quyền lợi hợp pháp của người tiêu dùng.",
+    "points": 0.7
+  },
+  {
+    "id": "q-10-7",
+    "assignmentId": "assign-11",
+    "order": 7,
+    "content": "💰 LEVEL 7 — “THUẾ ĐI ĐÂU?” (1 phút | Nối cặp nghĩa vụ thuế)\n\nNối mỗi từ khóa nghĩa vụ với ý nghĩa phù hợp theo quy định pháp luật:\n\n• TỪ KHÓA:\n1. Đăng kí thuế\n2. Khai thuế\n3. Nộp thuế\n4. Nghĩa vụ thuế\n\n• Ý NGHĨA:\nA. Thực hiện đúng thời hạn theo quy định\nB. Thực hiện thủ tục đăng kí mã số thuế theo quy định\nC. Cung cấp thông tin doanh thu chính xác, trung thực\nD. Nghĩa vụ bắt buộc phải thực hiện theo pháp luật\n\n👉 Mật mã ghép nối đúng là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "1–B ; 2–C ; 3–A ; 4–D (1–Thủ tục đăng kí ; 2–Khai trung thực ; 3–Nộp đúng hạn ; 4–Nghĩa vụ bắt buộc)"
+      },
+      {
+        "key": "B",
+        "text": "1–A ; 2–B ; 3–C ; 4–D"
+      },
+      {
+        "key": "C",
+        "text": "1–B ; 2–A ; 3–C ; 4–D"
+      },
+      {
+        "key": "D",
+        "text": "1–C ; 2–D ; 3–A ; 4–B"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 1–B ; 2–C ; 3–A ; 4–D.",
+    "points": 0.7
+  },
+  {
+    "id": "q-10-8",
+    "assignmentId": "assign-11",
+    "order": 8,
+    "content": "🧾 LEVEL 8 — “HÓA ĐƠN ẢO” (1 phút | Tìm điểm chưa hợp lí)\n\nChủ một cửa hàng nói:\n“Nếu khai doanh thu thấp hơn thực tế thì số thuế phải nộp có thể giảm. Công việc của mình mà, có ảnh hưởng ai đâu.”\n\n👉 Suy nghĩ trên sai ở điểm nào?\n🧠 CHÌA KHÓA: “TIỀN CỦA MÌNH” ≠ “NGHĨA VỤ THUẾ LÀ TÙY CHỌN”",
+    "options": [
+      {
+        "key": "A",
+        "text": "Không sai vì tiền mình kiếm được thì mình tự quyết."
+      },
+      {
+        "key": "B",
+        "text": "Chỉ các doanh nghiệp lớn mới bắt buộc phải khai trung thực."
+      },
+      {
+        "key": "C",
+        "text": "Người có nghĩa vụ phải khai thuế chính xác, trung thực, đầy đủ và chịu trách nhiệm trước pháp luật về hành vi trốn thuế, gian lận thuế."
+      },
+      {
+        "key": "D",
+        "text": "Miễn vẫn bán hàng chạy cho khách thì việc khai thuế thế nào cũng được."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Người có nghĩa vụ phải khai thuế chính xác, trung thực, đầy đủ và chịu trách nhiệm theo quy định pháp luật.",
+    "points": 0.7
+  },
+  {
+    "id": "q-10-9",
+    "assignmentId": "assign-11",
+    "order": 9,
+    "content": "🧩 LEVEL 9 — “4 BƯỚC CHECK STARTUP” (1 phút | Sắp xếp tư duy khởi nghiệp)\n\nTrước một ý tưởng khởi nghiệp kinh doanh, hãy sắp xếp 4 câu hỏi theo trình tự hợp lí:\nA. Tôi phải thực hiện những nghĩa vụ thuế và pháp lí nào?\nB. Ngành nghề/hàng hóa này có được pháp luật cho phép kinh doanh không?\nC. Hoạt động này có bảo đảm quyền lợi hợp pháp của khách hàng và xã hội không?\nD. Tôi sẽ lựa chọn hình thức/cách thức kinh doanh nào phù hợp quy định?\n\n🔐 CÔNG THỨC: HỢP PHÁP → CÁCH LÀM → TRÁCH NHIỆM → QUYỀN LỢI\n👉 Trình tự sắp xếp chuẩn là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "B → D → A → C (hoặc B → D → C → A: Kiểm tra tính hợp pháp → Chọn cách làm → Nghĩa vụ thuế → Bảo đảm quyền lợi)"
+      },
+      {
+        "key": "B",
+        "text": "A → B → C → D"
+      },
+      {
+        "key": "C",
+        "text": "C → B → D → A"
+      },
+      {
+        "key": "D",
+        "text": "D → A → B → C"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. B → D → A → C (hoặc B → D → C → A).",
+    "points": 0.7
+  },
+  {
+    "id": "q-10-10",
+    "assignmentId": "assign-11",
+    "order": 10,
+    "content": "⚡ LEVEL 10 — “FREESHIP THUẾ?” (1 phút | Chọn đáp án)\n\nMột người bán hàng qua mạng nói:\n“Tôi bán hàng chủ yếu trên mạng nên chắc kinh doanh online thì không liên quan gì đến nghĩa vụ thuế cả.”\n\n👉 Em hãy phân tích quan điểm này:",
+    "options": [
+      {
+        "key": "A",
+        "text": "Đúng vì bán trên mạng không có mặt bằng cố định nên không cần thuế."
+      },
+      {
+        "key": "B",
+        "text": "Đúng nếu chỉ bán qua trang mạng xã hội cá nhân."
+      },
+      {
+        "key": "C",
+        "text": "Không thể căn cứ chỉ vào việc bán online để kết luận không có nghĩa vụ thuế; nghĩa vụ thuế phải thực hiện theo quy định pháp luật áp dụng cho mọi hình thức kinh doanh."
+      },
+      {
+        "key": "D",
+        "text": "Thuế là việc của người mua hàng, người bán không bao giờ phải nộp."
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Không thể căn cứ chỉ vào việc bán online để kết luận không có nghĩa vụ thuế; nghĩa vụ phải thực hiện theo quy định pháp luật áp dụng.",
+    "points": 0.7
+  },
+  {
+    "id": "q-10-11",
+    "assignmentId": "assign-11",
+    "order": 11,
+    "content": "🕵️ LEVEL 11 — “BẪY TỰ DO” (1 phút | Điền từ khóa)\n\nChọn 4 từ: PHÁP LUẬT – LỢI NHUẬN – QUYỀN – NGHĨA VỤ để hoàn thành công thức:\n\n🟢 KINH DOANH HỢP PHÁP =\n(1) __________ tự do kinh doanh\n➕\n(2) __________ tuân thủ quy định\n➕\nKHUÔN KHỔ (3) __________\n≠\nchỉ chạy theo (4) __________\n\n👉 Bốn từ khóa theo thứ tự là:",
+    "options": [
+      {
+        "key": "A",
+        "text": "QUYỀN – NGHĨA VỤ – PHÁP LUẬT – LỢI NHUẬN"
+      },
+      {
+        "key": "B",
+        "text": "LỢI NHUẬN – QUYỀN – NGHĨA VỤ – PHÁP LUẬT"
+      },
+      {
+        "key": "C",
+        "text": "PHÁP LUẬT – LỢI NHUẬN – QUYỀN – NGHĨA VỤ"
+      },
+      {
+        "key": "D",
+        "text": "NGHĨA VỤ – QUYỀN – LỢI NHUẬN – PHÁP LUẬT"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. QUYỀN – NGHĨA VỤ – PHÁP LUẬT – LỢI NHUẬN.",
+    "points": 0.6
+  },
+  {
+    "id": "q-10-12",
+    "assignmentId": "assign-11",
+    "order": 12,
+    "content": "🧠 LEVEL 12 — “AI ĐƯỢC LỢI?” (1 phút | Chọn nhiều đáp án)\n\nViệc thực hiện đúng quy định pháp luật trong kinh doanh góp phần bảo vệ quyền lợi của những đối tượng nào dưới đây?\n1. 👤 Người kinh doanh chân chính\n2. 🛒 Người tiêu dùng\n3. 👷 Người lao động trong cơ sở kinh doanh\n4. 🌱 Những lợi ích chung của xã hội được pháp luật bảo vệ\n5. ❌ Chỉ duy nhất người bán hàng\n\n👉 Có bao nhiêu nhóm đối tượng được bảo vệ hợp pháp?",
+    "options": [
+      {
+        "key": "A",
+        "text": "4 nhóm đối tượng (Người kinh doanh, Người tiêu dùng, Người lao động và Lợi ích chung của xã hội)"
+      },
+      {
+        "key": "B",
+        "text": "Chỉ 1 đối tượng duy nhất là người kinh doanh"
+      },
+      {
+        "key": "C",
+        "text": "2 đối tượng"
+      },
+      {
+        "key": "D",
+        "text": "3 đối tượng"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. 4 đáp án đầu (Người kinh doanh, Người tiêu dùng, Người lao động, Lợi ích xã hội).",
+    "points": 0.6
+  },
+  {
+    "id": "q-10-13",
+    "assignmentId": "assign-11",
+    "order": 13,
+    "content": "📱 LEVEL 13 — “TIN NHẮN TỪ NGƯỜI THÂN” (1 phút | Vận dụng tình huống)\n\nNgười thân nhắn tin hỏi em:\n“Cô đang định bán một mặt hàng online. Người quen bảo mặt hàng này có thể thuộc diện bị hạn chế kinh doanh nhưng cô thấy nhiều shop trên mạng vẫn bán. Chắc bán theo họ được nhỉ?”\n\n👉 Là một học sinh GDCD 9 hiểu biết, em nên khuyên người thân thế nào?\n💥 NEO TƯ DUY: NHIỀU NGƯỜI LÀM ≠ PHÁP LUẬT CHO PHÉP",
+    "options": [
+      {
+        "key": "A",
+        "text": "“Nhiều người đang bán thì chắc chắn pháp luật cho phép, cô cứ yên tâm bán.”"
+      },
+      {
+        "key": "B",
+        "text": "“Cứ bán thử vài hôm kiếm lời, khi nào bị cơ quan chức năng nhắc nhở thì dừng.”"
+      },
+      {
+        "key": "C",
+        "text": "“Nên kiểm tra kỹ quy định pháp luật và điều kiện kinh doanh trước khi thực hiện; không thể thấy người khác làm sai mà làm theo.”"
+      },
+      {
+        "key": "D",
+        "text": "“Bán trên mạng thì không bao giờ bị xử phạt đâu cô đừng lo.”"
+      }
+    ],
+    "correctOption": "C",
+    "explanation": "Đáp án: C. Nên kiểm tra quy định pháp luật và điều kiện kinh doanh trước khi thực hiện.\n💥 Neo tư duy: NHIỀU NGƯỜI LÀM ≠ PHÁP LUẬT CHO PHÉP.",
+    "points": 0.6
+  },
+  {
+    "id": "q-10-14",
+    "assignmentId": "assign-11",
+    "order": 14,
+    "content": "🏆 FINAL BOSS — “STARTUP 300 TRIỆU” (1,5 phút | Ra quyết định chuẩn CEO)\n\nMột người chuẩn bị kinh doanh với số vốn 300 triệu. Có 6 quyết định sau:\n① Tìm hiểu xem ngành nghề có được phép kinh doanh không.\n② Chọn cách kinh doanh phù hợp quy định.\n③ Quảng cáo sai công dụng để tăng doanh số gấp ba.\n④ Thực hiện nghĩa vụ thuế đầy đủ theo quy định.\n⑤ Bảo đảm quyền, lợi ích hợp pháp của khách hàng.\n⑥ Nếu doanh thu tốt thì khai thấp xuống để giảm tiền thuế.\n\n👉 Hãy phân loại vào 2 vùng: STARTUP HỢP PHÁP và VƯỢT VẠCH:\n🔐 MẬT MÃ CUỐI: TỰ DO + ____________ = KINH DOANH CÓ TRÁCH NHIỆM",
+    "options": [
+      {
+        "key": "A",
+        "text": "🟢 STARTUP HỢP PHÁP: ① – ② – ④ – ⑤ | 🔴 VƯỢT VẠCH: ③ – ⑥ | Mật mã: TRÁCH NHIỆM / NGHĨA VỤ"
+      },
+      {
+        "key": "B",
+        "text": "🟢 STARTUP HỢP PHÁP: ③ – ⑥ | 🔴 VƯỢT VẠCH: ① – ② – ④ – ⑤"
+      },
+      {
+        "key": "C",
+        "text": "🟢 STARTUP HỢP PHÁP: ① – ③ – ⑤ | 🔴 VƯỢT VẠCH: ② – ④ – ⑥"
+      },
+      {
+        "key": "D",
+        "text": "🟢 STARTUP HỢP PHÁP: ② – ③ – ⑥ | 🔴 VƯỢT VẠCH: ① – ④ – ⑤"
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Hợp pháp: ①, ②, ④, ⑤. Vượt vạch: ③, ⑥.\n🔐 Mật mã: TRÁCH NHIỆM / NGHĨA VỤ.",
+    "points": 0.6
+  },
+  {
+    "id": "q-10-15",
+    "assignmentId": "assign-11",
+    "order": 15,
+    "content": "❤️ EXIT TICKET — “15 TUỔI THÌ LIÊN QUAN GÌ?” (Cam kết nhận thức công dân)\n\n⚖️ TỰ DO KHÔNG ĐỨNG NGOÀI PHÁP LUẬT.\nKinh doanh có quyền – có giới hạn – có nghĩa vụ – có trách nhiệm.\n\n👉 Chọn 01 thông điệp và hành động em quyết tâm mang ra khỏi lớp học hôm nay:",
+    "options": [
+      {
+        "key": "A",
+        "text": "🌱 TÔI HIỂU VÀ HÀNH ĐỘNG: Quyền luôn đi liền với nghĩa vụ trong khuôn khổ pháp luật + Không mua/bán hàng vi phạm, nhắc người thân tuân thủ quy định kinh doanh và nộp thuế!"
+      },
+      {
+        "key": "B",
+        "text": "Kinh doanh là chuyện của người lớn, học sinh 15 tuổi không cần biết đến pháp luật."
+      },
+      {
+        "key": "C",
+        "text": "Miễn kiếm được nhiều tiền thì phương thức kinh doanh không quan trọng."
+      },
+      {
+        "key": "D",
+        "text": "Chỉ cần không bị bắt thì kinh doanh bất cứ thứ gì cũng được."
+      }
+    ],
+    "correctOption": "A",
+    "explanation": "Đáp án: A. Mật khẩu rời lớp: Nhận thức đúng đắn rằng quyền luôn gắn liền với nghĩa vụ và tự giác thực hiện trách nhiệm công dân từ những việc làm thiết thực ngay hôm nay.",
+    "points": 0.6
+  }
+];

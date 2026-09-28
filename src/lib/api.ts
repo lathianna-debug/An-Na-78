@@ -15,6 +15,7 @@ import {
   Submission,
   SystemSettings,
 } from '../types.ts';
+import { clientFallbackEngine } from './clientFallbackEngine.ts';
 
 const ADMIN_TOKEN_KEY = 'htcdn_admin_token';
 
@@ -34,8 +35,24 @@ async function fetchJson<T>(url: string, options: RequestInit = {}): Promise<T> 
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetch(url, { ...options, headers });
-  if (!response.ok) {
+  try {
+    const response = await fetch(url, { ...options, headers });
+    if (response.ok) {
+      return (await response.json()) as T;
+    }
+
+    // If 404 (e.g. Netlify static deploy or route not found), fall back to client engine
+    if (response.status === 404) {
+      try {
+        const fallbackData = await clientFallbackEngine.handleRequest(url, options);
+        return fallbackData as T;
+      } catch (fbErr: any) {
+        if (fbErr && fbErr.message && !fbErr.message.includes('Endpoint not found')) {
+          throw fbErr;
+        }
+      }
+    }
+
     let errorMsg = `Lỗi hệ thống (${response.status})`;
     try {
       const errData = await response.json();
@@ -44,8 +61,18 @@ async function fetchJson<T>(url: string, options: RequestInit = {}): Promise<T> 
       // fallback
     }
     throw new Error(errorMsg);
+  } catch (networkErr: any) {
+    // If network failed (e.g. offline, failed to fetch, static deploy)
+    try {
+      const fallbackData = await clientFallbackEngine.handleRequest(url, options);
+      return fallbackData as T;
+    } catch (fbErr: any) {
+      if (fbErr && fbErr.message && !fbErr.message.includes('Endpoint not found')) {
+        throw fbErr;
+      }
+    }
+    throw networkErr;
   }
-  return response.json() as Promise<T>;
 }
 
 export const api = {
@@ -55,6 +82,10 @@ export const api = {
   getStudentsByClass: (className: string) =>
     fetchJson<{ students: Array<{ id: string; stt: number; name: string; class: ClassGrade9 }> }>(
       `/api/public/students-by-class/${encodeURIComponent(className)}`
+    ),
+  getAllStudents: () =>
+    fetchJson<{ students: Array<{ id: string; stt: number; name: string; class: ClassGrade9 }> }>(
+      '/api/public/all-students'
     ),
   getStudentScorecard: (data: { studentName?: string; studentClass?: string; studentId?: string }) =>
     fetchJson<{

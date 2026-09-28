@@ -108,6 +108,21 @@ app.get('/api/public/students-by-class/:className', (req, res) => {
   res.json({ students });
 });
 
+// Public all students across all classes for instant auto-recognition
+app.get('/api/public/all-students', (req, res) => {
+  const db = dbManager.getData();
+  const students = (db.students || [])
+    .filter((s: any) => !s.isDeleted)
+    .map((s: any) => ({
+      id: s.id,
+      stt: s.stt || 0,
+      name: s.name,
+      class: s.class,
+    }))
+    .sort((a: any, b: any) => a.class.localeCompare(b.class) || (a.stt - b.stt) || a.name.localeCompare(b.name, 'vi'));
+  res.json({ students });
+});
+
 // Public student scorecard: Student views ONLY their own completed columns (Bài 1..10) without seeing other students' work or answers
 app.post('/api/public/student-scorecard', (req, res) => {
   const { studentName, studentClass, studentId } = req.body;
@@ -116,29 +131,53 @@ app.post('/api/public/student-scorecard', (req, res) => {
   let student: any = null;
   if (studentId) {
     student = db.students.find((s: any) => !s.isDeleted && s.id === studentId);
-  } else if (studentName && studentClass) {
+  } else if (studentName) {
     const cleanName = String(studentName).trim().replace(/\s+/g, ' ');
-    const cleanClass = String(studentClass).trim().toUpperCase();
+    const cleanClass = studentClass ? String(studentClass).trim().toUpperCase() : '';
     const normName = normalizeVietnamese(cleanName);
 
-    student = db.students.find(
-      (s: any) =>
-        !s.isDeleted &&
-        s.class === cleanClass &&
-        (s.name.toLowerCase() === cleanName.toLowerCase() || normalizeVietnamese(s.name) === normName)
-    );
+    // 1. Try in selected class first
+    if (cleanClass) {
+      student = db.students.find(
+        (s: any) =>
+          !s.isDeleted &&
+          s.class === cleanClass &&
+          (s.name.toLowerCase() === cleanName.toLowerCase() || normalizeVietnamese(s.name) === normName)
+      );
 
+      if (!student) {
+        const classStudents = (db.students || []).filter((s: any) => !s.isDeleted && s.class === cleanClass);
+        const partialCandidates = classStudents.filter((s: any) => {
+          const normS = normalizeVietnamese(s.name);
+          return normS === normName ||
+                 normS.endsWith(' ' + normName) ||
+                 normS.startsWith(normName + ' ') ||
+                 normS.includes(normName);
+        });
+        if (partialCandidates.length === 1) {
+          student = partialCandidates[0];
+        }
+      }
+    }
+
+    // 2. Try across all classes if not found in selected class
     if (!student) {
-      const classStudents = (db.students || []).filter((s: any) => !s.isDeleted && s.class === cleanClass);
-      const partialCandidates = classStudents.filter((s: any) => {
-        const normS = normalizeVietnamese(s.name);
-        return normS === normName ||
-               normS.endsWith(' ' + normName) ||
-               normS.startsWith(normName + ' ') ||
-               normS.includes(normName);
-      });
-      if (partialCandidates.length === 1) {
-        student = partialCandidates[0];
+      const allStudents = (db.students || []).filter((s: any) => !s.isDeleted);
+      student = allStudents.find(
+        (s: any) =>
+          s.name.toLowerCase() === cleanName.toLowerCase() ||
+          normalizeVietnamese(s.name) === normName
+      );
+      if (!student) {
+        const partialAll = allStudents.filter((s: any) => {
+          const normS = normalizeVietnamese(s.name);
+          return normS.endsWith(' ' + normName) ||
+                 normS.startsWith(normName + ' ') ||
+                 normS.includes(normName);
+        });
+        if (partialAll.length === 1) {
+          student = partialAll[0];
+        }
       }
     }
   }
@@ -146,7 +185,7 @@ app.post('/api/public/student-scorecard', (req, res) => {
   if (!student) {
     return res.status(404).json({
       error: 'STUDENT_NOT_FOUND',
-      message: 'Không tìm thấy thông tin học sinh trong danh sách lớp. Em vui lòng kiểm tra lại chính tả họ và tên nhé!',
+      message: 'Không tìm thấy thông tin học sinh trong danh sách. Em vui lòng kiểm tra lại chính tả họ và tên nhé!',
     });
   }
 
@@ -224,46 +263,112 @@ app.post('/api/public/student-scorecard', (req, res) => {
   });
 });
 
+function getLessonNumberForAssignment(a: any, db: any): number {
+  if (typeof a.lessonNumber === 'number' && a.lessonNumber >= 1 && a.lessonNumber <= 10) {
+    return a.lessonNumber;
+  }
+  if (a.lessonId) {
+    const les = (db.lessons || []).find((l: any) => l.id === a.lessonId);
+    if (les && typeof les.number === 'number') return les.number;
+    const match = a.lessonId.match(/\d+/);
+    if (match) return parseInt(match[0], 10);
+  }
+  if (a.code) {
+    const match = a.code.match(/B(\d+)/i);
+    if (match) return parseInt(match[1], 10);
+  }
+  if (a.title) {
+    const match = a.title.match(/Bài\s*(\d+)/i);
+    if (match) return parseInt(match[1], 10);
+  }
+  return 1;
+}
+
 function findAssignmentByCode(rawCode: string, db: any) {
-  const code = (rawCode || '').trim().toUpperCase();
-  let assignment = db.assignments.find(
-    (a: any) => !a.isDeleted && a.code.toUpperCase() === code
+  const activeAssignments = (db.assignments || []).filter((a: any) => !a.isDeleted);
+  if (!activeAssignments.length) return null;
+
+  // Make sure all assignments have lessonNumber cached
+  for (const a of activeAssignments) {
+    if (!a.lessonNumber) {
+      a.lessonNumber = getLessonNumberForAssignment(a, db);
+    }
+  }
+
+  if (!rawCode || !rawCode.trim()) {
+    const firstOpen = activeAssignments.find((a: any) => !a.isLocked);
+    return firstOpen || activeAssignments[0];
+  }
+
+  const raw = rawCode.trim();
+  const code = raw.toUpperCase();
+  const norm = normalizeVietnamese(raw).replace(/[^a-z0-9]/g, '');
+
+  // 1. Direct code or ID match
+  let assignment = activeAssignments.find(
+    (a: any) => a.code.toUpperCase() === code || a.id === raw
   );
   if (assignment) return assignment;
 
-  // Friendly aliases
-  if (['GDCD9-B1', 'GDCD8-B1', 'GDCD-B1', 'B1', 'BAI1', 'BAI-1', 'LABAN15', '1'].includes(code)) {
-    return db.assignments.find((a: any) => a.id === 'assign-1');
-  }
-  if (['GDCD9-B2', 'GDCD8-B2', 'GDCD-B2', 'B2', 'BAI2', 'BAI-2', 'KHOANDUNG', 'TRAITIMRONGMO', '2', 'TUCHU-9A'].includes(code)) {
-    return db.assignments.find((a: any) => a.id === 'assign-3');
-  }
-  if (['GDCD9-B3', 'GDCD8-B3', 'GDCD-B3', 'B3', 'BAI3', 'BAI-3', 'EMCOVAOCUOC', 'HOATDONGCONGDONG', 'CONGDONG', 'DANCHU-9', '3'].includes(code)) {
-    return db.assignments.find((a: any) => a.id === 'assign-4');
-  }
-  if (['GDCD9-B4', 'GDCD8-B4', 'GDCD-B4', 'B4', 'BAI4', 'BAI-4', 'KHACHQUAN', 'CONGBANG', 'THAMPHAN15', 'THAMPHAN', '4'].includes(code)) {
-    return db.assignments.find((a: any) => a.id === 'assign-5');
-  }
-  if (['GDCD9-B5', 'GDCD8-B5', 'GDCD-B5', 'B5', 'BAI5', 'BAI-5', 'HOABINH', 'HOABINH-9', 'BAOVEHOABINH', 'SUGIAHOABINH', 'SUGIA15', 'SUGIA', '5'].includes(code)) {
-    return db.assignments.find((a: any) => a.id === 'assign-6');
-  }
-  if (['GDCD9-B6', 'GDCD8-B6', 'GDCD-B6', 'B6', 'BAI6', 'BAI-6', 'QUANLITHOIGIAN', 'THOIGIAN', 'CEO24GIO', 'CEO24H', 'CEO', '6'].includes(code)) {
-    return db.assignments.find((a: any) => a.id === 'assign-7');
-  }
-  if (['GDCD9-B7', 'GDCD8-B7', 'GDCD-B7', 'B7', 'BAI7', 'BAI-7', 'THICHUNG', 'UPDATE9', 'UPDATE', '7'].includes(code)) {
-    return db.assignments.find((a: any) => a.id === 'assign-8');
-  }
-  if (['GDCD9-B8', 'GDCD8-B8', 'GDCD-B8', 'B8', 'BAI8', 'BAI-8', 'TIEUDUNG', 'SMARTSHOPPER', 'SHOPPER', '8'].includes(code)) {
-    return db.assignments.find((a: any) => a.id === 'assign-9');
-  }
-  if (['GDCD9-B9', 'GDCD8-B9', 'GDCD-B9', 'B9', 'BAI9', 'BAI-9', 'PHAPLUAT', 'PHONGDIEUTRA', 'VIPHAM', '9'].includes(code)) {
-    return db.assignments.find((a: any) => a.id === 'assign-10');
-  }
-  if (['GDCD9-B10', 'GDCD8-B10', 'GDCD-B10', 'B10', 'BAI10', 'BAI-10', 'KINHDOANH', 'THUE', 'STARTUP15', 'STARTUP', '10'].includes(code)) {
-    return db.assignments.find((a: any) => a.id === 'assign-11');
+  // 2. Match by lesson number in clean normalized form (e.g. "1", "b1", "bai1", "baitap1", "gdcd1")
+  for (let num = 10; num >= 1; num--) {
+    const patterns = [
+      `${num}`,
+      `b${num}`,
+      `bai${num}`,
+      `baitap${num}`,
+      `baihoc${num}`,
+      `gdcd${num}`,
+      `gdcd9b${num}`,
+      `gdcd9bai${num}`,
+      `lesson${num}`,
+    ];
+    if (patterns.includes(norm)) {
+      const match = activeAssignments.find((a: any) => getLessonNumberForAssignment(a, db) === num);
+      if (match) return match;
+    }
   }
 
-  return null;
+  // 3. Look for number 1..10 in raw text (e.g. "Bài 1", "bài 2", "Bài tập 3")
+  const numMatch = raw.match(/\b(10|[1-9])\b/);
+  if (numMatch) {
+    const num = parseInt(numMatch[1], 10);
+    const match = activeAssignments.find((a: any) => getLessonNumberForAssignment(a, db) === num);
+    if (match) return match;
+  }
+
+  // 4. Keyword / title partial search
+  const keywordMatch = activeAssignments.find((a: any) => {
+    const normTitle = normalizeVietnamese(a.title).replace(/[^a-z0-9]/g, '');
+    const normDesc = normalizeVietnamese(a.description || '').replace(/[^a-z0-9]/g, '');
+    return normTitle.includes(norm) || normDesc.includes(norm) || (norm.length >= 4 && normTitle.includes(norm));
+  });
+  if (keywordMatch) return keywordMatch;
+
+  // 5. Friendly aliases for all 10 lessons
+  const aliasMap: Record<number, string[]> = {
+    1: ['GDCD9-B1', 'GDCD8-B1', 'GDCD-B1', 'B1', 'BAI1', 'BAI-1', 'LABAN15', 'LABAN', '1'],
+    2: ['GDCD9-B2', 'GDCD8-B2', 'GDCD-B2', 'B2', 'BAI2', 'BAI-2', 'KHOANDUNG', 'TRAITIMRONGMO', '2', 'TUCHU-9A'],
+    3: ['GDCD9-B3', 'GDCD8-B3', 'GDCD-B3', 'B3', 'BAI3', 'BAI-3', 'EMCOVAOCUOC', 'HOATDONGCONGDONG', 'CONGDONG', 'DANCHU-9', '3'],
+    4: ['GDCD9-B4', 'GDCD8-B4', 'GDCD-B4', 'B4', 'BAI4', 'BAI-4', 'KHACHQUAN', 'CONGBANG', 'THAMPHAN15', 'THAMPHAN', '4'],
+    5: ['GDCD9-B5', 'GDCD8-B5', 'GDCD-B5', 'B5', 'BAI5', 'BAI-5', 'HOABINH', 'HOABINH-9', 'BAOVEHOABINH', 'SUGIAHOABINH', 'SUGIA15', 'SUGIA', '5'],
+    6: ['GDCD9-B6', 'GDCD8-B6', 'GDCD-B6', 'B6', 'BAI6', 'BAI-6', 'QUANLITHOIGIAN', 'THOIGIAN', 'CEO24GIO', 'CEO24H', 'CEO', '6'],
+    7: ['GDCD9-B7', 'GDCD8-B7', 'GDCD-B7', 'B7', 'BAI7', 'BAI-7', 'THICHUNG', 'UPDATE9', 'UPDATE', '7'],
+    8: ['GDCD9-B8', 'GDCD8-B8', 'GDCD-B8', 'B8', 'BAI8', 'BAI-8', 'TIEUDUNG', 'SMARTSHOPPER', 'SHOPPER', '8'],
+    9: ['GDCD9-B9', 'GDCD8-B9', 'GDCD-B9', 'B9', 'BAI9', 'BAI-9', 'PHAPLUAT', 'PHONGDIEUTRA', 'VIPHAM', '9'],
+    10: ['GDCD9-B10', 'GDCD8-B10', 'GDCD-B10', 'B10', 'BAI10', 'BAI-10', 'KINHDOANH', 'THUE', 'STARTUP15', 'STARTUP', '10'],
+  };
+
+  for (const [lessonNumStr, aliases] of Object.entries(aliasMap)) {
+    const lNum = parseInt(lessonNumStr, 10);
+    if (aliases.some((al) => al === code || normalizeVietnamese(al) === norm)) {
+      const match = activeAssignments.find((a: any) => getLessonNumberForAssignment(a, db) === lNum);
+      if (match) return match;
+    }
+  }
+
+  // 6. Resilient fallback: return first active open assignment, NEVER return null to prevent student block
+  return activeAssignments.find((a: any) => !a.isLocked) || activeAssignments[0] || null;
 }
 
 function evaluateAssignmentAvailability(assignment: any, now = new Date()): {
@@ -469,14 +574,14 @@ app.post('/api/student/start', (req, res) => {
   let student = db.students.find(
     (s) =>
       !s.isDeleted &&
-      s.class === studentClass &&
+      s.class === cleanClass &&
       (s.name.toLowerCase() === cleanName.toLowerCase() ||
         normalizeVietnamese(s.name) === normCleanName)
   );
 
-  // Partial match fallback if unique candidate in class
+  // Partial match fallback if unique candidate in selected class
   if (!student) {
-    const classStudents = (db.students || []).filter((s) => !s.isDeleted && s.class === studentClass);
+    const classStudents = (db.students || []).filter((s) => !s.isDeleted && s.class === cleanClass);
     const partialCandidates = classStudents.filter((s) => {
       const normS = normalizeVietnamese(s.name);
       return normS === normCleanName ||
@@ -489,21 +594,49 @@ app.post('/api/student/start', (req, res) => {
     }
   }
 
-  const classHasRoster = db.students.some((s) => !s.isDeleted && s.class === studentClass);
-
+  // Cross-class auto-detection: If student is in another class (e.g. 9A12 instead of 9A8), find them!
   if (!student) {
-    if (classHasRoster) {
-      return res.status(403).json({
-        error: 'STUDENT_NOT_IN_ROSTER',
-        message: `🔐 BẢO MẬT DỮ LIỆU: Họ tên "${cleanName}" chưa khớp với danh sách Lớp ${studentClass} đã khóa của trường. Ngoài Cô An Na ra, không bất kỳ ai có thể thêm, xóa hay thay đổi danh sách học sinh. Em vui lòng kiểm tra lại chính tả họ và tên của mình nhé!`,
+    const allStudents = (db.students || []).filter((s) => !s.isDeleted);
+    // 1. Exact or normalized match across any class
+    const matchInAnyClass = allStudents.find(
+      (s) =>
+        s.name.toLowerCase() === cleanName.toLowerCase() ||
+        normalizeVietnamese(s.name) === normCleanName
+    );
+    if (matchInAnyClass) {
+      student = matchInAnyClass;
+    } else {
+      // 2. Partial match across all classes if unique
+      const partialAll = allStudents.filter((s) => {
+        const normS = normalizeVietnamese(s.name);
+        return normS.endsWith(' ' + normCleanName) ||
+               normS.startsWith(normCleanName + ' ') ||
+               normS.includes(normCleanName);
       });
+      if (partialAll.length === 1) {
+        student = partialAll[0];
+      }
     }
+  }
 
-    // Fallback only if class roster has not been loaded yet
+  // Resilient student registration: if student name is entered but not in preset roster, register them
+  if (!student) {
+    const classExistingStudents = (db.students || []).filter(
+      (s) => !s.isDeleted && s.class === cleanClass
+    );
+    const nextStt = classExistingStudents.length + 1;
+    // Format name to standard capitalized words
+    const formattedName = cleanName
+      .split(/\s+/)
+      .map((w: string) => (w.length > 0 ? w.charAt(0).toUpperCase() + w.slice(1) : ''))
+      .filter(Boolean)
+      .join(' ');
+
     student = {
       id: 'hs-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
-      name: cleanName,
-      class: studentClass,
+      stt: nextStt,
+      name: formattedName || cleanName,
+      class: cleanClass || '9A8',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       isDeleted: false,
