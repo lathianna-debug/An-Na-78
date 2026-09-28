@@ -1998,7 +1998,7 @@
       "isDeleted": false,
       "createdAt": "2026-09-27T08:31:35.158Z",
       "updatedAt": "2026-09-27T08:31:35.158Z",
-      "lastActive": "2026-09-27T09:50:33.548Z"
+      "lastActive": "2026-09-28T13:39:07.565Z"
     },
     {
       "id": "hs-9a12-02",
@@ -2605,7 +2605,7 @@
       "code": "GDCD9-B2",
       "description": "Phiếu học tập GDCD 9: Thử thách Trái tim rộng mở. Nhiệm vụ: Hiểu đúng → Nhận ra → Biết xử lí → Biết sống khoan dung. Khoan dung không có nghĩa là đồng ý với mọi điều người khác làm. (Thời gian: 12–15 phút)",
       "durationMinutes": 15,
-      "isLocked": true,
+      "isLocked": false,
       "order": 1,
       "reviewMode": "NO_REVIEW",
       "createdAt": "2026-09-05T08:00:00.000Z",
@@ -2619,7 +2619,7 @@
       "code": "GDCD9-B3",
       "description": "Phiếu học tập GDCD 9: Thử thách “Em có vào cuộc?”. Một người làm một việc nhỏ. Nhiều người cùng làm có thể tạo nên thay đổi lớn. (Thời gian: 10–15 phút | Mục tiêu: HIỂU → NHỚ → VẬN DỤNG → MUỐN HÀNH ĐỘNG)",
       "durationMinutes": 15,
-      "isLocked": true,
+      "isLocked": false,
       "order": 1,
       "reviewMode": "NO_REVIEW",
       "createdAt": "2026-09-10T08:00:00.000Z",
@@ -2633,7 +2633,7 @@
       "code": "GDCD9-B4",
       "description": "Phiếu học tập GDCD 9: Bài 4. Khách quan và công bằng — Thử thách: “Thẩm phán 15 tuổi”. Luật duy nhất: Đừng chọn theo cảm tính, hãy chọn theo dữ kiện. (Thời gian: 10–15 phút | Nhiệm vụ: HIỂU ĐÚNG → NHẬN RA → BIẾT QUYẾT ĐỊNH → BIẾT ỨNG XỬ)",
       "durationMinutes": 15,
-      "isLocked": true,
+      "isLocked": false,
       "order": 1,
       "reviewMode": "NO_REVIEW",
       "createdAt": "2026-09-12T08:00:00.000Z",
@@ -2647,7 +2647,7 @@
       "code": "GDCD9-B5",
       "description": "Phiếu học tập GDCD 9: Bài 5. Bảo vệ hoà bình — Mật lệnh: “Sứ giả hoà bình 15 tuổi”. Hành trình: HIỂU → NHẬN DIỆN → RA QUYẾT ĐỊNH → BIẾT HÀNH ĐỘNG. Hoà bình không chỉ là điều chúng ta mong muốn, nó còn được tạo nên từ cách chúng ta ứng xử mỗi ngày.",
       "durationMinutes": 15,
-      "isLocked": true,
+      "isLocked": false,
       "order": 1,
       "reviewMode": "NO_REVIEW",
       "createdAt": "2026-09-15T08:00:00.000Z",
@@ -2661,7 +2661,7 @@
       "code": "GDCD9-B6",
       "description": "Phiếu học tập GDCD 9: Bài 6. Quản lí thời gian hiệu quả — Thử thách: “CEO của 24 giờ”. Mục tiêu: HIỂU → BIẾT ƯU TIÊN → BIẾT LẬP KẾ HOẠCH → BIẾT HÀNH ĐỘNG. Mỗi người đều có 24 giờ. Khác biệt nằm ở cách chúng ta sử dụng 24 giờ ấy.",
       "durationMinutes": 15,
-      "isLocked": true,
+      "isLocked": false,
       "order": 1,
       "reviewMode": "NO_REVIEW",
       "createdAt": "2026-09-20T08:00:00.000Z",
@@ -2675,7 +2675,7 @@
       "code": "GDCD9-B7",
       "description": "Phiếu học tập GDCD 9: Bài 7. Thích ứng với thay đổi — Thử thách: “UPDATE BẢN THÂN 9.0”. Nhiệm vụ: NHẬN RA → BÌNH TĨNH → ĐIỀU CHỈNH → TIẾP TỤC TIẾN LÊN. 🌬️ Ta không phải lúc nào cũng đổi được “hướng gió”, nhưng có thể học cách điều chỉnh “cánh buồm”.",
       "durationMinutes": 15,
-      "isLocked": true,
+      "isLocked": false,
       "order": 1,
       "reviewMode": "NO_REVIEW",
       "createdAt": "2026-09-21T08:00:00.000Z",
@@ -2689,7 +2689,7 @@
       "code": "GDCD9-B8",
       "description": "Phiếu học tập GDCD 9: Bài 8. Tiêu dùng thông minh — Thử thách: “SMART SHOPPER – ĐỪNG ĐỂ CHIẾC VÍ QUYẾT ĐỊNH TRONG 3 GIÂY!”. Hành trình: NHẬN RA → KIỂM TRA → SO SÁNH → QUYẾT ĐỊNH. Người tiêu dùng thông minh biết mình đang mua gì – vì sao mua – và mua như thế nào.",
       "durationMinutes": 15,
-      "isLocked": true,
+      "isLocked": false,
       "order": 1,
       "reviewMode": "NO_REVIEW",
       "createdAt": "2026-09-21T08:00:00.000Z",
@@ -2703,7 +2703,7 @@
       "code": "GDCD9-B9",
       "description": "Phiếu học tập GDCD 9: Bài 9. Vi phạm pháp luật và trách nhiệm pháp lí — Nhiệm vụ: “PHÒNG ĐIỀU TRA PHÁP LÍ 9A”. Hành trình: NHẬN DIỆN → PHÂN LOẠI → GHÉP HẬU QUẢ → BIẾT TUÂN THỦ. ⚖️ Đừng phán đoán bằng cảm tính, hãy tìm đúng dấu hiệu pháp lí.",
       "durationMinutes": 15,
-      "isLocked": true,
+      "isLocked": false,
       "order": 1,
       "reviewMode": "NO_REVIEW",
       "createdAt": "2026-09-21T08:00:00.000Z",
@@ -2717,7 +2717,7 @@
       "code": "GDCD9-B10",
       "description": "Phiếu học tập GDCD 9: Bài 10. Quyền tự do kinh doanh và nghĩa vụ nộp thuế — Thử thách: “STARTUP 15 TUỔI – MỞ SHOP NHƯNG ĐỪNG VƯỢT VẠCH!”. Hành trình tư duy: HIỂU QUYỀN → NHẬN RA GIỚI HẠN → HIỂU NGHĨA VỤ → BIẾT HÀNH ĐỘNG.",
       "durationMinutes": 15,
-      "isLocked": true,
+      "isLocked": false,
       "order": 1,
       "reviewMode": "NO_REVIEW",
       "createdAt": "2026-09-21T08:00:00.000Z",
@@ -6588,38 +6588,7 @@
       "points": 0.6
     }
   ],
-  "submissions": [
-    {
-      "id": "sub-1790502633548-jbp4",
-      "assignmentId": "assign-1",
-      "assignmentTitle": "Bài 1: Sống có lí tưởng — Thử thách: “La bàn tuổi 15”",
-      "lessonNumber": 1,
-      "lessonTitle": "Sống có lí tưởng",
-      "studentId": "hs-9a12-01",
-      "studentName": "Nguyễn Võ Trầm Anh",
-      "studentClass": "9A12",
-      "startTime": "2026-09-27T09:50:33.548Z",
-      "serverDueTime": "2026-09-27T10:05:33.548Z",
-      "status": "IN_PROGRESS",
-      "totalQuestions": 18,
-      "maxScore": 10
-    },
-    {
-      "id": "sub-1790502633567-9mpg",
-      "assignmentId": "assign-1",
-      "assignmentTitle": "Bài 1: Sống có lí tưởng — Thử thách: “La bàn tuổi 15”",
-      "lessonNumber": 1,
-      "lessonTitle": "Sống có lí tưởng",
-      "studentId": "hs-9a12-02",
-      "studentName": "Nguyễn Hoàng Ân",
-      "studentClass": "9A12",
-      "startTime": "2026-09-27T09:50:33.567Z",
-      "serverDueTime": "2026-09-27T10:05:33.567Z",
-      "status": "IN_PROGRESS",
-      "totalQuestions": 18,
-      "maxScore": 10
-    }
-  ],
+  "submissions": [],
   "answers": [],
   "settings": {
     "lockImmediatelyOnSubmit": true,
@@ -6640,6 +6609,22 @@
     "backgroundTheme": "default"
   },
   "auditLogs": [
+    {
+      "id": "log-1790602747594-oqtnb",
+      "timestamp": "2026-09-28T13:39:07.594Z",
+      "actor": "Học sinh",
+      "action": "Nộp bài & Khóa",
+      "targetEntity": "Nguyễn Võ Trầm Anh – 9A12",
+      "details": "Hoàn thành Bài 1: Sống có lí tưởng — Thử thách: “La bàn tuổi 15” – Điểm: 0/10"
+    },
+    {
+      "id": "log-1790602704561-3aoq9",
+      "timestamp": "2026-09-28T13:38:24.561Z",
+      "actor": "Học sinh",
+      "action": "Nộp bài & Khóa",
+      "targetEntity": "Nguyễn Võ Trầm Anh – 9A12",
+      "details": "Hoàn thành Bài 1: Sống có lí tưởng — Thử thách: “La bàn tuổi 15” – Điểm: 0/10"
+    },
     {
       "id": "log-1790498107378-2gyuk",
       "timestamp": "2026-09-27T08:35:07.378Z",

@@ -754,7 +754,7 @@ app.post('/api/student/autosave', (req, res) => {
 
   dbManager.saveDatabase();
 
-  res.json({ success: true, savedAt: saveTimestamp });
+  res.json({ success: true, saved: true, savedAt: saveTimestamp });
 });
 
 // Final submit and IMMEDIATELY lock submission

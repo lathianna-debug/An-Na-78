@@ -45,6 +45,10 @@ export const StudentExamScreen: React.FC<StudentExamScreenProps> = ({ sessionDat
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const totalQ = questions?.length || 0;
+  const currentQ = questions?.[currentIndex];
+  const answeredCount = Object.keys(answers).length;
+
   // Timer countdown
   useEffect(() => {
     const interval = setInterval(() => {
@@ -180,9 +184,6 @@ export const StudentExamScreen: React.FC<StudentExamScreenProps> = ({ sessionDat
     }
   };
 
-  const currentQ = questions[currentIndex];
-  const totalQ = questions.length;
-  const answeredCount = Object.keys(answers).length;
   const progressPercent = totalQ > 0 ? Math.round(((currentIndex + 1) / totalQ) * 100) : 0;
 
   // Format time remaining

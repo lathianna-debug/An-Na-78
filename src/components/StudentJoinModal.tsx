@@ -163,9 +163,14 @@ export const StudentJoinModal: React.FC<StudentJoinModalProps> = ({ onBack, onSt
     return () => clearInterval(interval);
   }, []);
 
-  const selectedAssignment = assignments.find(
-    (a) => a.code.toUpperCase() === taskCode.trim().toUpperCase()
-  );
+  const selectedAssignment = assignments.find((a) => {
+    const raw = taskCode.trim().toUpperCase();
+    if (a.code.toUpperCase() === raw) return true;
+    if (raw === a.lessonNumber?.toString()) return true;
+    if (raw === `B${a.lessonNumber}`) return true;
+    if (raw === `BAI ${a.lessonNumber}` || raw === `BAI${a.lessonNumber}` || raw === `BAI-${a.lessonNumber}`) return true;
+    return false;
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
